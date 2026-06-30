@@ -27,8 +27,8 @@ class UserCanTests(TestCase):
         cls.receptionist = User.objects.create_user(
             "rec", "rec@test.com", "pw", role=User.RECEPTIONIST
         )
-        cls.reviewer = User.objects.create_user(
-            "rev", "rev@test.com", "pw", role=User.RECEPTIONIST, has_reviews_access=True
+        cls.inventory_user = User.objects.create_user(
+            "inv", "inv@test.com", "pw", role=User.RECEPTIONIST, has_inventory_access=True
         )
 
     def test_anonymous_has_no_capability(self):
@@ -43,16 +43,18 @@ class UserCanTests(TestCase):
         self.assertTrue(user_can(self.receptionist, Capability.HR_BACHECA))
 
     def test_flag_based_capability(self):
-        # has_reviews_access concede REVIEWS, senza non si accede.
-        self.assertTrue(user_can(self.reviewer, Capability.REVIEWS))
-        self.assertFalse(user_can(self.receptionist, Capability.REVIEWS))
+        # has_inventory_access concede INVENTORY, senza non si accede.
+        self.assertTrue(user_can(self.inventory_user, Capability.INVENTORY))
+        self.assertFalse(user_can(self.receptionist, Capability.INVENTORY))
 
     def test_role_based_capability(self):
-        # OWNER accede a FINANCIALS ed ECONOMATO; il receptionist no.
+        # OWNER accede a FINANCIALS, ECONOMATO e REVIEWS; il receptionist no.
         self.assertTrue(user_can(self.owner, Capability.FINANCIALS))
         self.assertTrue(user_can(self.owner, Capability.ECONOMATO))
+        self.assertTrue(user_can(self.owner, Capability.REVIEWS))
         self.assertFalse(user_can(self.receptionist, Capability.FINANCIALS))
         self.assertFalse(user_can(self.receptionist, Capability.ECONOMATO))
+        self.assertFalse(user_can(self.receptionist, Capability.REVIEWS))
 
     def test_superuser_bypasses_everything(self):
         for cap in CAPABILITY_RULES:
@@ -171,8 +173,8 @@ class SidebarCapabilityGatingTests(TestCase):
         cls.receptionist = User.objects.create_user(
             "rec5", "rec5@test.com", "pw", role=User.RECEPTIONIST
         )
-        cls.reviewer = User.objects.create_user(
-            "rev5", "rev5@test.com", "pw", role=User.RECEPTIONIST, has_reviews_access=True
+        cls.corporate = User.objects.create_user(
+            "corp5", "corp5@test.com", "pw", role=User.CORPORATE
         )
 
     def _render_sidebar(self, user):
@@ -203,8 +205,9 @@ class SidebarCapabilityGatingTests(TestCase):
         for label in ("Portale HR", "Economato", "Controllo Amministrativo"):
             self.assertIn(label, html, label)
 
-    def test_reviews_flag_controls_reviews_menu(self):
-        self.assertIn("Recensioni", self._render_sidebar(self.reviewer))
+    def test_reviews_role_controls_reviews_menu(self):
+        # Recensioni è role-based: un ruolo abilitato (CORPORATE) la vede, il receptionist no.
+        self.assertIn("Recensioni", self._render_sidebar(self.corporate))
         self.assertNotIn("Recensioni", self._render_sidebar(self.receptionist))
 
     def test_superuser_sees_profile_cards(self):

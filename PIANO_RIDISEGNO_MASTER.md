@@ -199,7 +199,22 @@ Obiettivo: un solo linguaggio visivo, una sola shell.
       deprecazione di `base_demo`/`base_landing`.
 - [ ] **Data-fetching standard** + responsive-first (eliminare i componenti "MobileOS" ad hoc).
 
-### FASE 3 — Ridisegno dei moduli, a ondate (continuativo) · **P1/P2**
+### FASE 3 — Ridisegno dei moduli, a ondate (continuativo) · **P1/P2** — *in corso*
+
+> **Moduli prioritari (deciso): Recensioni e Portale HR.**
+
+#### Recensioni — accesso e visibilità (fatto)
+- [x] **Fonte di verità unica** `reviews/access.py`: `can_access_reviews(user)` (== capability
+      REVIEWS) e `scope_reviews(qs, user)` (scoping per company/resort). Eliminata la
+      duplicazione del gate `allowed_roles` e dello scoping presente in 5 punti delle viste.
+- [x] **Sanata la divergenza nav↔viste**: la capability REVIEWS è ora role-based, identica al
+      gate reale delle viste (prima l'hub usava il flag `has_reviews_access`, le viste i ruoli →
+      tile mostrate ma accesso negato, e viceversa). Scoping senza fallback "tutte" → **niente
+      leak cross-azienda**. (9 nuovi test in `reviews/test_access.py`, verdi.)
+- [ ] **UI recensioni sui design token** (dashboard, analysis center, liste): adottare token e
+      componenti `ui/`.
+
+
 Per ogni modulo, nell'ordine, applicare lo stesso template di lavoro:
 *audit funzionale → definizione confini → riallineamento dati → UI sul design system → test.*
 - **Ondata 1 (valore alto, già maturi):** Manutenzioni/Ticket, Recensioni, Prenotazioni.

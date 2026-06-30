@@ -75,7 +75,22 @@ CAPABILITY_RULES: dict[str, Rule] = {
     Capability.MAINTENANCE: Rule(flags=("has_maintenance_access",)),
     Capability.INVENTORY: Rule(flags=("has_inventory_access",)),
     Capability.IT_SUPPORT: Rule(public=True),
-    Capability.REVIEWS: Rule(flags=("has_reviews_access",)),
+    # Recensioni: il gate reale nelle viste è SEMPRE stato per ruolo (azienda/direttore);
+    # il flag has_reviews_access guidava solo l'hub, creando una divergenza (tile mostrata
+    # ma viste che negavano l'accesso, e viceversa). Allineiamo nav e viste alla regola
+    # per ruolo — la fonte di verità è qui e in reviews/access.py.
+    Capability.REVIEWS: Rule(
+        roles=frozenset(
+            {
+                User.OWNER,
+                User.DIRECTOR,
+                User.CORPORATE,
+                User.RISORSE_UMANE,
+                User.CAPO_ECONOMO,
+                User.HEAD_MAINTAINER,
+            }
+        )
+    ),
     Capability.FINANCIALS: Rule(
         roles=frozenset({User.SUPERADMIN, User.OWNER, User.DIRECTOR, User.ADMINISTRATIVE})
     ),

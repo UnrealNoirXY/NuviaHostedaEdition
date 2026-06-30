@@ -29,6 +29,7 @@ from .forms import (
 from accounts.models import User
 from clients.models import Company
 from core.utils import themed_render
+from .access import can_access_reviews, scope_reviews
 from .pdf_generator import generate_report_pdf
 from .veratour_views import veratour_upload_wizard_view, veratour_task_status_api
 
@@ -37,17 +38,8 @@ def _get_analysis_center_filtered_reviews(request):
     user = request.user
     reviews = Review.objects.select_related('analysis', 'source', 'resort').all()
 
-    # Apply permissions
-    if user.role in [User.OWNER, User.CORPORATE, User.RISORSE_UMANE, User.CAPO_ECONOMO, User.HEAD_MAINTAINER]:
-        if user.company:
-            reviews = reviews.filter(resort__company=user.company)
-        else:
-            reviews = reviews.none()
-    elif user.role == User.DIRECTOR:
-        if user.resort:
-            reviews = reviews.filter(resort=user.resort)
-        else:
-            reviews = reviews.none()
+    # Visibilità per ruolo/azienda (fonte di verità: reviews/access.py)
+    reviews = scope_reviews(reviews, user)
 
     # Apply filters from request
     start_date_str = request.GET.get('start_date')
@@ -82,25 +74,14 @@ def _get_analysis_center_filtered_reviews(request):
 
 def _get_filtered_reviews(request, form_class):
     user = request.user
-    allowed_roles = [User.OWNER, User.DIRECTOR, User.CORPORATE, User.RISORSE_UMANE, User.CAPO_ECONOMO, User.HEAD_MAINTAINER]
-    if not (user.is_superuser or user.role in allowed_roles):
+    if not can_access_reviews(user):
         messages.error(request, "Non hai il permesso di accedere a questa sezione.")
         return None, None
 
     reviews = Review.objects.select_related('analysis', 'source', 'resort').all()
 
-    # Users who see all reviews for their company
-    if user.role in [User.OWNER, User.CORPORATE, User.RISORSE_UMANE, User.CAPO_ECONOMO, User.HEAD_MAINTAINER]:
-        if user.company:
-            reviews = reviews.filter(resort__company=user.company)
-        else:
-            reviews = reviews.none()
-    # Users who see reviews only for their specific resort
-    elif user.role == User.DIRECTOR:
-        if user.resort:
-            reviews = reviews.filter(resort=user.resort)
-        else:
-            reviews = reviews.none()
+    # Visibilità per ruolo/azienda (fonte di verità: reviews/access.py)
+    reviews = scope_reviews(reviews, user)
     form = form_class(request.GET or None, user=user)
     if form.is_valid():
         if form.cleaned_data.get('company'):
@@ -119,8 +100,7 @@ def _get_filtered_reviews(request, form_class):
 @login_required
 def review_dashboard_view(request):
     user = request.user
-    allowed_roles = [User.OWNER, User.DIRECTOR, User.CORPORATE, User.RISORSE_UMANE, User.CAPO_ECONOMO, User.HEAD_MAINTAINER]
-    if not (user.is_superuser or user.role in allowed_roles):
+    if not can_access_reviews(user):
         messages.error(request, "Non hai il permesso di accedere a questa sezione.")
         return redirect('home')
 
@@ -380,8 +360,7 @@ def scraping_panel_view(request):
 @login_required
 def review_list_view(request):
     user = request.user
-    allowed_roles = [User.OWNER, User.DIRECTOR, User.CORPORATE, User.RISORSE_UMANE, User.CAPO_ECONOMO, User.HEAD_MAINTAINER]
-    if not (user.is_superuser or user.role in allowed_roles):
+    if not can_access_reviews(user):
         messages.error(request, "Non hai il permesso di accedere a questa sezione.")
         return redirect('home')
 
