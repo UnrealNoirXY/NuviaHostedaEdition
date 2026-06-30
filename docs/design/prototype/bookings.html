@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Nuvia — Prenotazioni</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+.app{grid-template-columns:248px 1fr}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search-i{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px 12px;color:var(--ink-3);font-size:13px;width:260px}
+.search-i svg{width:15px;height:15px}
+.toolbar .sp{flex:1}
+.kpibar{display:flex;gap:22px;margin-bottom:16px;padding:14px 18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg)}
+.kpibar .k b{font-family:var(--mono);font-size:20px;display:block}.kpibar .k span{font-size:11px;color:var(--ink-3)}
+.kpibar .k.acc b{color:var(--accent)}
+.kpibar .sepv{width:1px;background:var(--line)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;color:var(--ink-3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:11px 16px;border-bottom:1px solid var(--line)}
+tbody td{padding:13px 16px;border-bottom:1px solid var(--line);color:var(--ink-2)}
+tbody tr:hover{background:var(--surface-2)}
+.gname{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:500}
+.gname .av{width:28px;height:28px;border-radius:50%;background:var(--surface-3);border:1px solid var(--line);display:grid;place-items:center;font-size:10px;font-weight:700;color:var(--ink-2)}
+.mono{font-family:var(--mono);color:var(--ink)}
+.st{font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px}
+.st.in{background:var(--pos-bg);color:var(--pos)} .st.soon{background:var(--accent-soft);color:var(--accent)} .st.wait{background:var(--surface-3);color:var(--ink-2)} .st.out{background:var(--neg-bg);color:var(--neg)}
+.rowact{display:flex;gap:6px;opacity:.6}
+.rowact button{width:28px;height:28px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);display:grid;place-items:center;cursor:pointer}
+.rowact button svg{width:14px;height:14px}
+.pager{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;color:var(--ink-3);font-size:12px}
+.pager .pg{display:flex;gap:4px}
+.pager .pg b{min-width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--line);border-radius:7px;font-family:var(--mono);font-weight:500;color:var(--ink-2);font-size:12px}
+.pager .pg b.on{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+</style></head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">N</div><div><b>Nuvia OS</b><span>Resort Group · Admin</span></div></div>
+    <div class="sect">Operativo</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg> Hub</div>
+    <div class="lnk active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Prenotazioni <span class="ct">42</span></div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l3 3m-9 9 9-9m-9 9-4 1 1-4 9-9a2.8 2.8 0 1 1 4 4z"/></svg> Manutenzioni <span class="ct">8</span></div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3 6.2 21l1.5-6.6L3 9.8l6.7-.6L12 3l2.3 6.2 6.7.6-4.7 4.6L17.8 21z"/></svg> Recensioni <span class="ct">23</span></div>
+    <div class="sect">Gestione</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 11l2 2 4-4"/></svg> Portale HR</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l3-3 3 3 5-6"/></svg> Finanza</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h12"/></svg> Economato</div>
+    <div class="sp"></div>
+    <div class="me"><div class="av">AM</div><div><b>Admin Noir</b><span>Super Admin</span></div></div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">Prenotazioni <b>/ Arrivi</b></div>
+      <div class="cmd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg> Cerca o digita un comando… <span class="kbd">⌘K</span></div>
+      <div class="tb-ic dot"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+    </header>
+    <main class="content">
+      <div class="page-h">
+        <div><h1>Arrivi &amp; Prenotazioni</h1><p>Resort Maldive · Martedì 30 giugno 2026</p></div>
+        <div style="display:flex;gap:10px"><button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Esporta</button><button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Nuova prenotazione</button></div>
+      </div>
+
+      <div class="kpibar">
+        <div class="k acc"><b>42</b><span>arrivi oggi</span></div><div class="sepv"></div>
+        <div class="k"><b>15</b><span>check-in completati</span></div><div class="sepv"></div>
+        <div class="k"><b>27</b><span>in attesa</span></div><div class="sepv"></div>
+        <div class="k"><b>8</b><span>partenze</span></div><div class="sepv"></div>
+        <div class="k"><b>86%</b><span>occupazione</span></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg> Cerca ospite o codice…</div>
+        <div class="chip accent">Stato: Tutti <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+        <div class="chip">Resort: Maldive <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+        <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Oggi</div>
+        <div class="sp"></div>
+        <div class="chip">Ordina: Arrivo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+      </div>
+
+      <div class="panel">
+        <table>
+          <thead><tr><th>Ospite</th><th>Camera</th><th>Check-in</th><th>Notti</th><th>Ospiti</th><th>Canale</th><th>Importo</th><th>Stato</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><div class="gname"><span class="av">MB</span>Marco Bianchi</div></td><td class="mono">214 · Suite</td><td>14:00</td><td class="mono">5</td><td class="mono">2</td><td>Booking</td><td class="mono">1.240 €</td><td><span class="st in">Arrivato</span></td><td><div class="rowact"><button>⋯</button></div></td></tr>
+            <tr><td><div class="gname"><span class="av">LV</span>Luca Verdi</div></td><td class="mono">108 · Deluxe</td><td>15:30</td><td class="mono">3</td><td class="mono">2</td><td>Diretto</td><td class="mono">890 €</td><td><span class="st soon">In arrivo</span></td><td><div class="rowact"><button>⋯</button></div></td></tr>
+            <tr><td><div class="gname"><span class="av">AR</span>Anna Russo</div></td><td class="mono">305 · Family</td><td>16:00</td><td class="mono">7</td><td class="mono">4</td><td>Veratour</td><td class="mono">2.310 €</td><td><span class="st soon">In arrivo</span></td><td><div class="rowact"><button>⋯</button></div></td></tr>
+            <tr><td><div class="gname"><span class="av">SC</span>Sara Conti</div></td><td class="mono">112 · Deluxe</td><td>17:00</td><td class="mono">4</td><td class="mono">1</td><td>Booking</td><td class="mono">1.020 €</td><td><span class="st wait">Da confermare</span></td><td><div class="rowact"><button>⋯</button></div></td></tr>
+            <tr><td><div class="gname"><span class="av">GF</span>Giulia Ferrari</div></td><td class="mono">220 · Suite</td><td>18:30</td><td class="mono">2</td><td class="mono">2</td><td>Expedia</td><td class="mono">760 €</td><td><span class="st soon">In arrivo</span></td><td><div class="rowact"><button>⋯</button></div></td></tr>
+            <tr><td><div class="gname"><span class="av">PG</span>Paolo Galli</div></td><td class="mono">101 · Standard</td><td>—</td><td class="mono">3</td><td class="mono">2</td><td>Diretto</td><td class="mono">540 €</td><td><span class="st out">Partenza</span></td><td><div class="rowact"><button>⋯</button></div></td></tr>
+            <tr><td><div class="gname"><span class="av">EM</span>Elena Moretti</div></td><td class="mono">318 · Family</td><td>19:00</td><td class="mono">6</td><td class="mono">3</td><td>Booking</td><td class="mono">1.980 €</td><td><span class="st soon">In arrivo</span></td><td><div class="rowact"><button>⋯</button></div></td></tr>
+          </tbody>
+        </table>
+        <div class="pager"><span>1–7 di 42 prenotazioni</span><div class="pg"><b>‹</b><b class="on">1</b><b>2</b><b>3</b><b>4</b><b>6</b><b>›</b></div></div>
+      </div>
+    </main>
+  </div>
+</div>
+</body></html>

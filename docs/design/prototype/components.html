@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Nuvia — Component library</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+.app{grid-template-columns:64px 1fr}
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.gal .panel-b{display:flex;flex-direction:column;gap:14px}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3)}
+.rowi{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.inp{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;color:var(--ink-3);font-size:13px}
+.inp.focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.inp svg{width:15px;height:15px}
+.sw{width:40px;height:23px;border-radius:20px;background:var(--accent);position:relative}.sw::after{content:"";position:absolute;width:17px;height:17px;border-radius:50%;background:#fff;top:3px;right:3px}
+.sw.off{background:var(--surface-3)}.sw.off::after{right:auto;left:3px}
+.al2{display:flex;gap:11px;padding:12px 14px;border-radius:10px;font-size:13px;align-items:center}
+.al2 svg{width:17px;height:17px;flex:none}
+.al2.ok{background:var(--pos-bg);color:var(--pos)} .al2.warn{background:var(--neu-bg);color:var(--neu)} .al2.err{background:var(--neg-bg);color:var(--neg)} .al2.info{background:rgba(124,168,240,.12);color:var(--info)}
+.empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:28px;color:var(--ink-3)}
+.empty .ic{width:48px;height:48px;border-radius:14px;background:var(--surface-3);display:grid;place-items:center;color:var(--ink-2)}
+.empty .ic svg{width:22px;height:22px}
+.empty b{color:var(--ink);font-size:14px}
+.skel{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--surface-2),var(--surface-3),var(--surface-2));margin-bottom:9px}
+.swatch{display:flex;gap:8px;flex-wrap:wrap}
+.swx{width:54px}.swx i{display:block;height:40px;border-radius:8px;border:1px solid var(--line)}.swx span{font-size:10px;color:var(--ink-3);font-family:var(--mono)}
+</style></head>
+<body>
+<div class="app">
+  <aside class="side side--mini">
+    <div class="brand"><div class="logo">N</div></div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></div>
+    <div class="lnk" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="ct">42</span></div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l3 3m-9 9 9-9m-9 9-4 1 1-4 9-9a2.8 2.8 0 1 1 4 4z"/></svg></div>
+    <div class="lnk active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3 6.2 21l1.5-6.6L3 9.8l6.7-.6L12 3l2.3 6.2 6.7.6-4.7 4.6L17.8 21z"/></svg></div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 11l2 2 4-4"/></svg></div>
+    <div class="sp"></div>
+    <div class="me"><div class="av">AM</div></div>
+  </aside>
+  <div class="main">
+    <header class="topbar"><div class="crumb">Design system <b>/ Componenti</b></div>
+      <div class="cmd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg> Cerca o digita un comando… <span class="kbd">⌘K</span></div>
+      <div class="tb-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg></div>
+    </header>
+    <main class="content">
+      <div class="page-h"><div><h1>Libreria componenti</h1><p>Building block del design system · sidebar in stato collassato</p></div></div>
+      <div class="gal">
+        <div class="panel"><div class="panel-h"><h3>Bottoni</h3></div><div class="panel-b">
+          <div class="rowi"><button class="btn primary">Primario</button><button class="btn">Secondario</button><button class="btn ghost">Ghost</button><button class="btn" style="color:var(--neg);border-color:rgba(248,113,113,.3)">Pericolo</button></div>
+          <div class="label">Segmented &amp; chip</div>
+          <div class="rowi"><div class="seg"><button class="on">Giorno</button><button>Settimana</button><button>Mese</button></div><div class="chip accent">Filtro attivo</div><div class="chip">Filtro</div></div>
+        </div></div>
+        <div class="panel"><div class="panel-h"><h3>Campi &amp; controlli</h3></div><div class="panel-b">
+          <div class="inp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg> Campo di ricerca</div>
+          <div class="inp focus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg> <span style="color:var(--ink)">Campo a fuoco</span></div>
+          <div class="rowi" style="justify-content:space-between"><span style="font-size:13px;color:var(--ink-2)">Notifiche email</span><div class="sw"></div></div>
+          <div class="rowi" style="justify-content:space-between"><span style="font-size:13px;color:var(--ink-2)">Modalità manutenzione</span><div class="sw off"></div></div>
+        </div></div>
+        <div class="panel"><div class="panel-h"><h3>Tag &amp; badge</h3></div><div class="panel-b">
+          <div class="rowi"><span class="tag p">Positivo</span><span class="tag n">Neutrale</span><span class="tag g">Negativo</span></div>
+          <div class="rowi"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--pos-bg);color:var(--pos)">Approvata</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--neu-bg);color:var(--neu)">In attesa</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--surface-3);color:var(--ink-2)">Bozza</span></div>
+        </div></div>
+        <div class="panel"><div class="panel-h"><h3>Alert</h3></div><div class="panel-b">
+          <div class="al2 ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Operazione completata con successo.</div>
+          <div class="al2 warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01"/></svg> Alcune buste paga richiedono revisione.</div>
+          <div class="al2 err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6m0-6 6 6"/></svg> Connessione al provider non riuscita.</div>
+          <div class="al2 info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg> 3 nuove recensioni importate.</div>
+        </div></div>
+        <div class="panel"><div class="panel-h"><h3>Stato vuoto &amp; caricamento</h3></div><div class="panel-b" style="flex-direction:row;gap:18px">
+          <div class="empty" style="flex:1"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.5 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.5A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.8 1.5z"/></svg></div><b>Nessun risultato</b><span style="font-size:12px">Prova a modificare i filtri.</span></div>
+          <div style="flex:1"><div class="skel" style="width:60%"></div><div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:40%"></div><div class="skel"></div></div>
+        </div></div>
+        <div class="panel"><div class="panel-h"><h3>Palette token</h3></div><div class="panel-b">
+          <div class="swatch">
+            <div class="swx"><i style="background:var(--accent)"></i><span>accent</span></div>
+            <div class="swx"><i style="background:var(--bg)"></i><span>bg</span></div>
+            <div class="swx"><i style="background:var(--surface)"></i><span>surface</span></div>
+            <div class="swx"><i style="background:var(--surface-3)"></i><span>surf-3</span></div>
+            <div class="swx"><i style="background:var(--pos)"></i><span>pos</span></div>
+            <div class="swx"><i style="background:var(--neu)"></i><span>neu</span></div>
+            <div class="swx"><i style="background:var(--neg)"></i><span>neg</span></div>
+            <div class="swx"><i style="background:var(--info)"></i><span>info</span></div>
+          </div>
+        </div></div>
+      </div>
+    </main>
+  </div>
+</div>
+</body></html>

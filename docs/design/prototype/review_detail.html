@@ -1,0 +1,116 @@
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Nuvia — Dettaglio recensione</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+.app{grid-template-columns:248px 1fr}
+.det{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
+.back{display:inline-flex;align-items:center;gap:7px;color:var(--ink-3);font-size:13px;margin-bottom:14px}
+.back svg{width:15px;height:15px}
+.rev-head{display:flex;gap:16px;align-items:flex-start;padding:18px;border-bottom:1px solid var(--line)}
+.rev-head .av{width:46px;height:46px;border-radius:12px;background:var(--surface-3);border:1px solid var(--line);display:grid;place-items:center;font-weight:700;color:var(--ink-2);flex:none}
+.rev-head h2{font-size:16px}
+.rev-head .meta{color:var(--ink-3);font-size:12.5px;margin-top:4px;display:flex;gap:10px;align-items:center}
+.rev-head .src .b{width:16px;height:16px;border-radius:4px;background:var(--info);display:inline-grid;place-items:center;font-size:8px;color:#06121f;font-weight:800;vertical-align:middle;margin-right:5px}
+.rev-head .rate{margin-left:auto;text-align:center;flex:none}
+.rev-head .rate b{font-family:var(--mono);font-size:30px;color:var(--accent)}
+.rev-head .rate span{display:block;font-size:11px;color:var(--ink-3)}
+.rev-body{padding:18px;color:var(--ink);line-height:1.65;font-size:14px}
+.rev-body .stars{color:var(--accent);letter-spacing:2px;margin-bottom:12px}
+.aspects{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 18px}
+.asp{font-size:12px;padding:5px 11px;border-radius:8px;border:1px solid var(--line);display:flex;align-items:center;gap:7px;color:var(--ink-2)}
+.asp b{font-family:var(--mono)}
+.compose{padding:16px}
+.compose textarea{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:13px;font-family:var(--sans);font-size:13.5px;resize:none;height:120px;outline:none}
+.compose .ai{display:flex;align-items:center;gap:8px;background:var(--accent-soft);border:1px solid var(--accent-line);color:var(--accent);border-radius:8px;padding:9px 12px;font-size:12.5px;margin-bottom:12px}
+.compose .ai svg{width:15px;height:15px}
+.compose .actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
+.side-meta .row{display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--line);font-size:13px}
+.side-meta .row:last-child{border:0}
+.side-meta .row span{color:var(--ink-3)}.side-meta .row b{color:var(--ink);font-weight:500}
+.tl{padding:6px 16px 16px}
+.tl .it{display:flex;gap:11px;padding:10px 0;position:relative}
+.tl .it::before{content:"";position:absolute;left:13px;top:26px;bottom:-10px;width:1px;background:var(--line)}
+.tl .it:last-child::before{display:none}
+.tl .dot{width:26px;height:26px;border-radius:50%;background:var(--surface-3);border:1px solid var(--line);display:grid;place-items:center;flex:none;z-index:1}
+.tl .dot svg{width:13px;height:13px;color:var(--ink-2)}
+.tl h5{font-size:13px;color:var(--ink)}.tl p{font-size:12px;color:var(--ink-3);margin-top:1px}
+</style></head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">N</div><div><b>Nuvia OS</b><span>Resort Group · Admin</span></div></div>
+    <div class="sect">Operativo</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg> Hub</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Prenotazioni <span class="ct">42</span></div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l3 3m-9 9 9-9m-9 9-4 1 1-4 9-9a2.8 2.8 0 1 1 4 4z"/></svg> Manutenzioni <span class="ct">8</span></div>
+    <div class="lnk active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3 6.2 21l1.5-6.6L3 9.8l6.7-.6L12 3l2.3 6.2 6.7.6-4.7 4.6L17.8 21z"/></svg> Recensioni <span class="ct">23</span></div>
+    <div class="sect">Gestione</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 11l2 2 4-4"/></svg> Portale HR</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l3-3 3 3 5-6"/></svg> Finanza</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h12"/></svg> Economato</div>
+    <div class="sp"></div>
+    <div class="me"><div class="av">AM</div><div><b>Admin Noir</b><span>Super Admin</span></div></div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">Recensioni / <b>Dettaglio</b></div>
+      <div class="cmd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg> Cerca o digita un comando… <span class="kbd">⌘K</span></div>
+      <div class="tb-ic dot"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+    </header>
+    <main class="content">
+      <a class="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> Torna alle recensioni</a>
+      <div class="det">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="rev-head">
+              <div class="av">SC</div>
+              <div>
+                <h2>Sara Conti</h2>
+                <div class="meta"><span class="src"><span class="b">B</span>Booking.com</span> · Resort Toscana · 29 Giu 2026 <span class="tag g" style="margin-left:4px">Negativo</span></div>
+              </div>
+              <div class="rate"><b>5,4</b><span>/10</span></div>
+            </div>
+            <div class="rev-body">
+              <div class="stars">★★★☆☆</div>
+              <strong style="color:var(--ink)">Camera non pulita all'arrivo</strong><br><br>
+              La posizione è ottima e lo staff alla reception gentile, ma la camera al nostro arrivo non era stata pulita a dovere: bagno con aloni e polvere sui mobili. Abbiamo dovuto attendere oltre un'ora per il rifacimento. Peccato perché il resto della struttura è di buon livello.
+            </div>
+            <div class="aspects">
+              <div class="asp" style="color:var(--neg)">Pulizia <b>2/5</b></div>
+              <div class="asp" style="color:var(--pos)">Posizione <b>5/5</b></div>
+              <div class="asp" style="color:var(--pos)">Staff <b>4/5</b></div>
+              <div class="asp" style="color:var(--neu)">Comfort <b>3/5</b></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><h3>Rispondi pubblicamente</h3><a href="#">Modelli</a></div>
+            <div class="compose">
+              <div class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg> Bozza suggerita dall'AI in base al sentiment e agli aspetti critici.</div>
+              <textarea>Gentile Sara, la ringraziamo per il feedback. Ci scusiamo per la pulizia della camera al suo arrivo: non rispecchia i nostri standard. Abbiamo già coinvolto il responsabile housekeeping per evitare che accada di nuovo. Saremo felici di riaccoglierla.</textarea>
+              <div class="actions"><button class="btn ghost">Salva bozza</button><button class="btn primary">Pubblica risposta</button></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel side-meta">
+            <div class="panel-h"><h3>Dettagli</h3></div>
+            <div class="row"><span>Resort</span><b>Toscana</b></div>
+            <div class="row"><span>Piattaforma</span><b>Booking.com</b></div>
+            <div class="row"><span>Soggiorno</span><b>22–26 Giu</b></div>
+            <div class="row"><span>Tipo camera</span><b>Deluxe</b></div>
+            <div class="row"><span>Sentiment</span><b style="color:var(--neg)">Negativo · -0,52</b></div>
+            <div class="row"><span>Stato</span><b style="color:var(--neu)">Da gestire</b></div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><h3>Cronologia</h3></div>
+            <div class="tl">
+              <div class="it"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5z"/></svg></div><div><h5>Recensione importata</h5><p>da Booking · 29 Giu 14:20</p></div></div>
+              <div class="it"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3"/></svg></div><div><h5>Analisi sentiment completata</h5><p>Negativo · pulizia critica</p></div></div>
+              <div class="it"><div class="dot" style="background:var(--accent-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg></div><div><h5>Assegnata a te</h5><p>per risposta · 12 min fa</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</body></html>

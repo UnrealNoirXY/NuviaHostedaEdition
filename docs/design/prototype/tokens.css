@@ -83,3 +83,27 @@ a{color:inherit}
 .tag.p{background:var(--pos-bg);color:var(--pos)} .tag.p::before{background:var(--pos)}
 .tag.n{background:var(--neu-bg);color:var(--neu)} .tag.n::before{background:var(--neu)}
 .tag.g{background:var(--neg-bg);color:var(--neg)} .tag.g::before{background:var(--neg)}
+
+/* ===== sidebar etichettata (standard) + variante collassata .side--mini ===== */
+.side{background:#0C1019;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px}
+.side .brand{display:flex;align-items:center;gap:11px;padding:6px 8px 16px}
+.side .brand .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:var(--accent-ink);font-weight:800;flex:none}
+.side .brand b{font-size:15px;font-weight:700}.side .brand span{display:block;font-size:11px;color:var(--ink-3)}
+.side .sect{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);padding:14px 10px 6px}
+.side .lnk{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:9px;color:var(--ink-2);font-size:13.5px;cursor:pointer}
+.side .lnk svg{width:18px;height:18px;flex:none}
+.side .lnk:hover{background:var(--surface-2);color:var(--ink)}
+.side .lnk.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.side .lnk .ct{margin-left:auto;font-size:11px;font-family:var(--mono);background:var(--surface-3);color:var(--ink-2);border-radius:20px;padding:1px 7px}
+.side .lnk.active .ct{background:rgba(245,181,68,.2);color:var(--accent)}
+.side .sp{flex:1}
+.side .me{display:flex;align-items:center;gap:10px;padding:10px;border-top:1px solid var(--line);margin-top:8px}
+.side .me .av{width:32px;height:32px;border-radius:50%;background:var(--surface-3);border:1px solid var(--line-strong);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink-2);flex:none}
+.side .me b{font-size:13px}.side .me span{display:block;font-size:11px;color:var(--ink-3)}
+/* collassata */
+.side--mini{width:64px;align-items:center;padding:14px 0}
+.side--mini .brand b,.side--mini .brand span,.side--mini .sect,.side--mini .lnk span:not(.ct),.side--mini .me b,.side--mini .me span{display:none}
+.side--mini .brand{padding:6px 0 14px}
+.side--mini .lnk{justify-content:center;padding:11px;width:42px}
+.side--mini .lnk .ct{position:absolute;margin:0;transform:translate(12px,-12px);padding:0 5px}
+.side--mini .me{justify-content:center;border:0}
