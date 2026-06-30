@@ -22,6 +22,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from weasyprint import HTML
 
+from core.permissions import Capability, user_can
+
 from .models import (
     HREventLog,
     HRDocument,
@@ -183,35 +185,9 @@ def _get_client_ip(request):
 
 
 def _has_hr_portal_access(user):
-    return bool(
-        user
-        and user.is_authenticated
-        and (
-            user.is_superuser
-            or getattr(user, "role", None)
-            in {
-                User.RISORSE_UMANE,
-                User.OWNER,
-                User.SUPERADMIN,
-            }
-        )
-    )
-
-
-def _has_hr_portal_access(user):
-    return bool(
-        user
-        and user.is_authenticated
-        and (
-            user.is_superuser
-            or getattr(user, "role", None)
-            in {
-                User.RISORSE_UMANE,
-                User.OWNER,
-                User.SUPERADMIN,
-            }
-        )
-    )
+    """Accesso al Portale HR riservato. Fonte di verità: capability HR_PORTAL
+    (superuser o ruoli HR/owner/superadmin), la stessa che guida hub e sidebar."""
+    return user_can(user, Capability.HR_PORTAL)
 
 
 class IsHRorSuperAdmin(permissions.BasePermission):

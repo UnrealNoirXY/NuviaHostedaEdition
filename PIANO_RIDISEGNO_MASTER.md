@@ -214,6 +214,12 @@ Obiettivo: un solo linguaggio visivo, una sola shell.
 - [ ] **UI recensioni sui design token** (dashboard, analysis center, liste): adottare token e
       componenti `ui/`.
 
+#### Portale HR — accesso (fatto)
+- [x] **Rimossa la doppia definizione** di `_has_hr_portal_access` (era dichiarata due volte,
+      identica: bug F811) e fatta **delegare a `user_can(user, HR_PORTAL)`** → unica fonte di
+      verità condivisa con hub/sidebar. Comportamento invariato (29 test hr_portal verdi).
+- [ ] **UI portale HR sui design token** e adozione componenti `ui/`.
+
 
 Per ogni modulo, nell'ordine, applicare lo stesso template di lavoro:
 *audit funzionale → definizione confini → riallineamento dati → UI sul design system → test.*
