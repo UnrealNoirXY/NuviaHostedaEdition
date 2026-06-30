@@ -1,0 +1,51 @@
+/* A fresh, simple, and robust stylesheet for the Tic-Tac-Toe game */
+
+.game-container {
+    max-width: 400px;
+    margin: 2rem auto;
+    text-align: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Perfect square */
+    border: 2px solid #343a40;
+    border-radius: 10px;
+    gap: 5px;
+    background-color: #343a40;
+}
+
+.cell {
+    background-color: #ffffff;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem; /* Will be adjusted with media queries */
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    transition: background-color 0.2s ease;
+}
+
+.cell:hover {
+    background-color: #f0f0f0;
+}
+
+.cell.x {
+    color: #0d6efd; /* Bootstrap Primary Blue */
+}
+
+.cell.o {
+    color: #dc3545; /* Bootstrap Danger Red */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+    .cell {
+        font-size: 3rem;
+    }
+}

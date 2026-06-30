@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Cavalieri - {{ menu.nome }}</title>
+    {% with config=menu.cavaliere_template.configurazione %}
+    <style>
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        body {
+            font-family: '{{ menu.layout.font_principale|default:"serif" }}', 'Georgia', serif;
+            color: {{ menu.layout.colore_font|default:"#1a1a1a" }};
+            margin: 0;
+            padding: 0;
+            background-color: white;
+        }
+        .cavaliere-page {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+        .cavaliere-card {
+            width: 90mm;
+            height: 120mm; /* Dimensioni per un cavaliere verticale standard */
+            border: 1px solid #eee;
+            margin: 5mm;
+            padding: 10mm;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            page-break-inside: avoid;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Linea di piegatura simulata se fosse un cavaliere pieghevole,
+           ma qui facciamo una card singola elegante */
+
+        .logo {
+            max-width: 60mm;
+            max-height: 20mm;
+            margin-bottom: 8mm;
+            object-fit: contain;
+        }
+        .piatto-nome {
+            font-size: {{ config.font_size_nome|default:20 }}pt;
+            font-weight: bold;
+            line-height: 1.2;
+            margin-bottom: 5mm;
+            color: #000;
+        }
+        .piatto-descrizione {
+            font-size: {{ config.font_size_desc|default:11 }}pt;
+            margin-bottom: 5mm;
+            opacity: 0.8;
+            font-style: italic;
+            line-height: 1.4;
+        }
+        .piatto-prezzo {
+            font-size: {{ config.font_size_prezzo|default:14 }}pt;
+            font-weight: 700;
+            margin-bottom: 5mm;
+        }
+        .piatto-allergeni {
+            font-size: {{ config.font_size_allergeni|default:8 }}pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+            margin-top: auto;
+        }
+        .piatto-img {
+            width: 100%;
+            height: 40mm;
+            object-fit: cover;
+            border-radius: 2mm;
+            margin-bottom: 5mm;
+        }
+    </style>
+</head>
+<body>
+    <div class="cavaliere-page">
+    {% for piatto in menu.piatti.all %}
+        <div class="cavaliere-card">
+            {% if config.mostra_logo and menu.layout.logo %}
+                <img src="{{ menu.layout.logo.path }}" alt="Logo" class="logo">
+            {% endif %}
+
+            {% if config.mostra_immagine and piatto.immagine %}
+                <img src="{{ piatto.immagine.path }}" class="piatto-img">
+            {% endif %}
+
+            <div class="piatto-nome">{{ piatto.nome }}</div>
+
+            {% if config.mostra_descrizione and piatto.descrizione %}
+                <div class="piatto-descrizione">{{ piatto.descrizione }}</div>
+            {% endif %}
+
+            {% if config.mostra_prezzo and piatto.prezzo %}
+                <div class="piatto-prezzo">{{ piatto.prezzo }} €</div>
+            {% endif %}
+
+            {% if config.mostra_allergeni %}
+                {% if piatto.allergeni.exists or piatto.allergen_summary %}
+                    <div class="piatto-allergeni">
+                        <strong>Allergeni:</strong><br>
+                        {% for allergene in piatto.allergeni.all %}
+                            {{ allergene.nome }}{% if not forloop.last or piatto.allergen_summary %}, {% endif %}
+                        {% endfor %}
+                        {% if piatto.allergen_summary %}{{ piatto.allergen_summary }}{% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endfor %}
+    </div>
+    {% endwith %}
+</body>
+</html>

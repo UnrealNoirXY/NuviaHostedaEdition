@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Profile Cards KPI</title>
+  <style>
+    body{font-family:Arial,sans-serif;padding:24px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+    .card{border:1px solid #ddd;border-radius:8px;padding:12px;background:#fafafa}
+  </style>
+</head>
+<body>
+  <h2>Profile Cards KPI (ultimi {{ kpi.window_days }} giorni)</h2>
+  <div class="grid">
+    <div class="card"><strong>Aperture</strong><p>{{ kpi.opens }}</p></div>
+    <div class="card"><strong>Condivisioni</strong><p>{{ kpi.shares }}</p></div>
+    <div class="card"><strong>Add to Wallet</strong><p>{{ kpi.wallet_adds }}</p></div>
+    <div class="card"><strong>Download vCard</strong><p>{{ kpi.vcard_downloads }}</p></div>
+    <div class="card"><strong>Email inviate</strong><p>{{ kpi.delivery_total }}</p></div>
+    <div class="card"><strong>Bounce email</strong><p>{{ kpi.email_bounces }}</p></div>
+    <div class="card"><strong>Tasso apertura link</strong><p>{{ kpi.open_rate }}%</p></div>
+    <div class="card"><strong>Tasso click “Invia Contatto”</strong><p>{{ kpi.share_rate }}%</p></div>
+    <div class="card"><strong>Tasso download vCard</strong><p>{{ kpi.vcard_rate }}%</p></div>
+    <div class="card"><strong>Tasso Add to Wallet</strong><p>{{ kpi.wallet_add_rate }}%</p></div>
+    <div class="card"><strong>Tasso successo invio email</strong><p>{{ kpi.email_success_rate }}%</p></div>
+    <div class="card"><strong>Creazione media schede/giorno</strong><p>{{ kpi.avg_card_creation_per_day }}</p></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,220 @@
+.economato-app-shell {
+    min-height: calc(100vh - 120px);
+}
+
+.economato-header {
+    position: relative;
+    background: linear-gradient(135deg, var(--bs-primary), #6f42c1);
+    color: #fff;
+    border-radius: 1.25rem;
+    padding: 2rem;
+    box-shadow: 0 25px 45px rgba(31, 45, 61, 0.25);
+    overflow: hidden;
+}
+
+.economato-header::after {
+    content: '';
+    position: absolute;
+    inset: auto -30% -60% 40%;
+    width: 240px;
+    height: 240px;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.25), transparent 65%);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.economato-header__meta .badge {
+    backdrop-filter: blur(2px);
+}
+
+.economato-header__title {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.economato-header__subtitle {
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 640px;
+}
+
+.economato-header__summary {
+    min-width: min(100%, 320px);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 1.25rem;
+    color: #fff;
+}
+
+.economato-header__summary .card-body {
+    color: inherit;
+}
+
+.economato-header__hint {
+    max-width: 520px;
+}
+
+.economato-scope .form-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.economato-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.economato-tabs .nav-link {
+    border-radius: 50rem;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap;
+}
+
+.economato-tabs .nav-link.active {
+    background-color: var(--bs-primary);
+    color: #fff;
+    box-shadow: 0 12px 24px rgba(13, 110, 253, 0.25);
+}
+
+.economato-stats-card {
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(33, 37, 41, 0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.economato-stats-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(33, 37, 41, 0.18);
+}
+
+.economato-low-stock .badge {
+    font-size: 0.75rem;
+}
+
+.economato-board-column {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: inset 0 0 0 1px rgba(73, 80, 87, 0.08);
+    min-height: 300px;
+}
+
+.economato-board-card {
+    border: 1px solid rgba(73, 80, 87, 0.15);
+    border-radius: 0.85rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.2s ease;
+}
+
+.economato-board-card:hover {
+    box-shadow: 0 16px 32px rgba(52, 58, 64, 0.15);
+    cursor: pointer;
+}
+
+.economato-request-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(420px, 100%);
+    height: 100vh;
+    background: #fff;
+    box-shadow: -12px 0 35px rgba(15, 23, 42, 0.2);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+}
+
+.economato-drawer-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+}
+
+.economato-drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+.economato-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.35);
+    z-index: 1040;
+}
+
+.economato-modal {
+    position: fixed;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    width: min(720px, 96vw);
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.25);
+    z-index: 1050;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.economato-modal-header,
+.economato-modal-footer {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+}
+
+.economato-modal-footer {
+    border-bottom: 0;
+    border-top: 1px solid rgba(229, 231, 235, 0.9);
+}
+
+.economato-modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.economato-requests {
+    scroll-margin-top: 1.5rem;
+}
+
+#economato-requests-board .economato-board-column {
+    min-height: 260px;
+}
+
+.economato-requests .btn-outline-primary {
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .economato-header {
+        padding: 1.5rem;
+    }
+
+    .economato-request-drawer {
+        width: 100%;
+    }
+
+    .economato-header__summary {
+        order: -1;
+    }
+
+    .economato-tabs {
+        margin-inline: -0.75rem;
+        padding-inline: 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .economato-header__subtitle {
+        font-size: 0.95rem;
+    }
+
+    .economato-header__summary {
+        min-width: 100%;
+    }
+
+    .economato-board-card {
+        padding: 0.85rem;
+    }
+}

@@ -1,0 +1,179 @@
+/*
+ * react-big-calendar custom theme.
+ * Overrides the default styles to match the application's new design system.
+ */
+
+:root {
+    --event-color-default: #2a7fbe;
+    --event-color-task: #f5a623;
+    --event-color-appointment: #28a745;
+    --event-color-ticket-due-date: #dc3545;
+}
+
+/* General Calendar Styling */
+.rbc-calendar {
+    font-family: var(--font-family-sans-serif);
+    border: none;
+    height: 100% !important;
+}
+
+/* Toolbar Styling */
+.rbc-toolbar {
+    padding: 0 0 1rem 0;
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rbc-toolbar .rbc-toolbar-label {
+    font-size: 1.25em;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.rbc-toolbar button {
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.rbc-toolbar button:hover,
+.rbc-toolbar button:focus {
+    background-color: var(--desk-bg);
+    border-color: #bbb;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.rbc-btn-group {
+    display: inline-flex;
+    gap: 1px;
+}
+
+.rbc-btn-group > button:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.rbc-btn-group > button:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.rbc-btn-group > button.rbc-active,
+.rbc-btn-group > button.rbc-active:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: none;
+}
+
+/* Calendar Grid Styling */
+.rbc-header {
+    padding: 8px 5px;
+    text-align: center;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.rbc-day-bg {
+    border-left: 1px solid var(--border-color);
+}
+.rbc-day-bg:first-child {
+    border-left: none;
+}
+
+.rbc-month-view, .rbc-time-view {
+    border: none;
+}
+
+.rbc-today {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Event Styling */
+.rbc-event {
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: #fff;
+    font-size: 0.85em;
+    border: 1px solid transparent;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    opacity: 0.95;
+    transition: opacity 0.2s, background-color 0.2s, border-color 0.2s;
+    background-color: var(--event-color-default); /* Default color */
+}
+
+.rbc-event.event-task {
+    background-color: var(--event-color-task);
+}
+
+.rbc-event.event-appointment {
+    background-color: var(--event-color-appointment);
+}
+
+.rbc-event.event-ticket_due_date {
+    background-color: var(--event-color-ticket-due-date);
+}
+
+.rbc-event.event-pending {
+    opacity: 0.7;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px dashed var(--text-secondary);
+}
+
+.rbc-event:hover {
+    opacity: 1;
+}
+
+.rbc-event:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.rbc-event-label {
+    font-weight: 500;
+}
+
+/* Responsive Styles for Mobile */
+@media (max-width: 768px) {
+    .rbc-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .rbc-toolbar .rbc-toolbar-label {
+        font-size: 1.1em;
+        text-align: center;
+    }
+
+    .rbc-toolbar .rbc-btn-group {
+        display: flex;
+        justify-content: center;
+    }
+
+    .rbc-toolbar button {
+        padding: 5px 8px;
+        font-size: 0.9em;
+    }
+
+    .rbc-header {
+        font-size: 0.85em;
+    }
+
+    /* Make agenda view more compact */
+    .rbc-agenda-view .rbc-agenda-time,
+    .rbc-agenda-view .rbc-agenda-event-cell {
+        padding: 5px;
+    }
+}

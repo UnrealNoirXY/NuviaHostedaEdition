@@ -1,0 +1,15 @@
+[Unit]
+Description=gunicorn daemon for gestione_manutenzioni project
+After=network.target
+
+[Service]
+User=deploy
+Group=www-data
+WorkingDirectory=/home/deploy/manutenzionetest
+ExecStart=/home/deploy/manutenzionetest/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/deploy/manutenzionetest/gunicorn.sock -k uvicorn.workers.UvicornWorker gestione_manutenzioni.asgi:application
+
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

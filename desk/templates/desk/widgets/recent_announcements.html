@@ -1,0 +1,27 @@
+<!-- desk/templates/desk/widgets/recent_announcements.html -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-bullhorn me-2"></i>Annunci Recenti</h6>
+    </div>
+    <div class="card-body">
+        {% if recent_announcements %}
+            <div class="list-group list-group-flush">
+                {% for announcement in recent_announcements %}
+                    <a href="{% url 'communications:detail' announcement.pk %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ announcement.title }}</h5>
+                            <small>{{ announcement.created_at|date:"d/m/Y" }}</small>
+                        </div>
+                        <p class="mb-1 text-muted">{{ announcement.content|truncatewords:15 }}</p>
+                        <small>Autore: {{ announcement.author.username }}</small>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center">Nessun annuncio recente.</p>
+        {% endif %}
+    </div>
+    <div class="card-footer text-center">
+        <a href="{% url 'home' %}">Vedi tutti gli annunci</a>
+    </div>
+</div>

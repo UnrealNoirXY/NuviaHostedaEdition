@@ -1,0 +1,447 @@
+{% extends 'core/base.html' %}
+{% block title %}Dettaglio Ticket IT #{{ ticket.id }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Main content -->
+        <div class="col-md-8">
+            <div class="dashboard-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="dashboard-title mb-0">{{ ticket.title }}</h2>
+                    <span class="badge fs-6
+                        {% if ticket.status == 'open' %}bg-warning
+                        {% elif ticket.status == 'in_progress' %}bg-info
+                        {% elif ticket.status == 'resolved' %}bg-success
+                        {% elif ticket.status == 'closed' %}bg-secondary
+                        {% endif %}">
+                        {{ ticket.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Descrizione del Problema</h5>
+                        <p>{{ ticket.description|linebreaksbr }}</p>
+
+                        {% if ticket.attachment %}
+                            <hr>
+                            <h5 class="card-title mt-3">Allegato</h5>
+                            <a href="{{ ticket.attachment.url }}" class="btn btn-outline-secondary" download>
+                                <i class="fas fa-download me-2"></i>Scarica Allegato
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Comments Section -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Commenti</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for comment in comments %}
+                            <div class="d-flex mb-3">
+                                <div class="flex-shrink-0 me-3">
+                                    {% if comment.author.avatar %}
+                                        <img src="{{ comment.author.avatar.url }}" class="rounded-circle" width="40" height="40" alt="{{ comment.author.username }}" style="object-fit: cover;">
+                                    {% else %}
+                                        <img src="https://ui-avatars.com/api/?name={{ comment.author.username|first|upper }}&background=random&color=fff&size=40" class="rounded-circle" alt="{{ comment.author.username }}">
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 border rounded p-3">
+                                    <strong>{{ comment.author.username }}</strong>
+                                    <small class="text-muted float-end">{{ comment.created_at|timesince }} fa</small>
+                                    <div class="mt-2">{{ comment.comment|linebreaksbr }}</div>
+                                    {% if comment.attachment %}
+                                        <hr>
+                                        <p class="mb-0">
+                                            <a href="{{ comment.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-paperclip me-1"></i> Visualizza Allegato
+                                            </a>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted">Nessun commento ancora.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Add Comment Form -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Aggiungi un Commento</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {{ comment_form.comment }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ comment_form.attachment.label }}</label>
+                                {{ comment_form.attachment }}
+                            </div>
+                            <button type="submit" class="btn btn-primary">Invia Commento</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <a href="{% url 'it_support:it_ticket_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>I Miei Ticket
+                    </a>
+                    {% if user.is_superuser or user.role == 'it_technician' %}
+                    <a href="{% url 'it_support:it_ticket_update' ticket.pk %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Modifica Ticket
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <div class="dashboard-card p-3">
+                <h5>Dettagli Ticket</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>ID Ticket:</strong> #{{ ticket.id }}</li>
+                    <li class="list-group-item"><strong>Priorità:</strong>
+                        <span class="badge
+                            {% if ticket.priority == 'urgent' %}bg-danger
+                            {% elif ticket.priority == 'high' %}bg-warning
+                            {% elif ticket.priority == 'medium' %}bg-info
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ ticket.get_priority_display }}
+                        </span>
+                    </li>
+                    <li class="list-group-item"><strong>Tipo Dispositivo:</strong> {{ ticket.get_device_type_display }}</li>
+                    <li class="list-group-item"><strong>ID AnyDesk:</strong> {{ ticket.anydesk_id|default:"Non fornito" }}</li>
+                    <li class="list-group-item"><strong>Costo Intervento:</strong> € {{ ticket.intervention_cost|default:"N/A" }}</li>
+                    <li class="list-group-item"><strong>Creato da:</strong> {{ ticket.user.username }}</li>
+                    <li class="list-group-item"><strong>Assegnato a:</strong> {{ ticket.assigned_to.username|default:"Non assegnato" }}</li>
+                    <li class="list-group-item"><strong>Creato il:</strong> {{ ticket.created_at|date:"d/m/Y H:i" }}</li>
+                    <li class="list-group-item"><strong>Ultimo aggiornamento:</strong> {{ ticket.updated_at|date:"d/m/Y H:i" }}</li>
+                </ul>
+            </div>
+
+            <!-- Chat Section -->
+            <div class="dashboard-card p-3 mt-3">
+                <h5 class="mb-3"><i class="fas fa-comments me-2"></i>Live Chat</h5>
+
+                {% if ticket.chat_status == 'active' %}
+                    <!-- Chat Window -->
+                    <div id="chat-window" class="border rounded p-2 bg-light" style="height: 300px; overflow-y: auto;">
+                        <!-- Messages will be loaded here by JavaScript -->
+                    </div>
+                    <form id="chat-form" class="mt-2" enctype="multipart/form-data">
+                        <div class="input-group">
+                            <input type="text" id="chat-message-input" class="form-control" placeholder="Scrivi un messaggio...">
+                            <label for="chat-file-input" class="btn btn-outline-secondary mb-0 d-flex align-items-center">
+                                <i class="fas fa-paperclip"></i>
+                            </label>
+                            <input type="file" id="chat-file-input" class="d-none">
+                            <button id="chat-send-btn" type="submit" class="btn btn-primary">Invia</button>
+                        </div>
+                        <div id="file-preview-container" class="mt-1" style="display: none;">
+                            <span class="badge bg-light text-dark">
+                                <span id="file-preview-name"></span>
+                                <button type="button" id="file-remove-btn" class="btn-close btn-close-white ms-2" style="font-size: 0.6em;" aria-label="Remove File"></button>
+                            </span>
+                        </div>
+                    </form>
+                    {% if user.is_superuser or user.role == 'it_technician' %}
+                    <form action="{% url 'it_support:end_chat' ticket.pk %}" method="post" class="mt-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger w-100">Termina Chat</button>
+                    </form>
+                    {% endif %}
+
+                {% elif ticket.chat_status == 'requested' %}
+                    {% if user.is_superuser or user.role == 'it_technician' %}
+                        <div class="alert alert-info">L'utente ha richiesto una sessione di chat.</div>
+                        <div class="d-grid gap-2">
+                            <form action="{% url 'it_support:accept_chat' ticket.pk %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success w-100">Accetta Chat</button>
+                            </form>
+                            <form action="{% url 'it_support:decline_chat' ticket.pk %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger w-100">Rifiuta Chat</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-light">La tua richiesta di chat è in attesa di essere accettata da un tecnico.</div>
+                    {% endif %}
+
+                {% elif ticket.chat_status == 'declined' %}
+                    <div class="alert alert-danger">La tua ultima richiesta di chat è stata rifiutata.</div>
+                    <form action="{% url 'it_support:request_chat' ticket.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary w-100">Richiedi di Nuovo</button>
+                    </form>
+
+                {% elif ticket.chat_status == 'ended' %}
+                    <div class="alert alert-secondary">Questa sessione di chat è terminata.</div>
+                     {% if ticket.user == user %}
+                        <form action="{% url 'it_support:request_chat' ticket.pk %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100">Richiedi Nuova Chat</button>
+                        </form>
+                    {% endif %}
+
+                {% else %} {# 'none' #}
+                    {% if ticket.user == user %}
+                        <p class="text-muted small">Se hai bisogno di assistenza in tempo reale, puoi richiedere una chat con il supporto IT.</p>
+                        <form action="{% url 'it_support:request_chat' ticket.pk %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100">Richiedi Live Chat</button>
+                        </form>
+                    {% else %}
+                         <p class="text-muted small">L'utente non ha richiesto una sessione di chat per questo ticket.</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if ticket.chat_status == 'active' %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatWindow = document.getElementById('chat-window');
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('chat-message-input');
+    const fileInput = document.getElementById('chat-file-input');
+    const sendButton = document.getElementById('chat-send-btn');
+    const filePreviewContainer = document.getElementById('file-preview-container');
+    const filePreviewName = document.getElementById('file-preview-name');
+    const fileRemoveBtn = document.getElementById('file-remove-btn');
+
+    const ticketId = {{ ticket.id }};
+    const currentUsername = '{{ user.username }}';
+    const messagesUrl = `{% url 'it_support:chat_messages' ticket.pk %}`;
+    const messageCreateUrl = `{% url 'it_support:chat_messages_create' ticket.pk %}`;
+    let lastTimestamp = null;
+    let pollingIntervalId = null;
+
+    function getCookie(name) {
+        if (!document.cookie) {
+            return null;
+        }
+        const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+        for (const cookie of cookies) {
+            if (cookie.startsWith(`${name}=`)) {
+                return decodeURIComponent(cookie.split('=').slice(1).join('='));
+            }
+        }
+        return null;
+    }
+    function createMessageElement(msgData) {
+        const { message, author, timestamp, is_me, author_avatar_url, attachment_url, attachment_name } = msgData;
+
+        const msgWrapper = document.createElement('div');
+        msgWrapper.classList.add('d-flex', 'mb-2', 'align-items-end');
+
+        const avatarImg = document.createElement('img');
+        avatarImg.src = author_avatar_url;
+        avatarImg.classList.add('rounded-circle');
+        avatarImg.width = 30;
+        avatarImg.height = 30;
+        avatarImg.style.objectFit = 'cover';
+
+        const msgBubble = document.createElement('div');
+        msgBubble.classList.add('p-2', 'rounded', 'mx-2');
+        msgBubble.style.maxWidth = '75%';
+
+        if (is_me) {
+            msgWrapper.classList.add('justify-content-end');
+            msgBubble.classList.add('bg-primary', 'text-white');
+            msgWrapper.appendChild(msgBubble);
+            msgWrapper.appendChild(avatarImg);
+        } else {
+            msgWrapper.classList.add('justify-content-start');
+            msgBubble.classList.add('bg-light', 'text-dark', 'border');
+            msgWrapper.appendChild(avatarImg);
+            msgWrapper.appendChild(msgBubble);
+        }
+
+        if (message) {
+            const messageContent = document.createElement('div');
+            messageContent.className = 'chat-message-content';
+            messageContent.textContent = message;
+            msgBubble.appendChild(messageContent);
+        }
+
+        if (attachment_url) {
+            const attachmentDiv = document.createElement('div');
+            attachmentDiv.className = 'mt-2';
+            const isImage = /\.(jpg|jpeg|png|gif)$/i.test(attachment_name);
+            if (isImage) {
+                attachmentDiv.innerHTML = `<a href="${attachment_url}" target="_blank"><img src="${attachment_url}" class="img-fluid rounded" style="max-height: 150px;"></a>`;
+            } else {
+                attachmentDiv.innerHTML = `<a href="${attachment_url}" class="btn btn-sm ${is_me ? 'btn-outline-light' : 'btn-outline-secondary'}" target="_blank"><i class="fas fa-paperclip me-1"></i> ${attachment_name}</a>`;
+            }
+            msgBubble.appendChild(attachmentDiv);
+        }
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'd-flex justify-content-between align-items-center mt-1';
+        infoDiv.innerHTML = `<div class="fw-bold small">${author}</div><div class="small" style="font-size: 0.75em; opacity: 0.7;">${new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
+        msgBubble.insertBefore(infoDiv, msgBubble.firstChild);
+
+        return msgWrapper;
+    }
+
+    function appendMessage(msgData) {
+        // The broadcast sends the message to everyone, including the sender.
+        // We add the `is_me` flag here based on the current user's username.
+        msgData.is_me = msgData.author === currentUsername;
+        const msgElement = createMessageElement(msgData);
+        chatWindow.appendChild(msgElement);
+        const isScrolledToBottom = (chatWindow.scrollHeight - chatWindow.scrollTop - chatWindow.clientHeight) < 100;
+        if (isScrolledToBottom || msgData.is_me) {
+             chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+    }
+
+    function fetchInitialMessages() {
+        fetch(messagesUrl)
+            .then(response => response.json())
+            .then(data => {
+                chatWindow.innerHTML = '';
+                data.forEach(msg => {
+                    // The initial fetch already includes the 'is_me' flag
+                    const msgElement = createMessageElement(msg);
+                    chatWindow.appendChild(msgElement);
+                });
+                if (data.length > 0) {
+                    lastTimestamp = data[data.length - 1].timestamp;
+                }
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            })
+            .catch(error => console.error('Error fetching initial messages:', error));
+    }
+
+    function pollForNewMessages() {
+        const url = lastTimestamp
+            ? `${messagesUrl}?${new URLSearchParams({ since: lastTimestamp })}`
+            : messagesUrl;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (!Array.isArray(data)) {
+                    return;
+                }
+                data.forEach(msg => {
+                    appendMessage(msg);
+                    lastTimestamp = msg.timestamp;
+                });
+            })
+            .catch(error => console.error('Error polling messages:', error));
+    }
+
+    function startPollingFallback() {
+        if (pollingIntervalId) {
+            return;
+        }
+        pollingIntervalId = setInterval(pollForNewMessages, 5000);
+    }
+
+    fetchInitialMessages();
+
+    const chatSocket = new WebSocket(
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+        window.location.host +
+        '/ws/chat/' + ticketId + '/'
+    );
+    let socketConnected = false;
+
+    chatSocket.onopen = function(e) {
+        console.log('Chat socket connected.');
+        socketConnected = true;
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly.');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger small p-2 text-center';
+        errorDiv.textContent = 'Connessione live persa. Passo alla modalità di recupero messaggi.';
+        chatForm.insertAdjacentElement('beforebegin', errorDiv);
+        socketConnected = false;
+        startPollingFallback();
+    };
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        appendMessage(data);
+        lastTimestamp = data.timestamp;
+    };
+
+    chatSocket.onerror = function(e) {
+        console.error('Chat socket error.', e);
+        socketConnected = false;
+        startPollingFallback();
+    };
+
+    fileInput.addEventListener('change', function() {
+        if (fileInput.files.length > 0) {
+            filePreviewName.textContent = fileInput.files[0].name;
+            filePreviewContainer.style.display = 'block';
+        } else {
+            filePreviewContainer.style.display = 'none';
+        }
+    });
+
+    fileRemoveBtn.addEventListener('click', function() {
+        fileInput.value = '';
+        filePreviewContainer.style.display = 'none';
+    });
+
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const message = messageInput.value.trim();
+
+        if (!message) {
+            return;
+        }
+
+        if (socketConnected && chatSocket.readyState === WebSocket.OPEN) {
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+        } else {
+            fetch(messageCreateUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({ message })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    appendMessage(data);
+                    lastTimestamp = data.timestamp;
+                })
+                .catch(error => console.error('Error sending message:', error));
+        }
+
+        messageInput.value = '';
+        messageInput.focus();
+    });
+
+    // Disable file functionality for now as it's not supported by WebSocket backend
+    fileInput.disabled = true;
+    fileInput.parentElement.classList.add('disabled');
+});
+</script>
+{% endif %}
+{% endblock %}

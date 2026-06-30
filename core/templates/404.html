@@ -1,0 +1,114 @@
+{% extends 'core/base.html' %}
+{% block title %}Pagina Non Trovata{% endblock %}
+
+{% block content %}
+<style>
+    .not-found-container {
+        text-align: center;
+        padding: 50px 20px;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    .not-found-icon {
+        font-size: 6rem;
+        color: #888;
+    }
+    .not-found-title {
+        font-size: 2.5rem;
+        margin-top: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+    .not-found-text {
+        font-size: 1.2rem;
+        color: #555;
+        margin-top: 15px;
+    }
+    .not-found-case {
+        border: 2px dashed #ccc;
+        padding: 20px;
+        margin-top: 30px;
+        display: inline-block;
+        background-color: #f9f9f9;
+    }
+    .not-found-stamp {
+        font-size: 2rem;
+        color: #d9534f;
+        border: 3px solid #d9534f;
+        padding: 10px;
+        display: inline-block;
+        transform: rotate(-15deg);
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    #magnifying-glass {
+        position: absolute;
+        pointer-events: none; /* So it doesn't block clicks on things underneath */
+        transition: transform 0.1s ease-out;
+    }
+    #hidden-clue {
+        position: absolute;
+        font-size: 2rem;
+        opacity: 0.1;
+        transition: opacity 0.5s ease-in-out;
+        cursor: pointer;
+    }
+</style>
+
+<div class="not-found-container">
+    <div id="magnifying-glass" class="not-found-icon">
+        <i class="fas fa-search"></i>
+    </div>
+    <i id="hidden-clue" class="fas fa-palm-tree"></i>
+
+    <div class="not-found-case">
+        <h1 class="not-found-title">Fascicolo 404</h1>
+        <p class="not-found-stamp">Caso Non Trovato</p>
+    </div>
+    <p class="not-found-text">
+        La pista che stai seguendo si è raffreddata.
+        <br>
+        La pagina che cerchi non è in questo fascicolo.
+    </p>
+    <a href="{% url 'home' %}" class="btn btn-primary btn-lg mt-4">
+        <i class="fas fa-arrow-left me-2"></i> Torna alla Home
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const glass = document.getElementById('magnifying-glass');
+    const clue = document.getElementById('hidden-clue');
+    const container = document.querySelector('.not-found-container');
+
+    // Randomly position the clue within the container
+    const clueX = container.offsetLeft + Math.random() * (container.offsetWidth - 50);
+    const clueY = container.offsetTop + Math.random() * (container.offsetHeight - 50);
+    clue.style.left = `${clueX}px`;
+    clue.style.top = `${clueY}px`;
+
+    document.addEventListener('mousemove', function (e) {
+        // Move the magnifying glass
+        glass.style.left = `${e.pageX - 30}px`;
+        glass.style.top = `${e.pageY - 30}px`;
+
+        // Check distance to the clue using document-relative coordinates
+        const dx = e.pageX - (clueX + 15); // Adjust for icon size
+        const dy = e.pageY - (clueY + 15); // Adjust for icon size
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < 50) {
+            clue.style.opacity = '1';
+        } else {
+            clue.style.opacity = '0.1';
+        }
+    });
+
+    clue.addEventListener('click', function() {
+        alert("Hai trovato un bug! Anzi no, solo una pagina mancante.");
+    });
+});
+</script>
+{% endblock %}

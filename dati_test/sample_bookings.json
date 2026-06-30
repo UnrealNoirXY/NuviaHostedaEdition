@@ -1,0 +1,29 @@
+[
+  {
+    "booking_engine_id": "EXT-1001",
+    "guest_name": "Mario Rossi",
+    "guest_email": "mario.rossi@example.com",
+    "check_in_date": "2025-10-15",
+    "check_out_date": "2025-10-20",
+    "resort_name": "Resort Paradiso",
+    "room_details": "Camera Deluxe Vista Mare"
+  },
+  {
+    "booking_engine_id": "EXT-1002",
+    "guest_name": "Giulia Bianchi",
+    "guest_email": "giulia.bianchi@example.com",
+    "check_in_date": "2025-11-01",
+    "check_out_date": "2025-11-08",
+    "resort_name": "Resort Montagna Incantata",
+    "room_details": "Suite Presidenziale"
+  },
+  {
+    "booking_engine_id": "EXT-1003",
+    "guest_name": "Luca Verdi",
+    "guest_email": "luca.verdi@example.com",
+    "check_in_date": "2025-10-18",
+    "check_out_date": "2025-10-22",
+    "resort_name": "Resort Paradiso",
+    "room_details": "Bungalow sulla Spiaggia"
+  }
+]

@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+{% block title %}I Miei Ticket IT{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title mb-0">I Miei Ticket di Supporto IT</h2>
+        <a href="{% url 'it_support:it_ticket_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Apri Nuovo Ticket
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Oggetto</th>
+                    <th>Stato</th>
+                    <th>Priorità</th>
+                    <th>Tipo Dispositivo</th>
+                    <th>Creato il</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>#{{ ticket.id }}</td>
+                    <td><a href="{% url 'it_support:it_ticket_detail' ticket.pk %}">{{ ticket.title }}</a></td>
+                    <td>
+                        <span class="badge
+                            {% if ticket.status == 'open' %}bg-warning
+                            {% elif ticket.status == 'in_progress' %}bg-info
+                            {% elif ticket.status == 'resolved' %}bg-success
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ ticket.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge
+                            {% if ticket.priority == 'urgent' %}bg-danger
+                            {% elif ticket.priority == 'high' %}bg-warning
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ ticket.get_priority_display }}
+                        </span>
+                    </td>
+                    <td>{{ ticket.get_device_type_display }}</td>
+                    <td>{{ ticket.created_at|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <a href="{% url 'it_support:it_ticket_detail' ticket.pk %}" class="btn btn-sm btn-info">Dettagli</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">Non hai ancora aperto nessun ticket di supporto IT.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

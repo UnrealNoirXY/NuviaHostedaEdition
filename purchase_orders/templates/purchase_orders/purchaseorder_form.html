@@ -1,0 +1,71 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}{% if object %}Modifica Ordine #{{ object.id }}{% else %}Nuovo Buono d'Ordine{% endif %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4 fade-in">
+    <h2 class="dashboard-title mb-4">
+        {% if object %}
+            Modifica Buono d'Ordine #{{ object.id }}
+        {% else %}
+            Nuovo Buono d'Ordine
+        {% endif %}
+    </h2>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.resort|as_crispy_field }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.supplier|as_crispy_field }}
+            </div>
+            {% if object %}
+            <div class="col-md-6 mb-3">
+                {{ form.status|as_crispy_field }}
+            </div>
+            {% endif %}
+        </div>
+
+        {% if object %}
+            <hr class="my-4">
+            <h4 class="mb-3">Articoli dell'Ordine</h4>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Prodotto</th>
+                            <th>Codice</th>
+                            <th>Quantità</th>
+                            <th>Prezzo Unitario</th>
+                            <th>Elimina?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ item_formset.management_form }}
+                        {% for form in item_formset %}
+                            <tr class="item-form">
+                                <td>{{ form.product_name }}</td>
+                                <td>{{ form.product_code }}</td>
+                                <td>{{ form.quantity }}</td>
+                                <td>{{ form.unit_price }}</td>
+                                <td>{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>
+                                {{ form.id }}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">
+                {% if object %}Salva Modifiche{% else %}Crea e Aggiungi Articoli{% endif %}
+            </button>
+            <a href="{% if object %}{% url 'purchase_orders:detail' object.pk %}{% else %}{% url 'purchase_orders:list' %}{% endif %}" class="btn btn-secondary">Annulla</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

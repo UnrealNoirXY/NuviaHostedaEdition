@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Costruttore di Report{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Costruttore di Report di Recensioni</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="mt-3">
+                    <button type="submit" name="action" value="generate_pdf" class="btn btn-primary">
+                        <i class="fas fa-file-pdf me-2"></i>Genera PDF
+                    </button>
+                    <button type="submit" name="action" value="save_template" class="btn btn-secondary">
+                        <i class="fas fa-save me-2"></i>Salva come Template
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

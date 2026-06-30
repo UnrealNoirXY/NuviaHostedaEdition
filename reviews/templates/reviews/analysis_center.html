@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+{% load django_vite %}
+
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block body_styles %}--topbar-height: 0px;{% endblock %}
+
+{% block content %}
+<style>
+    /* Full Page Override - Extreme Reset */
+    .app-topbar, .app-shell__sidebar, .app-footer, .app-mobile-offcanvas { display: none !important; }
+
+    .app-shell, .main-wrapper, .app-shell__main, .main-content, .app-content, .app-content__inner, .content-container, .app-surface, .container, .container-fluid {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .authenticated-layout .app-shell { display: block !important; grid-template-columns: none !important; }
+
+    /* Ensure the React root takes full width */
+    #analysis-center-root { width: 100% !important; min-height: 100vh; display: block !important; background: #f8fafc; }
+
+    /* Global scrollbar for the hub-like feel */
+    body { overflow-x: hidden; }
+</style>
+
+<div class="container-fluid p-0 w-100">
+    <div id="analysis-center-root">
+        <!-- React will mount here -->
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Caricamento...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="application/json" id="filters-data">
+    {{ filters_data|safe }}
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  {% vite_asset 'src/analysis_center_main.jsx' %}
+{% endblock %}

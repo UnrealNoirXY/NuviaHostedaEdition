@@ -1,0 +1,62 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h2 mb-4 dashboard-title">{{ page_title }}</h1>
+
+    <div class="card dashboard-card mb-4">
+        <div class="card-body">
+            <form method="get"
+                  hx-get="{% url 'reviews:review_list' %}"
+                  hx-target="#review-list-container"
+                  hx-swap="innerHTML"
+                  hx-trigger="keyup changed delay:500ms from:#q, change from:select"
+                  class="row g-3 align-items-center">
+                <div class="col-md-3">
+                    <label for="q" class="visually-hidden">Cerca recensione</label>
+                    <input type="text" name="q" id="q" class="form-control form-control-lg" value="{{ search_query|default:'' }}" placeholder="Cerca per parola chiave...">
+                </div>
+                {% if user.is_superuser and companies %}
+                <div class="col-md-2">
+                    <label for="company_id" class="visually-hidden">Filtra per Società</label>
+                    <select name="company_id" id="company_id" class="form-select form-select-lg">
+                        <option value="">--- Tutte le Società ---</option>
+                        {% for company in companies %}
+                            <option value="{{ company.id }}" {% if selected_company.id == company.id %}selected{% endif %}>{{ company.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                <div class="col-md-2">
+                    <label for="resort_id" class="visually-hidden">Seleziona Resort</label>
+                    <select name="resort_id" id="resort_id" class="form-select form-select-lg">
+                        <option value="">--- Tutti i Resort ---</option>
+                        {% for resort in all_resorts %}
+                            <option value="{{ resort.id }}" {% if selected_resort.id == resort.id %}selected{% endif %}>{{ resort.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="source_id" class="visually-hidden">Seleziona Piattaforma</label>
+                    <select name="source_id" id="source_id" class="form-select form-select-lg">
+                        <option value="">--- Tutte le Piattaforme ---</option>
+                        {% for source in all_sources %}
+                            <option value="{{ source.id }}" {% if selected_source.id == source.id %}selected{% endif %}>{{ source.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 text-end">
+                    <button type="submit" class="btn btn-primary">Filtra</button>
+                    <a href="{% url 'reviews:review_list' %}" class="btn btn-secondary">Resetta</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="review-list-container">
+        {% include 'reviews/partials/_review_list_content.html' %}
+    </div>
+</div>
+{% endblock %}

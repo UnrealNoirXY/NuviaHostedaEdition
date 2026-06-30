@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Report Analisi Recensioni</title>
+    <style>
+        body { font-family: sans-serif; }
+        h1, h2, h3 { color: #333; }
+        .container { width: 90%; margin: auto; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .section { margin-bottom: 30px; }
+        .chart { text-align: center; }
+        .chart img { max-width: 100%; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Report Analisi Recensioni</h1>
+            <p>Generato il: {{ report_date }}</p>
+        </div>
+
+        <div class="section">
+            <h3>Riepilogo KPI</h3>
+            <ul>
+                <li><strong>Recensioni Totali:</strong> {{ kpi_summary.total_reviews }}</li>
+                <li><strong>Rating Medio:</strong> {{ kpi_summary.average_rating }}</li>
+                <li><strong>Sentiment Medio:</strong> {{ kpi_summary.average_sentiment }}</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>Andamento Temporale</h3>
+            <div class="chart">
+                <img src="{{ trend_chart_img }}" alt="Grafico Andamento Temporale">
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Confronto Piattaforme</h3>
+            <div class="chart">
+                <img src="{{ platform_chart_img }}" alt="Grafico Confronto Piattaforme">
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Distribuzione Valutazioni</h3>
+            {% if rating_distribution_chart_img %}
+            <div class="chart">
+                <img src="{{ rating_distribution_chart_img }}" alt="Grafico Distribuzione Valutazioni">
+            </div>
+            {% else %}
+            <p>Nessun dato disponibile per la distribuzione delle valutazioni nel periodo selezionato.</p>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <h3>Analisi Tematica</h3>
+            <div class="chart">
+                <img src="{{ thematic_chart_img }}" alt="Grafico Analisi Tematica">
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Ultime Recensioni</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Autore</th>
+                        <th>Resort</th>
+                        <th>Piattaforma</th>
+                        <th>Data</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in reviews %}
+                    <tr>
+                        <td>{{ review.author }}</td>
+                        <td>{{ review.resort.name }}</td>
+                        <td>{{ review.source.name }}</td>
+                        <td>{{ review.review_date|date:"Y-m-d" }}</td>
+                        <td>{{ review.rating }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

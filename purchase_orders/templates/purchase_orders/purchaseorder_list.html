@@ -1,0 +1,104 @@
+{% extends 'core/base.html' %}
+{% load po_extras crispy_forms_tags %}
+{% block title %}Buoni d'Ordine{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title mb-0">Buoni d'Ordine</h2>
+        <div>
+            <a href="{% url 'purchase_orders:export_excel' %}" class="btn btn-outline-primary">
+                <i class="fas fa-file-excel me-2"></i> Esporta Excel
+            </a>
+            {% if user.role == 'director' or user.role == 'owner' or user.is_superuser or user.role == 'capo_economo' %}
+            <a href="{% url 'purchase_orders:supplier_list' %}" class="btn btn-secondary">
+                <i class="fas fa-truck me-2"></i> Gestisci Fornitori
+            </a>
+            {% endif %}
+            <a href="{% url 'purchase_orders:create' %}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i> Nuovo Buono d'Ordine
+            </a>
+        </div>
+    </div>
+
+    <form method="get" class="row g-3 align-items-center mb-4 p-3 border rounded bg-light">
+        <div class="col-md-3">{{ filter_form.supplier|as_crispy_field }}</div>
+        <div class="col-md-3">{{ filter_form.resort|as_crispy_field }}</div>
+        <div class="col-md-2">{{ filter_form.start_date|as_crispy_field }}</div>
+        <div class="col-md-2">{{ filter_form.end_date|as_crispy_field }}</div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Filtra</button>
+        </div>
+    </form>
+
+    <!-- Desktop Table View -->
+    <div class="table-responsive d-none d-lg-block">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>ID Ordine</th>
+                    <th>Resort</th>
+                    <th>Fornitore</th>
+                    <th>Creato Da</th>
+                    <th>Stato</th>
+                    <th class="text-end">Importo Totale</th>
+                    <th class="text-end">Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in purchase_orders %}
+                <tr>
+                    <td><strong><a href="{% url 'purchase_orders:detail' order.pk %}">#{{ order.id }}</a></strong></td>
+                    <td>{{ order.resort.name }}</td>
+                    <td>{{ order.supplier.name }}</td>
+                    <td>{{ order.created_by.username|default:"-" }}</td>
+                    <td><span class="badge {{ order.status|status_badge }}">{{ order.get_status_display }}</span></td>
+                    <td class="text-end">€ {{ order.total_amount|floatformat:2 }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'purchase_orders:detail' order.pk %}" class="btn btn-sm btn-outline-info">Dettagli</a>
+                        <a href="{% url 'purchase_orders:update' order.pk %}" class="btn btn-sm btn-outline-primary">Modifica</a>
+                        <a href="{% url 'purchase_orders:delete' order.pk %}" class="btn btn-sm btn-outline-danger">Elimina</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4">Nessun buono d'ordine trovato.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="d-lg-none">
+        {% for order in purchase_orders %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="card-title mb-1">
+                        <a href="{% url 'purchase_orders:detail' order.pk %}">Ordine #{{ order.id }}</a>
+                    </h5>
+                    <span class="badge {{ order.status|status_badge }}">{{ order.get_status_display }}</span>
+                </div>
+                <p class="card-text mb-2">
+                    <small class="text-muted">{{ order.resort.name }}</small>
+                </p>
+                <p class="card-text">
+                    <strong>Fornitore:</strong> {{ order.supplier.name }}<br>
+                    <strong>Creato da:</strong> {{ order.created_by.username|default:"N/D" }}<br>
+                    <strong>Importo:</strong> € {{ order.total_amount|floatformat:2 }}
+                </p>
+                <hr>
+                <a href="{% url 'purchase_orders:detail' order.pk %}" class="btn btn-sm btn-info">Dettagli</a>
+                <a href="{% url 'purchase_orders:update' order.pk %}" class="btn btn-sm btn-primary">Modifica</a>
+                <a href="{% url 'purchase_orders:delete' order.pk %}" class="btn btn-sm btn-danger">Elimina</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info">Nessun buono d'ordine trovato.</div>
+        {% endfor %}
+    </div>
+
+    {% include 'partials/_pagination.html' %}
+</div>
+{% endblock %}

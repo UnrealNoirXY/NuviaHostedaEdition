@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nuovo Commento sul Ticket</title>
+</head>
+<body>
+    <h2>Nuovo commento sul ticket: #{{ ticket.id }} - "{{ ticket.title }}"</h2>
+
+    <p><strong>{{ comment.author.username }}</strong> ha scritto:</p>
+    <blockquote style="border-left: 2px solid #ccc; padding-left: 10px; margin-left: 5px;">
+        <p>{{ comment.comment|linebreaksbr }}</p>
+    </blockquote>
+
+    <p>Puoi visualizzare il commento e rispondere al ticket al seguente link:</p>
+    <p><a href="{{ absolute_url }}">Vedi Dettagli Ticket</a></p>
+
+    <p>Grazie,</p>
+    <p>Il Team di Gestione Manutenzioni</p>
+</body>
+</html>

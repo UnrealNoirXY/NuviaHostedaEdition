@@ -1,0 +1,254 @@
+:root {
+    --mail-sidebar-width: 260px;
+    --mail-list-width: 380px;
+    --noir-glass: rgba(15, 23, 42, 0.7);
+    --noir-border: rgba(148, 163, 184, 0.15);
+}
+
+.nuvia-mail-workspace {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    grid-template-columns: var(--mail-sidebar-width) var(--mail-list-width) 1fr;
+    background: var(--ntk-body-gradient);
+    color: var(--ntk-text-inverse);
+    z-index: 1000;
+    overflow: hidden;
+    font-family: var(--ntk-font-family);
+}
+
+/* Glassmorphism Panels */
+.mail-sidebar, .mail-list, .mail-detail {
+    backdrop-filter: blur(20px);
+    border-right: 1px solid var(--noir-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.mail-sidebar {
+    background: rgba(15, 23, 42, 0.8);
+    padding: 1.5rem 1rem;
+}
+
+.mail-list {
+    background: rgba(30, 41, 59, 0.4);
+}
+
+.mail-detail {
+    background: rgba(15, 23, 42, 0.2);
+    border-right: none;
+}
+
+/* Sidebar Components */
+.mail-brand {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    padding: 0 0.5rem;
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.btn-compose {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border: none;
+    border-radius: 14px;
+    padding: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+}
+
+.nav-folders {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-folder-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 0.25rem;
+    color: rgba(241, 245, 249, 0.7);
+}
+
+.nav-folder-item:hover, .nav-folder-item.active {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.nav-folder-item.active {
+    background: rgba(37, 99, 235, 0.15);
+    border-left: 3px solid #38bdf8;
+}
+
+/* Mail List Components */
+.mail-list-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--noir-border);
+}
+
+.mail-search {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--noir-border);
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    color: #fff;
+    width: 100%;
+}
+
+.mail-items-container {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.mail-item {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--noir-border);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.mail-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.mail-item.unread {
+    border-left: 3px solid #38bdf8;
+}
+
+.mail-item-sender {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.mail-item-time {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: rgba(241, 245, 249, 0.5);
+}
+
+.mail-item-subject {
+    font-size: 0.9rem;
+    color: #fff;
+    margin-bottom: 0.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mail-item-preview {
+    font-size: 0.85rem;
+    color: rgba(241, 245, 249, 0.5);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Detail View Components */
+.mail-detail-toolbar {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--noir-border);
+    display: flex;
+    gap: 1rem;
+}
+
+.mail-detail-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.mail-detail-header {
+    margin-bottom: 2rem;
+}
+
+.mail-detail-subject {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.mail-detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #38bdf8;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.mail-body {
+    line-height: 1.6;
+    color: rgba(241, 245, 249, 0.9);
+}
+
+/* Configuration Wizard - Noir Style */
+.noir-wizard-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.95);
+    z-index: 2000;
+    display: grid;
+    place-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.noir-wizard-card {
+    width: min(600px, 90vw);
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.wizard-steps-indicator {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.wizard-step-dot {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.wizard-step-dot.active {
+    background: #38bdf8;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 1024px) {
+    .nuvia-mail-workspace {
+        grid-template-columns: 80px 1fr;
+    }
+    .mail-list { display: none; }
+}
+
+@media (max-width: 768px) {
+    .nuvia-mail-workspace {
+        grid-template-columns: 1fr;
+    }
+    .mail-sidebar { display: none; }
+}

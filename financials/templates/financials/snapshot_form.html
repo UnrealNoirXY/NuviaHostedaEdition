@@ -1,0 +1,89 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <h2 class="dashboard-title mb-4">{{ title }}</h2>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header">Dati Generali</div>
+                    <div class="card-body">
+                        {% for field in form %}
+                            {% if field.name != 'recalculate_totals' %}
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                                    {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <div class="form-check form-switch">
+                            {{ form.recalculate_totals }}
+                            <label class="form-check-label" for="{{ form.recalculate_totals.id_for_label }}">{{ form.recalculate_totals.label }}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Dettaglio Ricavi e Costi</span>
+                        <span class="text-muted small">Compila le voci per ottenere un confronto granulare per categoria.</span>
+                    </div>
+                    <div class="card-body">
+                        {{ formset.management_form }}
+                        {% if formset.non_form_errors %}
+                            <div class="alert alert-danger">{{ formset.non_form_errors }}</div>
+                        {% endif %}
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Categoria</th>
+                                        <th>Tipo</th>
+                                        <th>Descrizione</th>
+                                        <th>Importo</th>
+                                        <th>Centro di Costo</th>
+                                        <th>Budget</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for line_form in formset.forms %}
+                                    <tr>
+                                        <td>{{ line_form.category }}</td>
+                                        <td>{{ line_form.line_type }}</td>
+                                        <td>{{ line_form.description }}</td>
+                                        <td>{{ line_form.amount }}</td>
+                                        <td>{{ line_form.cost_center }}</td>
+                                        <td>{{ line_form.budget }}</td>
+                                        <td class="text-center">{% if line_form.instance.pk %}{{ line_form.DELETE }}{% endif %}</td>
+                                    </tr>
+                                    {% if line_form.non_field_errors %}
+                                    <tr>
+                                        <td colspan="7" class="text-danger small">{{ line_form.non_field_errors }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% for field in line_form.hidden_fields %}{{ field }}{% endfor %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <a href="{% url 'financials:snapshot_list' %}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Annulla</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Salva</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+{% load django_vite %}
+
+{% block content %}
+<div id="bookings-dashboard-root">
+    <!-- L'applicazione React per il cruscotto prenotazioni verrà montata qui -->
+</div>
+
+{% comment %}
+    Questo tag dice a Django di includere gli script necessari per
+    l'applicazione React definita nel nostro nuovo file di ingresso.
+{% endcomment %}
+{% vite_asset 'src/bookings_dashboard_entry.jsx' %}
+{% endblock %}

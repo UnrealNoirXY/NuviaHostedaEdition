@@ -1,0 +1,366 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Noir-Man{% endblock %}
+
+{% block extra_head %}
+<style>
+    body, .main-content, .content-container, .main-wrapper {
+        background-color: #0c0c0c !important;
+        color: #fff;
+        overflow: hidden;
+    }
+    .footer, .mobile-navbar, #sidebarMenu {
+        display: none !important;
+    }
+    .game-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+    }
+    canvas {
+        background-color: #000;
+        border: 2px solid #ffc107; /* Yellow for Noir-Man */
+        touch-action: manipulation; /* Disable double-tap to zoom */
+    }
+    .game-ui {
+        color: #fff;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        justify-content: space-between;
+        width: 90%;
+        max-width: 560px; /* Match canvas width */
+    }
+    .game-over-screen {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+    }
+    .game-over-screen h1 {
+        font-size: 3rem;
+        color: #ff4136;
+        margin-bottom: 1rem;
+    }
+    .touch-controls {
+        display: none; /* Hidden on desktop */
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0.7;
+    }
+    .touch-controls button {
+        width: 60px;
+        height: 60px;
+        border: 2px solid #ffc107;
+        background-color: rgba(255, 193, 7, 0.2);
+        color: white;
+        font-size: 1.5rem;
+        margin: 5px;
+    }
+    @media (hover: none) and (pointer: coarse) {
+        .touch-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+            width: 200px;
+        }
+        .up { grid-column: 2; grid-row: 1; }
+        .left { grid-column: 1; grid-row: 2; }
+        .right { grid-column: 3; grid-row: 2; }
+        .down { grid-column: 2; grid-row: 2; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="game-container">
+    <div class="game-ui">
+        <span>Punteggio: <span id="score">0</span></span>
+        <span>Vite: <span id="lives">3</span></span>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <div class="touch-controls">
+        <button class="up" id="btn-up">▲</button>
+        <button class="left" id="btn-left">◀</button>
+        <button class="down" id="btn-down">▼</button>
+        <button class="right" id="btn-right">▶</button>
+    </div>
+    <div id="gameOver" class="game-over-screen">
+        <h1>GAME OVER</h1>
+        <a href="{% url 'svago:noir_man' %}" class="btn btn-primary btn-lg">Rigioca</a>
+        <a href="{% url 'svago:lobby' %}" class="btn btn-secondary btn-lg ms-2">Torna alla Lobby</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+    const gameOverEl = document.getElementById('gameOver');
+
+    let gridSize, canvasSize;
+
+    const map = [
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,1],
+        [1,2,1,1,2,1,1,1,2,1,2,1,1,1,2,1,1,2,1],
+        [1,3,1,1,2,1,1,1,2,1,2,1,1,1,2,1,1,3,1],
+        [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+        [1,2,1,1,2,1,2,1,1,1,1,1,2,1,2,1,1,2,1],
+        [1,2,2,2,2,1,2,2,2,1,2,2,2,1,2,2,2,2,1],
+        [1,1,1,1,2,1,1,1,0,1,0,1,1,1,2,1,1,1,1],
+        [0,0,0,1,2,1,0,0,0,0,0,0,0,1,2,1,0,0,0],
+        [1,1,1,1,2,1,0,1,1,0,1,1,0,1,2,1,1,1,1],
+        [2,2,2,2,2,0,0,1,0,0,0,1,0,0,2,2,2,2,2],
+        [1,1,1,1,2,1,0,1,1,1,1,1,0,1,2,1,1,1,1],
+        [0,0,0,1,2,1,0,0,0,0,0,0,0,1,2,1,0,0,0],
+        [1,1,1,1,2,1,0,1,1,1,1,1,0,1,2,1,1,1,1],
+        [1,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,1],
+        [1,2,1,1,2,1,1,1,2,1,2,1,1,1,2,1,1,2,1],
+        [1,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,1],
+        [1,1,2,1,2,1,2,1,1,1,1,1,2,1,2,1,2,1,1],
+        [1,2,2,2,2,1,2,2,2,1,2,2,2,1,2,2,2,2,1],
+        [1,2,1,1,1,1,1,1,2,1,2,1,1,1,1,1,1,2,1],
+        [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    ];
+    // 1: wall, 2: dot, 3: power-up, 0: empty
+
+    let player, ghosts, score, lives, frightenedMode;
+    let dotCount = 0;
+    let ghostMoveCounter = 0;
+    const ghostMoveInterval = 2; // Ghosts move every 2 frames (half speed)
+
+    function setupCanvas() {
+        canvasSize = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.8);
+        gridSize = canvasSize / map[0].length;
+        canvas.width = canvasSize;
+        canvas.height = map.length * gridSize;
+    }
+
+    function init() {
+        player = { x: 9, y: 16, dx: 0, dy: 0, nextDx: 0, nextDy: 0, mouthOpen: 0 };
+        ghosts = [
+            { x: 8, y: 10, dx: 1, dy: 0, color: '#ff4136' }, // red
+            { x: 9, y: 10, dx: -1, dy: 0, color: '#0074d9' }, // blue
+            { x: 10, y: 10, dx: 1, dy: 0, color: '#ff851b' } // orange
+        ];
+        score = 0;
+        lives = 3;
+        frightenedMode = { active: false, timer: 0 };
+        dotCount = map.flat().filter(cell => cell === 2 || cell === 3).length;
+
+        updateUI();
+        gameLoop();
+    }
+
+    function updateUI() {
+        scoreEl.textContent = score;
+        livesEl.textContent = lives;
+    }
+
+    function draw() {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw map
+        for (let y = 0; y < map.length; y++) {
+            for (let x = 0; x < map[y].length; x++) {
+                if (map[y][x] === 1) { // Wall
+                    ctx.fillStyle = '#001f3f'; // Navy
+                    ctx.fillRect(x * gridSize, y * gridSize, gridSize, gridSize);
+                } else if (map[y][x] === 2) { // Dot
+                    ctx.fillStyle = '#ffc107'; // Yellow
+                    ctx.beginPath();
+                    ctx.arc(x * gridSize + gridSize / 2, y * gridSize + gridSize / 2, gridSize / 8, 0, 2 * Math.PI);
+                    ctx.fill();
+                } else if (map[y][x] === 3) { // Power-up
+                    ctx.fillStyle = '#f012be'; // Pink
+                    ctx.beginPath();
+                    ctx.arc(x * gridSize + gridSize / 2, y * gridSize + gridSize / 2, gridSize / 4, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+        }
+
+        // Draw player
+        ctx.fillStyle = '#ffc107'; // Yellow
+        ctx.beginPath();
+        if (player.mouthOpen > 10) {
+             ctx.arc(player.x * gridSize + gridSize / 2, player.y * gridSize + gridSize / 2, gridSize / 2 - 2, 0, 2 * Math.PI);
+        } else {
+             ctx.arc(player.x * gridSize + gridSize / 2, player.y * gridSize + gridSize / 2, gridSize / 2 - 2, 0.2 * Math.PI, 1.8 * Math.PI);
+        }
+        player.mouthOpen = (player.mouthOpen + 1) % 20;
+        ctx.lineTo(player.x * gridSize + gridSize / 2, player.y * gridSize + gridSize / 2);
+        ctx.fill();
+
+        // Draw ghosts
+        ghosts.forEach(ghost => {
+            ctx.fillStyle = frightenedMode.active ? '#7fdbff' : ghost.color;
+            ctx.beginPath();
+            ctx.arc(ghost.x * gridSize + gridSize / 2, ghost.y * gridSize + gridSize / 2, gridSize / 2 - 2, 0, 2*Math.PI);
+            ctx.fill();
+        });
+    }
+
+    function update() {
+        movePlayer();
+
+        ghostMoveCounter++;
+        if (ghostMoveCounter >= ghostMoveInterval) {
+            moveGhosts();
+            ghostMoveCounter = 0;
+        }
+
+        checkCollisions();
+
+        if (dotCount === 0) {
+            // Win condition, for simplicity, just restart
+            init();
+        }
+    }
+
+    function movePlayer() {
+        const nextX = player.x + player.nextDx;
+        const nextY = player.y + player.nextDy;
+        if (map[nextY] && map[nextY][nextX] !== 1) {
+            player.dx = player.nextDx;
+            player.dy = player.nextDy;
+        }
+
+        const currentX = player.x + player.dx;
+        const currentY = player.y + player.dy;
+        if (map[currentY] && map[currentY][currentX] !== 1) {
+            player.x = currentX;
+            player.y = currentY;
+        }
+    }
+
+    function moveGhosts() {
+        ghosts.forEach(ghost => {
+            // Simple AI: try to move towards player
+            const possibleMoves = [];
+            if (map[ghost.y][ghost.x + 1] !== 1) possibleMoves.push({dx:1, dy:0});
+            if (map[ghost.y][ghost.x - 1] !== 1) possibleMoves.push({dx:-1, dy:0});
+            if (map[ghost.y + 1][ghost.x] !== 1) possibleMoves.push({dx:0, dy:1});
+            if (map[ghost.y - 1][ghost.x] !== 1) possibleMoves.push({dx:0, dy:-1});
+
+            // Avoid reversing
+            const nonReversingMoves = possibleMoves.filter(move => move.dx !== -ghost.dx || move.dy !== -ghost.dy);
+
+            if (nonReversingMoves.length > 0) {
+                let bestMove = nonReversingMoves[0];
+                if (nonReversingMoves.length > 1) {
+                    // Choose move that gets closer to player
+                    let minDistance = Infinity;
+                    nonReversingMoves.forEach(move => {
+                        const distance = Math.hypot(ghost.x + move.dx - player.x, ghost.y + move.dy - player.y);
+                        if(distance < minDistance) {
+                            minDistance = distance;
+                            bestMove = move;
+                        }
+                    });
+                }
+                ghost.dx = bestMove.dx;
+                ghost.dy = bestMove.dy;
+            }
+
+            ghost.x += ghost.dx;
+            ghost.y += ghost.dy;
+        });
+    }
+
+    function checkCollisions() {
+        // Dots and power-ups
+        const cell = map[player.y][player.x];
+        if (cell === 2) { // Dot
+            map[player.y][player.x] = 0;
+            score += 10;
+            dotCount--;
+            updateUI();
+        } else if (cell === 3) { // Power-up
+            map[player.y][player.x] = 0;
+            score += 50;
+            dotCount--;
+            frightenedMode.active = true;
+            frightenedMode.timer = 300; // 5 seconds at 60fps
+            updateUI();
+        }
+
+        // Frightened mode timer
+        if (frightenedMode.active) {
+            frightenedMode.timer--;
+            if (frightenedMode.timer <= 0) {
+                frightenedMode.active = false;
+            }
+        }
+
+        // Ghosts
+        ghosts.forEach(ghost => {
+            if (ghost.x === player.x && ghost.y === player.y) {
+                if (frightenedMode.active) {
+                    // Eat ghost
+                    score += 200;
+                    ghost.x = 9; ghost.y = 10; // reset ghost
+                    updateUI();
+                } else {
+                    // Lose a life
+                    lives--;
+                    if (lives <= 0) {
+                        gameOverEl.style.display = 'block';
+                        // game over logic handled by gameLoop exit
+                    } else {
+                        // Reset positions
+                        player.x = 9; player.y = 16;
+                        ghosts.forEach(g => { g.x = 9; g.y = 10; });
+                    }
+                    updateUI();
+                }
+            }
+        });
+    }
+
+    function gameLoop() {
+        if (lives <= 0) return;
+        update();
+        draw();
+        setTimeout(gameLoop, 1000 / 15); // 15 FPS
+    }
+
+    // Controls
+    function handleKeydown(e) {
+        if (e.key === 'ArrowUp') { player.nextDx = 0; player.nextDy = -1; }
+        else if (e.key === 'ArrowDown') { player.nextDx = 0; player.nextDy = 1; }
+        else if (e.key === 'ArrowLeft') { player.nextDx = -1; player.nextDy = 0; }
+        else if (e.key === 'ArrowRight') { player.nextDx = 1; player.nextDy = 0; }
+    }
+
+    // Touch controls - D-pad
+    document.getElementById('btn-up').addEventListener('click', () => { player.nextDx = 0; player.nextDy = -1; });
+    document.getElementById('btn-down').addEventListener('click', () => { player.nextDx = 0; player.nextDy = 1; });
+    document.getElementById('btn-left').addEventListener('click', () => { player.nextDx = -1; player.nextDy = 0; });
+    document.getElementById('btn-right').addEventListener('click', () => { player.nextDx = 1; player.nextDy = 0; });
+
+    window.addEventListener('keydown', handleKeydown);
+    setupCanvas();
+    init();
+});
+</script>
+{% endblock %}

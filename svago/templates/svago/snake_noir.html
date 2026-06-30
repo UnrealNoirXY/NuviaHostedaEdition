@@ -1,0 +1,276 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Snake Noir{% endblock %}
+
+{% block extra_head %}
+<style>
+    body, .main-content, .content-container, .main-wrapper {
+        background-color: #0c0c0c !important;
+        color: #fff;
+        overflow: hidden;
+    }
+    .footer, .mobile-navbar, #sidebarMenu {
+        display: none !important;
+    }
+    .game-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+    }
+    canvas {
+        background-color: #000;
+        border: 2px solid #0dcaf0;
+        touch-action: manipulation; /* Disable double-tap to zoom */
+    }
+    .game-ui {
+        color: #fff;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        font-family: 'Poppins', sans-serif;
+    }
+    .game-over-screen {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+    }
+    .game-over-screen h1 {
+        font-size: 3rem;
+        color: #ff4136;
+        margin-bottom: 1rem;
+    }
+    .touch-controls {
+        display: none; /* Hidden on desktop */
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0.7;
+    }
+    .touch-controls button {
+        width: 60px;
+        height: 60px;
+        border: 2px solid #0dcaf0;
+        background-color: rgba(13, 202, 240, 0.2);
+        color: white;
+        font-size: 1.5rem;
+        margin: 5px;
+    }
+    @media (hover: none) and (pointer: coarse) {
+        .touch-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+            width: 200px;
+        }
+        .up { grid-column: 2; grid-row: 1; }
+        .left { grid-column: 1; grid-row: 2; }
+        .right { grid-column: 3; grid-row: 2; }
+        .down { grid-column: 2; grid-row: 2; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="game-container">
+    <div class="game-ui">
+        <span>Punteggio: <span id="score">0</span></span>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <div class="touch-controls">
+        <button class="up" id="btn-up">▲</button>
+        <button class="left" id="btn-left">◀</button>
+        <button class="down" id="btn-down">▼</button>
+        <button class="right" id="btn-right">▶</button>
+    </div>
+    <div id="gameOver" class="game-over-screen">
+        <h1>GAME OVER</h1>
+        <a href="{% url 'svago:snake_noir' %}" class="btn btn-primary btn-lg">Rigioca</a>
+        <a href="{% url 'svago:lobby' %}" class="btn btn-secondary btn-lg ms-2">Torna alla Lobby</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const gameOverEl = document.getElementById('gameOver');
+
+    let gridSize = 20;
+    let tileCount;
+
+    let snake, food, score, direction, nextDirection, gameSpeed, gameOver;
+
+    function setupCanvas() {
+        const size = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.7);
+        // Ensure the canvas size is a multiple of the grid size for perfect grid
+        const baseTileCount = Math.floor(size / gridSize);
+        canvas.width = baseTileCount * gridSize;
+        canvas.height = baseTileCount * gridSize;
+        tileCount = baseTileCount;
+    }
+
+    function init() {
+        snake = [{ x: 10, y: 10 }];
+        food = {};
+        placeFood();
+        score = 0;
+        direction = 'right';
+        nextDirection = 'right';
+        gameSpeed = 120; // ms
+        gameOver = false;
+
+        scoreEl.textContent = score;
+        gameOverEl.style.display = 'none';
+
+        mainLoop();
+    }
+
+    function placeFood() {
+        food = {
+            x: Math.floor(Math.random() * tileCount),
+            y: Math.floor(Math.random() * tileCount)
+        };
+        // Ensure food is not placed on the snake
+        for (let segment of snake) {
+            if (segment.x === food.x && segment.y === food.y) {
+                placeFood();
+                break;
+            }
+        }
+    }
+
+    function draw() {
+        // Clear canvas
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw grid
+        ctx.strokeStyle = '#1a1a1a';
+        for (let i = 0; i < tileCount; i++) {
+            for (let j = 0; j < tileCount; j++) {
+                ctx.strokeRect(i * gridSize, j * gridSize, gridSize, gridSize);
+            }
+        }
+
+        // Draw snake
+        snake.forEach((segment, index) => {
+            if (index === 0) {
+                ctx.fillStyle = '#39ffff'; // Brighter Cyan for the head
+            } else {
+                ctx.fillStyle = '#0dcaf0'; // Standard Cyan for the body
+            }
+            ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+        });
+
+        // Draw food
+        ctx.fillStyle = '#ff4136'; // Red
+        ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+    }
+
+    function update() {
+        if (gameOver) return;
+
+        direction = nextDirection;
+        const head = { x: snake[0].x, y: snake[0].y };
+
+        // Move head
+        if (direction === 'right') head.x++;
+        if (direction === 'left') head.x--;
+        if (direction === 'up') head.y--;
+        if (direction === 'down') head.y++;
+
+        // Wall collision
+        if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+            endGame();
+            return;
+        }
+
+        // Self collision
+        for (let i = 1; i < snake.length; i++) {
+            if (head.x === snake[i].x && head.y === snake[i].y) {
+                endGame();
+                return;
+            }
+        }
+
+        snake.unshift(head);
+
+        // Food collision
+        if (head.x === food.x && head.y === food.y) {
+            score++;
+            scoreEl.textContent = score;
+            placeFood();
+        } else {
+            snake.pop();
+        }
+    }
+
+    function endGame() {
+        gameOver = true;
+        gameOverEl.style.display = 'block';
+
+        // Game over visual feedback
+        canvas.style.borderColor = '#ff4136';
+        setTimeout(() => {
+            canvas.style.borderColor = '#0dcaf0';
+        }, 500);
+    }
+
+    function mainLoop() {
+        if (gameOver) return;
+        update();
+        draw();
+        setTimeout(mainLoop, gameSpeed);
+    }
+
+    // Controls
+    function handleKeydown(e) {
+        const key = e.key;
+        if (key === 'ArrowUp' && direction !== 'down') nextDirection = 'up';
+        if (key === 'ArrowDown' && direction !== 'up') nextDirection = 'down';
+        if (key === 'ArrowLeft' && direction !== 'right') nextDirection = 'left';
+        if (key === 'ArrowRight' && direction !== 'left') nextDirection = 'right';
+    }
+
+    // Touch controls - D-pad
+    document.getElementById('btn-up').addEventListener('click', () => {
+        if (direction !== 'down') nextDirection = 'up';
+    });
+    document.getElementById('btn-down').addEventListener('click', () => {
+        if (direction !== 'up') nextDirection = 'down';
+    });
+    document.getElementById('btn-left').addEventListener('click', () => {
+        if (direction !== 'right') nextDirection = 'left';
+    });
+    document.getElementById('btn-right').addEventListener('click', () => {
+        if (direction !== 'left') nextDirection = 'right';
+    });
+
+    // Event Listeners
+    window.addEventListener('keydown', handleKeydown);
+    window.addEventListener('resize', () => {
+        setupCanvas();
+        // We might need to restart or adjust the game state on resize
+        // For simplicity, we'll just re-init
+        init();
+    });
+
+    // Start Game
+    setupCanvas();
+    init();
+});
+</script>
+{% endblock %}

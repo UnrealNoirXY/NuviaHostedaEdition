@@ -1,0 +1,15 @@
+{% extends "core/base.html" %}
+{% load static django_vite %}
+
+{% block page_title %}Menu Creation Studio{% endblock %}
+
+{% block content %}
+<div class="menu-studio-shell">
+    <div id="menu-generator-studio-root"></div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+{{ block.super }}
+{% vite_asset 'src/apps/menu_generator/MenuGeneratorStudio.jsx' %}
+{% endblock extra_js %}

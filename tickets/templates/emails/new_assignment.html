@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nuovo Ticket Assegnato</title>
+</head>
+<body>
+    <h2>Ciao {{ ticket.assigned_to.first_name|default:ticket.assigned_to.username }},</h2>
+    <p>Ti è stato assegnato un nuovo ticket di manutenzione.</p>
+
+    <h3>Dettagli del Ticket:</h3>
+    <ul>
+        <li><strong>ID:</strong> #{{ ticket.id }}</li>
+        <li><strong>Titolo:</strong> {{ ticket.title }}</li>
+        <li><strong>Resort:</strong> {{ ticket.resort.name }}</li>
+        {% if ticket.room %}
+        <li><strong>Camera:</strong> {{ ticket.room.name }}</li>
+        {% endif %}
+        <li><strong>Priorità:</strong> {{ ticket.get_priority_display }}</li>
+        <li><strong>Creato da:</strong> {{ ticket.created_by.username }}</li>
+    </ul>
+
+    <p><strong>Descrizione:</strong></p>
+    <p>{{ ticket.description|linebreaksbr }}</p>
+
+    <p>Puoi visualizzare i dettagli completi e aggiornare lo stato del ticket al seguente link:</p>
+    <p><a href="{{ request.scheme }}://{{ request.get_host }}{% url 'ticket_detail' ticket.id %}">Vedi Dettagli Ticket</a></p>
+
+    <p>Grazie,</p>
+    <p>Il Team di Gestione Manutenzioni</p>
+</body>
+</html>

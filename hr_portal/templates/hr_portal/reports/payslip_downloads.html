@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <title>Report download buste paga</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 12px;
+        color: #0f172a;
+        margin: 24px;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 4px;
+      }
+      .subtitle {
+        color: #64748b;
+        margin: 0 0 16px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: top;
+      }
+      th {
+        background: #f1f5f9;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .meta {
+        color: #475569;
+        font-size: 11px;
+      }
+      .mono {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Report download buste paga</h1>
+    <p class="subtitle">Generato il {{ generated_at|date:"d/m/Y H:i" }}</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Data/Ora</th>
+          <th>Utente</th>
+          <th>Email</th>
+          <th>IP</th>
+          <th>User Agent</th>
+          <th>Target</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td>{{ row.created_at|date:"d/m/Y H:i" }}</td>
+            <td>{{ row.actor }}</td>
+            <td class="meta">{{ row.actor_email }}</td>
+            <td class="mono">{{ row.ip_address|default:"n/d" }}</td>
+            <td class="meta">{{ row.user_agent|default:"n/d" }}</td>
+            <td class="mono">{{ row.target_id }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="meta">Nessun download registrato.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>

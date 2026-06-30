@@ -1,0 +1,53 @@
+{% extends 'core/base.html' %}
+{% block title %}Dettaglio Asset: {{ asset.name }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title mb-0">{{ asset.name }}</h2>
+        <div>
+            <a href="{% url 'assets:asset-update' asset.pk %}" class="btn btn-primary">Modifica</a>
+            <a href="{% url 'assets:asset-delete' asset.pk %}" class="btn btn-danger">Elimina</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Informazioni Principali</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Categoria:</strong> {{ asset.category.name }}</li>
+                    <li class="list-group-item"><strong>Resort:</strong> {{ asset.resort.name|default:"N/A" }}</li>
+                    <li class="list-group-item"><strong>Seriale:</strong> {{ asset.serial_number|default:"N/A" }}</li>
+                    <li class="list-group-item"><strong>Costo Acquisto:</strong> € {{ asset.purchase_cost|default:"N/A" }}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Date Importanti</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Data di Acquisto:</strong> {{ asset.purchase_date|date:"d/m/Y"|default:"N/A" }}</li>
+                    <li class="list-group-item"><strong>Scadenza Garanzia:</strong> {{ asset.warranty_expiry_date|date:"d/m/Y"|default:"N/A" }}</li>
+                    <li class="list-group-item"><strong>Inserito il:</strong> {{ asset.created_at|date:"d/m/Y H:i" }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% if asset.notes %}
+    <div class="card mt-4">
+        <div class="card-header">Note</div>
+        <div class="card-body">
+            {{ asset.notes|linebreaksbr }}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'assets:asset-list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Torna alla Lista
+        </a>
+    </div>
+</div>
+{% endblock %}

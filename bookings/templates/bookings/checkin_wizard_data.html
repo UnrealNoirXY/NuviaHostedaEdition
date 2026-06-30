@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-in Online</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7f6;
+        }
+        .wizard-container {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            max-width: 700px;
+            margin: 2rem auto;
+        }
+        .wizard-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .wizard-header h1 {
+            font-weight: 700;
+        }
+        .form-section {
+            margin-bottom: 2.5rem;
+        }
+        .form-section h5 {
+            font-weight: 600;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .guest-form {
+            padding: 1.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .btn-remove-guest {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        #empty-form {
+            display: none;
+        }
+        .camera-wrapper {
+            border: 1px dashed #ced4da;
+            border-radius: 12px;
+            padding: 1rem;
+            background: #f8f9fa;
+        }
+        .video-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #000;
+        }
+        .video-container video {
+            width: 100%;
+            height: auto;
+        }
+        .frame-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        .frame-overlay::before,
+        .frame-overlay::after {
+            content: "";
+            position: absolute;
+            border: 2px solid rgba(13, 110, 253, 0.7);
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-radius: 12px;
+            box-shadow: 0 0 0 999px rgba(0,0,0,0.25);
+        }
+        .frame-overlay::after {
+            border-style: dashed;
+            border-color: rgba(13, 110, 253, 0.35);
+        }
+        .ocr-status {
+            min-height: 24px;
+        }
+        .badge-processing {
+            background: #fff3cd;
+            color: #664d03;
+        }
+        .ocr-status .spinner-border {
+            width: 0.9rem;
+            height: 0.9rem;
+        }
+        .ocr-preview {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            min-height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .ocr-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .ocr-preview .placeholder {
+            color: #6c757d;
+        }
+        .manual-editing .guest-form {
+            border-color: #f6c344;
+            box-shadow: 0 0 0 3px rgba(246, 195, 68, 0.2);
+        }
+        .ocr-guidance li {
+            margin-bottom: 0.35rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wizard-container">
+        <div class="wizard-header">
+            <h1>Check-in Online</h1>
+            <p class="text-muted">Benvenuto, {{ booking.guest_name }}. Completa i dati per un arrivo più veloce.</p>
+        </div>
+
+        <div class="camera-wrapper mb-4" id="ocr-assistant" data-booking-token="{{ token }}">
+            <div class="d-flex flex-column flex-md-row gap-3">
+                <div class="flex-grow-1">
+                    <div class="video-container mb-2">
+                        <video id="ocr-video" playsinline muted></video>
+                        <div class="frame-overlay"></div>
+                        <canvas id="ocr-canvas" class="d-none"></canvas>
+                    </div>
+                    <div class="small text-muted">Allinea il documento all'interno del riquadro. Se la fotocamera non è disponibile, usa il caricamento qui sotto.</div>
+                    <div class="alert alert-info small mt-2 ocr-guidance" id="ocr-guidance" role="status">
+                        <div class="fw-semibold">Suggerimenti rapidi per una scansione leggibile:</div>
+                        <ul class="mb-0 ps-3">
+                            <li>Usa luce uniforme e naturale: <strong>evita riflessi</strong> e ombre sul documento.</li>
+                            <li>Inquadra l'<strong>intero documento dentro il riquadro</strong>, mantenendo i bordi visibili e allineati.</li>
+                            <li>Rimuovi <strong>custodie o cover plastificate</strong> che possano creare bagliori.</li>
+                            <li>Assicurati di essere su <strong>HTTPS</strong> e di aver consentito i permessi camera/microfono.</li>
+                            <li>Se la camera non funziona, carica una foto nitida del documento con il tasto di upload.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-shrink-0" style="min-width: 260px;">
+                    <div class="mb-2">
+                        <div class="btn-group w-100" role="group">
+                            <button class="btn btn-outline-primary" type="button" id="start-camera-btn">🎥 Avvia camera</button>
+                            <button class="btn btn-outline-secondary" type="button" id="stop-camera-btn" disabled>Stop</button>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 mb-3">
+                        <button class="btn btn-primary" type="button" id="capture-frame-btn" disabled>Scatta e invia OCR</button>
+                        <label class="form-label small mb-1" for="ocr-upload-input">Oppure carica un'immagine</label>
+                        <input type="file" class="form-control" accept="image/*" id="ocr-upload-input">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Applica i dati a</label>
+                        <select class="form-select" id="guest-target-select"></select>
+                        <div class="form-text">Puoi modificare manualmente i campi precompilati prima di inviare.</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="form-label mb-0">Preview documento ritagliato</span>
+                            <span class="badge text-bg-light" id="ocr-progress" aria-live="polite">In attesa</span>
+                        </div>
+                        <div class="ocr-preview" id="ocr-preview">
+                            <div class="placeholder" id="ocr-preview-placeholder">Scatta o carica per vedere il ritaglio</div>
+                            <img id="ocr-preview-img" alt="Anteprima documento ritagliato" class="d-none" loading="lazy" />
+                        </div>
+                    </div>
+                    <div class="ocr-status small" id="ocr-status" aria-live="polite"></div>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" id="checkin-form" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Sezione Ospiti -->
+            <div class="form-section">
+                <h5>Dati degli Ospiti</h5>
+                <p class="text-muted small">Inserisci i dati e carica un documento d'identità per ogni persona, te compreso.</p>
+
+                {{ guest_formset.management_form }}
+
+                <div id="guest-forms-container">
+                    {% for form in guest_formset %}
+                        <div class="guest-form">
+                            {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+                            {% if guest_formset.can_delete %}
+                            <div class="form-check" style="position: absolute; top: 10px; right: 10px;">
+                                {{ form.DELETE }}
+                                <label class="form-check-label" for="{{ form.DELETE.id_for_label }}">Rimuovi</label>
+                            </div>
+                            {% endif %}
+                            {{ form.id }}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
+                                    {{ form.first_name }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
+                                    {{ form.last_name }}
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">{{ form.date_of_birth.label }}</label>
+                                    {{ form.date_of_birth }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.document_number.id_for_label }}" class="form-label">{{ form.document_number.label }}</label>
+                                    {{ form.document_number }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.document_expiry_date.id_for_label }}" class="form-label">{{ form.document_expiry_date.label }}</label>
+                                    {{ form.document_expiry_date }}
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="{{ form.document_image.id_for_label }}" class="form-label">{{ form.document_image.label }}</label>
+                                    {{ form.document_image }}
+                                    {% if form.document_image.errors %}<div class="text-danger small mt-1">{{ form.document_image.errors.0 }}</div>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" id="add-guest-btn" class="btn btn-outline-secondary mt-2">Aggiungi Ospite</button>
+            </div>
+
+            <!-- Sezione Consensi -->
+            <div class="form-section">
+                <h5>Consensi e Privacy</h5>
+                <div class="form-check">
+                    {{ consent_form.terms_and_conditions }}
+                    <label class="form-check-label" for="{{ consent_form.terms_and_conditions.id_for_label }}">
+                        {{ consent_form.terms_and_conditions.label }}
+                    </label>
+                </div>
+                <div class="form-check mt-2">
+                    {{ consent_form.privacy_policy }}
+                    <label class="form-check-label" for="{{ consent_form.privacy_policy.id_for_label }}">
+                        {{ consent_form.privacy_policy.label }}
+                    </label>
+                </div>
+                <div class="form-check mt-2">
+                    {{ consent_form.newsletter_subscription }}
+                    <label class="form-check-label" for="{{ consent_form.newsletter_subscription.id_for_label }}">
+                        {{ consent_form.newsletter_subscription.label }}
+                    </label>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-lg">Completa e Invia Check-in</button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Template per il form vuoto -->
+    <div id="empty-form" style="display: none;">
+        <div class="guest-form">
+            {% if guest_formset.empty_form %}
+                {% if guest_formset.can_delete %}
+                <div class="form-check" style="position: absolute; top: 10px; right: 10px;">
+                    {{ guest_formset.empty_form.DELETE }}
+                    <label class="form-check-label" for="{{ guest_formset.empty_form.DELETE.id_for_label }}">Rimuovi</label>
+                </div>
+                {% endif %}
+                {{ guest_formset.empty_form.id }}
+                 <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ guest_formset.empty_form.first_name.id_for_label }}" class="form-label">{{ guest_formset.empty_form.first_name.label }}</label>
+                        {{ guest_formset.empty_form.first_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ guest_formset.empty_form.last_name.id_for_label }}" class="form-label">{{ guest_formset.empty_form.last_name.label }}</label>
+                        {{ guest_formset.empty_form.last_name }}
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label for="{{ guest_formset.empty_form.date_of_birth.id_for_label }}" class="form-label">{{ guest_formset.empty_form.date_of_birth.label }}</label>
+                        {{ guest_formset.empty_form.date_of_birth }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ guest_formset.empty_form.document_number.id_for_label }}" class="form-label">{{ guest_formset.empty_form.document_number.label }}</label>
+                        {{ guest_formset.empty_form.document_number }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ guest_formset.empty_form.document_expiry_date.id_for_label }}" class="form-label">{{ guest_formset.empty_form.document_expiry_date.label }}</label>
+                        {{ guest_formset.empty_form.document_expiry_date }}
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label for="{{ guest_formset.empty_form.document_image.id_for_label }}" class="form-label">{{ guest_formset.empty_form.document_image.label }}</label>
+                        {{ guest_formset.empty_form.document_image }}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addGuestBtn = document.getElementById('add-guest-btn');
+    const container = document.getElementById('guest-forms-container');
+    const emptyFormTemplate = document.getElementById('empty-form').querySelector('.guest-form');
+    const formsetPrefix = '{{ guest_formset.prefix }}';
+    let totalFormsInput = document.getElementById(`id_${formsetPrefix}-TOTAL_FORMS`);
+    let formIdx = parseInt(totalFormsInput.value);
+
+    const video = document.getElementById('ocr-video');
+    const canvas = document.getElementById('ocr-canvas');
+    const startBtn = document.getElementById('start-camera-btn');
+    const stopBtn = document.getElementById('stop-camera-btn');
+    const captureBtn = document.getElementById('capture-frame-btn');
+    const uploadInput = document.getElementById('ocr-upload-input');
+    const statusEl = document.getElementById('ocr-status');
+    const previewImg = document.getElementById('ocr-preview-img');
+    const previewPlaceholder = document.getElementById('ocr-preview-placeholder');
+    const progressBadge = document.getElementById('ocr-progress');
+    const wizardContainer = document.querySelector('.wizard-container');
+    const guestTargetSelect = document.getElementById('guest-target-select');
+    const bookingToken = document.getElementById('ocr-assistant')?.dataset.bookingToken || '';
+    const csrfToken = getCookie('csrftoken') || '';
+    let mediaStream = null;
+    let isProcessing = false;
+    let tesseractPromise = null;
+    const CONFIDENCE_THRESHOLD = 0.7;
+    const CROP_RATIO = 0.72;
+
+    function updateGuestOptions() {
+        guestTargetSelect.innerHTML = '';
+        const forms = container.querySelectorAll('.guest-form');
+        forms.forEach((_, idx) => {
+            const option = document.createElement('option');
+            option.value = idx;
+            option.textContent = `Ospite ${idx + 1}`;
+            guestTargetSelect.appendChild(option);
+        });
+    }
+
+    function setStatus(message, type = 'text-muted', { loading = false } = {}) {
+        statusEl.className = `ocr-status small ${type}`;
+        const spinner = loading ? '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' : '';
+        statusEl.innerHTML = `${spinner}${message}`;
+    }
+
+    function setProgress(message, tone = 'text-bg-light') {
+        if (!progressBadge) return;
+        progressBadge.className = `badge ${tone}`;
+        progressBadge.textContent = message;
+    }
+
+    function updatePreview(dataUrl, caption = 'Ritaglio pronto') {
+        if (!previewImg || !previewPlaceholder) return;
+        previewImg.src = dataUrl;
+        previewImg.classList.remove('d-none');
+        previewPlaceholder.classList.add('d-none');
+        setProgress(caption, 'text-bg-primary');
+    }
+
+    function enableManualEditing(reason = 'Controlla e compila manualmente i campi.') {
+        wizardContainer?.classList.add('manual-editing');
+        const targetIdx = parseInt(guestTargetSelect.value || '0', 10);
+        const firstInput = document.getElementById(`id_${formsetPrefix}-${targetIdx}-first_name`) || container.querySelector('input');
+        if (firstInput) {
+            firstInput.focus();
+        }
+        setStatus(reason, 'text-warning');
+    }
+
+    function logClientEvent(level, message, context = {}) {
+        const normalizedLevel = ['error', 'warn', 'info'].includes(level) ? level : 'info';
+        const consoleFn = normalizedLevel === 'error' ? 'error' : normalizedLevel === 'warn' ? 'warn' : 'log';
+        const payload = {
+            token: bookingToken,
+            level: normalizedLevel,
+            message,
+            context: {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                ...context,
+            },
+        };
+
+        console[consoleFn](`[ClientLog] ${message}`, payload.context);
+
+        if (!bookingToken) return;
+
+        fetch('/bookings/api/checkin/logs/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+                'X-Booking-Token': bookingToken,
+            },
+            body: JSON.stringify(payload),
+        }).catch(() => {
+            // Avoid breaking UX if logging fails
+        });
+    }
+
+    function enforceIframePermissions() {
+        const iframes = document.querySelectorAll('iframe');
+        iframes.forEach((frame) => {
+            const allow = frame.getAttribute('allow') || '';
+            const permissions = allow.split(';').map(p => p.trim()).filter(Boolean);
+            if (!permissions.includes('camera')) permissions.push('camera');
+            if (!permissions.includes('microphone')) permissions.push('microphone');
+            frame.setAttribute('allow', permissions.join('; '));
+            if (!frame.hasAttribute('allowfullscreen')) {
+                frame.setAttribute('allowfullscreen', 'true');
+            }
+        });
+    }
+
+    function ensureSecureContext() {
+        const isSecure = window.isSecureContext || location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname);
+        if (!isSecure) {
+            const warning = 'Per usare la fotocamera apri la pagina in HTTPS o consenti l\'accesso in un contesto sicuro.';
+            setStatus(warning, 'text-danger');
+            startBtn.disabled = true;
+            logClientEvent('warn', 'Insecure context: camera blocked', { protocol: location.protocol, host: location.hostname });
+        }
+        return isSecure;
+    }
+
+    function describeCameraError(error) {
+        switch (error?.name) {
+            case 'NotAllowedError':
+            case 'SecurityError':
+                return 'Accesso alla fotocamera negato: consenti i permessi per procedere o usa il caricamento foto.';
+            case 'NotFoundError':
+                return 'Nessuna fotocamera disponibile sul dispositivo. Carica una foto del documento.';
+            case 'NotReadableError':
+            case 'TrackStartError':
+                return 'La fotocamera è in uso o non può essere avviata. Chiudi altre app e riprova.';
+            case 'OverconstrainedError':
+                return 'La fotocamera richiesta non è disponibile. Rimuovi vincoli e riprova.';
+            default:
+                return 'Impossibile accedere alla fotocamera. Usa il caricamento dell\'immagine o riprova più tardi.';
+        }
+    }
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function cropDataUrl(dataUrl) {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = () => {
+                const cropWidth = Math.floor(image.width * CROP_RATIO);
+                const cropHeight = Math.floor(image.height * CROP_RATIO);
+                const cropX = Math.max(0, Math.floor((image.width - cropWidth) / 2));
+                const cropY = Math.max(0, Math.floor((image.height - cropHeight) / 2));
+                const cropCanvas = document.createElement('canvas');
+                cropCanvas.width = cropWidth;
+                cropCanvas.height = cropHeight;
+                const ctx = cropCanvas.getContext('2d');
+                ctx.drawImage(image, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+                resolve(cropCanvas.toDataURL('image/jpeg', 0.9));
+            };
+            image.onerror = () => reject(new Error("Impossibile generare il ritaglio dell'immagine."));
+            image.src = dataUrl;
+        });
+    }
+
+    async function prepareImagePayload(dataUrl) {
+        try {
+            const cropped = await cropDataUrl(dataUrl);
+            return { fullDataUrl: dataUrl, croppedDataUrl: cropped };
+        } catch (error) {
+            logClientEvent('warn', 'Preview crop failed', { errorMessage: error?.message });
+            setStatus('Impossibile generare il ritaglio, uso l\'immagine completa.', 'text-warning');
+            return { fullDataUrl: dataUrl, croppedDataUrl: dataUrl };
+        }
+    }
+
+    function stopCamera() {
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+            mediaStream = null;
+        }
+        video.srcObject = null;
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        captureBtn.disabled = true;
+    }
+
+    async function startCamera() {
+        if (!ensureSecureContext()) return;
+        if (!navigator.mediaDevices?.getUserMedia) {
+            setStatus('Questo browser non supporta la richiesta alla fotocamera. Usa il caricamento dell\'immagine.', 'text-danger');
+            logClientEvent('error', 'getUserMedia not available', {});
+            return;
+        }
+
+        try {
+            mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            video.srcObject = mediaStream;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            captureBtn.disabled = false;
+            setStatus('Camera pronta. Inquadra il documento e scatta.');
+        } catch (error) {
+            const friendly = describeCameraError(error);
+            setStatus(friendly, 'text-danger');
+            logClientEvent('error', 'Camera start failed', {
+                errorName: error?.name,
+                errorMessage: error?.message,
+                isSecureContext: window.isSecureContext,
+            });
+        }
+    }
+
+    function drawFrameFromVideo() {
+        if (!video.videoWidth || !video.videoHeight) {
+            setStatus('Attendi che la camera sia pronta prima di scattare.', 'text-warning');
+            return null;
+        }
+        const maxWidth = 1280;
+        const scale = Math.min(maxWidth / video.videoWidth, 1);
+        canvas.width = video.videoWidth * scale;
+        canvas.height = video.videoHeight * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const cropWidth = Math.floor(canvas.width * CROP_RATIO);
+        const cropHeight = Math.floor(canvas.height * CROP_RATIO);
+        const cropX = Math.max(0, Math.floor((canvas.width - cropWidth) / 2));
+        const cropY = Math.max(0, Math.floor((canvas.height - cropHeight) / 2));
+        const cropCanvas = document.createElement('canvas');
+        cropCanvas.width = cropWidth;
+        cropCanvas.height = cropHeight;
+        const cropCtx = cropCanvas.getContext('2d');
+        cropCtx.drawImage(canvas, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+
+        return {
+            fullDataUrl: canvas.toDataURL('image/jpeg', 0.85),
+            croppedDataUrl: cropCanvas.toDataURL('image/jpeg', 0.9),
+        };
+    }
+
+    function attachImageToGuest(idx, dataUrl) {
+        const fileInput = document.getElementById(`id_${formsetPrefix}-${idx}-document_image`);
+        if (!fileInput) return;
+        fetch(dataUrl)
+            .then(res => res.blob())
+            .then(blob => {
+                const file = new File([blob], `document-guest-${idx + 1}.jpg`, { type: 'image/jpeg' });
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                fileInput.files = dt.files;
+            })
+            .catch(() => setStatus('Impossibile allegare automaticamente l\'immagine, caricala manualmente.', 'text-warning'));
+    }
+
+    function applyFieldsToGuest(fields, sourceLabel, silent = false) {
+        const idx = parseInt(guestTargetSelect.value || '0', 10);
+        const prefix = `id_${formsetPrefix}-${idx}`;
+        const mapping = {
+            first_name: document.getElementById(`${prefix}-first_name`),
+            last_name: document.getElementById(`${prefix}-last_name`),
+            document_number: document.getElementById(`${prefix}-document_number`),
+            document_expiry_date: document.getElementById(`${prefix}-document_expiry_date`),
+        };
+
+        if (fields.first_name && mapping.first_name) mapping.first_name.value = fields.first_name;
+        if (fields.last_name && mapping.last_name) mapping.last_name.value = fields.last_name;
+        if (fields.document_number && mapping.document_number) mapping.document_number.value = fields.document_number;
+        if (fields.document_expiry_date && mapping.document_expiry_date) mapping.document_expiry_date.value = fields.document_expiry_date;
+
+        if (!silent) {
+            setStatus(`Campi precompilati via ${sourceLabel}. Controlla i dati prima di inviare.`);
+        }
+    }
+
+    function handleOcrResult(result, sourceLabel) {
+        const fields = result?.fields || {};
+        const confidence = typeof result?.confidence === 'number' ? result.confidence : 0;
+        const confidencePct = confidence ? Math.round(confidence * 100) : null;
+        const hasValues = Object.values(fields).some(Boolean);
+        const confidenceLabel = confidencePct !== null ? ` (conf. ${confidencePct}%)` : '';
+
+        if (!hasValues) {
+            setStatus('Nessun dato estratto dal documento. Inserisci i campi manualmente.', 'text-warning');
+            const confirmManual = confirm('OCR non ha trovato dati. Vuoi compilare manualmente?');
+            if (confirmManual) enableManualEditing('Compila manualmente i campi richiesti.');
+            setProgress('Richiede intervento', 'text-bg-warning');
+            return false;
+        }
+
+        const lowConfidence = confidence && confidence < CONFIDENCE_THRESHOLD;
+        if (lowConfidence) {
+            const confirmed = confirm(`OCR ${sourceLabel}${confidenceLabel} con confidenza bassa. Applicare i dati e modificarli manualmente?`);
+            if (!confirmed) {
+                enableManualEditing('Confidenza bassa: inserisci manualmente i dati o correggili.');
+                setProgress('Verifica richiesta', 'text-bg-warning');
+                return false;
+            }
+            enableManualEditing('Confidenza bassa: controlla e correggi i dati inseriti.');
+        }
+
+        applyFieldsToGuest(fields, `${sourceLabel}${confidenceLabel}`, true);
+        setStatus(`Campi precompilati da ${sourceLabel}${confidenceLabel}. Verifica e correggi se necessario.`, 'text-success');
+        setProgress('OCR completato', 'text-bg-success');
+        return true;
+    }
+
+    async function ensureTesseract() {
+        if (typeof Tesseract !== 'undefined') return;
+        if (!tesseractPromise) {
+            tesseractPromise = new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error('Impossibile caricare il motore OCR locale.'));
+                document.body.appendChild(script);
+            });
+        }
+        return tesseractPromise;
+    }
+
+    function extractFieldsFromText(text) {
+        const line = (text.split('\n').find(l => l.trim()) || '').trim();
+        const tokens = line.split(/\s+/);
+        const firstName = tokens.length > 1 ? tokens[0].charAt(0).toUpperCase() + tokens[0].slice(1) : '';
+        const lastName = tokens.length > 1 ? tokens.slice(1).join(' ') : '';
+        const dateMatch = text.match(/(\d{2}[\/\.-]\d{2}[\/\.-]\d{4}|\d{4}-\d{2}-\d{2})/);
+        const docMatch = text.match(/[A-Z0-9]{5,}/i);
+
+        let normalizedDate = '';
+        if (dateMatch) {
+            const raw = dateMatch[1].replace(/\./g, '-').replace(/\//g, '-');
+            const parts = raw.split('-');
+            if (parts[0].length === 4) {
+                normalizedDate = raw;
+            } else if (parts.length === 3) {
+                normalizedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+        }
+
+        return {
+            first_name: firstName,
+            last_name: lastName,
+            document_number: docMatch ? docMatch[0].toUpperCase() : '',
+            document_expiry_date: normalizedDate,
+        };
+    }
+
+    async function runClientOcr(dataUrl) {
+        setStatus('Elaborazione OCR nel browser...', 'badge-processing', { loading: true });
+        try {
+            await ensureTesseract();
+            const result = await Tesseract.recognize(dataUrl, 'eng');
+            const fields = extractFieldsFromText(result.data.text || '');
+            const confidence = typeof result?.data?.confidence === 'number' ? result.data.confidence / 100 : 0;
+            return handleOcrResult({ fields, confidence }, 'OCR locale');
+        } catch (error) {
+            logClientEvent('error', 'Client-side OCR failed', { errorName: error?.name, errorMessage: error?.message });
+            setStatus('OCR locale non riuscito. Puoi riprovare o inserire i dati manualmente.', 'text-danger');
+            enableManualEditing('OCR locale non riuscito: compila manualmente.');
+            setProgress('Richiede intervento', 'text-bg-warning');
+            return false;
+        }
+    }
+
+    async function sendToBackend(dataUrl) {
+        const csrfToken = getCookie('csrftoken');
+        const response = await fetch('/bookings/api/checkin/ocr/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken || '',
+            },
+            body: JSON.stringify({ token: bookingToken, image_base64: dataUrl }),
+        });
+        if (response.ok) {
+            return response.json();
+        }
+        const payload = await response.json().catch(() => ({}));
+        const errorMessage = payload.error || 'OCR backend non disponibile.';
+        throw new Error(errorMessage);
+    }
+
+    async function processImage(imagePayload) {
+        if (isProcessing) return;
+        if (!imagePayload?.croppedDataUrl) {
+            setStatus('Impossibile leggere l\'immagine acquisita.', 'text-danger');
+            return;
+        }
+
+        isProcessing = true;
+        updatePreview(imagePayload.croppedDataUrl, 'Ritaglio aggiornato');
+        setProgress('Analisi OCR…', 'text-bg-warning');
+        setStatus('Invio immagine per OCR...', 'badge-processing', { loading: true });
+        attachImageToGuest(parseInt(guestTargetSelect.value || '0', 10), imagePayload.croppedDataUrl);
+        let applied = false;
+        try {
+            if (bookingToken) {
+                const result = await sendToBackend(imagePayload.croppedDataUrl);
+                if (result) {
+                    applied = handleOcrResult(result, 'OCR backend');
+                }
+            }
+        } catch (error) {
+            logClientEvent('warn', 'Backend OCR fallback', { errorMessage: error?.message });
+            setStatus(error.message || 'OCR backend non disponibile, uso OCR locale.', 'text-warning');
+            enableManualEditing('OCR backend non disponibile: verifica manualmente i dati.');
+        }
+
+        if (!applied) {
+            const clientApplied = await runClientOcr(imagePayload.croppedDataUrl);
+            applied = applied || clientApplied;
+        }
+
+        if (!applied) {
+            setProgress('Richiede intervento', 'text-bg-warning');
+        }
+
+        isProcessing = false;
+    }
+
+    startBtn.addEventListener('click', startCamera);
+    stopBtn.addEventListener('click', stopCamera);
+    captureBtn.addEventListener('click', async () => {
+        const payload = drawFrameFromVideo();
+        if (payload) {
+            await processImage(payload);
+        }
+        isProcessing = false;
+    });
+
+    uploadInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const payload = await prepareImagePayload(e.target.result);
+            await processImage(payload);
+            isProcessing = false;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    addGuestBtn.addEventListener('click', function() {
+        const newFormHtml = emptyFormTemplate.innerHTML.replace(/__prefix__/g, formIdx);
+        const newFormDiv = document.createElement('div');
+        newFormDiv.className = 'guest-form';
+        newFormDiv.innerHTML = newFormHtml;
+        container.appendChild(newFormDiv);
+
+        totalFormsInput.value = formIdx + 1;
+        formIdx++;
+        updateGuestOptions();
+    });
+
+    updateGuestOptions();
+    enforceIframePermissions();
+    ensureSecureContext();
+    setStatus('Puoi usare la fotocamera per precompilare automaticamente i campi del documento oppure caricare una foto.');
+    setProgress('In attesa', 'text-bg-light');
+});
+</script>
+
+</body>
+</html>

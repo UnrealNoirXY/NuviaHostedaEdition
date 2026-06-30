@@ -1,0 +1,157 @@
+{% extends 'core/base.html' %}
+{% block title %}Manutentore | {{ platform_name }}{% endblock %}
+{% block content %}
+<div class="dashboard-card p-4">
+    <h2 class="dashboard-title">Area Manutentori</h2>
+    <p>Qui trovi tutte le richieste di manutenzione assegnate a te.</p>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ counts.total }}</h5>
+                    <p class="card-text">Ticket Totali</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ counts.open }}</h5>
+                    <p class="card-text">Aperti</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ counts.in_progress }}</h5>
+                    <p class="card-text">In Lavorazione</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ counts.resolved }}</h5>
+                    <p class="card-text">Risolti</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="get" class="row g-3 align-items-center mb-4">
+        <div class="col-auto">
+            <label for="status" class="form-label">Stato</label>
+            <select name="status" id="status" class="form-select">
+                <option value="">Tutti</option>
+                {% for value, display in status_choices %}
+                <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>{{ display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-auto">
+            <label for="priority" class="form-label">Priorità</label>
+            <select name="priority" id="priority" class="form-select">
+                <option value="">Tutte</option>
+                {% for value, display in priority_choices %}
+                <option value="{{ value }}" {% if value == current_priority %}selected{% endif %}>{{ display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Filtra</button>
+        </div>
+    </form>
+    <h4 class="mt-4 mb-3">Ticket assegnati</h4>
+
+    <!-- Desktop Table -->
+    <div class="table-responsive d-none d-md-block">
+        <table class="table table-striped table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Priorità</th>
+                    <th>Titolo</th>
+                    <th>Resort</th>
+                    <th>Data</th>
+                    <th>Stato</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>
+                        <span class="badge
+                            {% if ticket.priority == 'urgent' %}bg-danger
+                            {% elif ticket.priority == 'high' %}bg-warning
+                            {% elif ticket.priority == 'medium' %}bg-info
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ ticket.get_priority_display }}
+                        </span>
+                    </td>
+                    <td>{{ ticket.title }}</td>
+                    <td>{{ ticket.resort.name }}</td>
+                    <td>{{ ticket.created_at|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <span class="badge
+                            {% if ticket.status == 'open' %}bg-warning
+                            {% elif ticket.status == 'in_progress' %}bg-info
+                            {% elif ticket.status == 'resolved' %}bg-success
+                            {% elif ticket.status == 'closed' %}bg-secondary
+                            {% endif %}">
+                            {{ ticket.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-sm btn-outline-primary">Dettaglio</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6">Nessun ticket assegnato.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="d-md-none">
+        {% for ticket in tickets %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <a href="{% url 'ticket_detail' ticket.id %}" class="text-decoration-none text-dark">
+                    <h5 class="card-title">{{ ticket.title }}</h5>
+                </a>
+                <div class="d-flex justify-content-between">
+                    <span class="badge
+                        {% if ticket.priority == 'urgent' %}bg-danger
+                        {% elif ticket.priority == 'high' %}bg-warning
+                        {% elif ticket.priority == 'medium' %}bg-info
+                        {% else %}bg-secondary
+                        {% endif %}">
+                        {{ ticket.get_priority_display }}
+                    </span>
+                    <span class="badge
+                        {% if ticket.status == 'open' %}bg-warning
+                        {% elif ticket.status == 'in_progress' %}bg-info
+                        {% elif ticket.status == 'resolved' %}bg-success
+                        {% elif ticket.status == 'closed' %}bg-secondary
+                        {% endif %}">
+                        {{ ticket.get_status_display }}
+                    </span>
+                </div>
+                <hr>
+                <p class="card-text small text-muted">
+                    Resort: {{ ticket.resort.name }}<br>
+                    Creato il: {{ ticket.created_at|date:"d/m/Y" }}
+                </p>
+                <a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-primary w-100">Vedi Dettagli</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info">Nessun ticket assegnato.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

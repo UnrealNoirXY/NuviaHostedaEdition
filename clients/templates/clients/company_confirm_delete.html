@@ -1,0 +1,21 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Conferma Eliminazione Società{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="dashboard-card p-4 text-center">
+            <h1 class="dashboard-title mb-4">Conferma Eliminazione</h1>
+            <p>Sei sicuro di voler eliminare la società "<strong>{{ company.name }}</strong>"?</p>
+            <p class="text-danger">Questa azione è irreversibile e cancellerà anche tutti gli utenti associati a questa società.</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Sì, Elimina</button>
+                <a href="{% url 'clients:company_list' %}" class="btn btn-secondary">Annulla</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

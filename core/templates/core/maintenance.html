@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pit-Stop Tecnico | Manutenzione in corso</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #2c3e50;
+            --primary-color: {{ platform_settings.primary_color|default:'#23395d' }};
+            --hole-bg: #e8ecef;
+            --bug-color: #e74c3c;
+            --bubble-bg: #ffffff;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 1rem;
+            text-align: center;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .robot-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .robot-icon svg {
+            width: 100px;
+            height: 100px;
+            fill: var(--primary-color);
+            filter: drop-shadow(0 0 15px {{ platform_settings.primary_color|default:'#23395d' }}77);
+            animation: float 4s ease-in-out infinite;
+            cursor: pointer;
+        }
+
+        .robot-container:hover .robot-icon svg {
+            animation: shake 0.4s infinite;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            background-color: var(--bubble-bg);
+            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: max-content;
+            max-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 20;
+            /* Default: Left */
+            top: 50%;
+            right: 105%;
+            transform: translateY(-50%) translateX(10px);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            border-width: 8px;
+            border-style: solid;
+            /* Default: Left Pointer */
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            border-color: transparent transparent transparent var(--bubble-bg);
+        }
+
+        .robot-container:hover .speech-bubble,
+        .speech-bubble.is-visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(-50%) translateX(0);
+        }
+
+        .speech-bubble.secret-bubble {
+            background-color: #fffacd;
+            font-weight: bold;
+            animation: glow 2s infinite;
+        }
+
+        .sweat-drop {
+            position: absolute;
+            top: 15px;
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .robot-container:hover .sweat-drop {
+            animation: sweat 0.7s ease-out infinite;
+        }
+        .sweat-drop.s1 { left: 25%; animation-delay: 0s; }
+        .sweat-drop.s2 { left: 65%; animation-delay: 0.3s; }
+        .sweat-drop.s3 { left: 40%; animation-delay: 0.6s; }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            color: var(--primary-color);
+            text-shadow: 0 0 8px {{ platform_settings.primary_color|default:'#23395d' }}55;
+            margin-bottom: 1rem;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+        }
+
+        .message {
+            font-size: clamp(1rem, 3vw, 1.1rem);
+            line-height: 1.6;
+            max-width: 500px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .game-container {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .game-container h2 {
+            font-family: 'Press Start 2P', cursive;
+            margin-top: 0;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            color: var(--text-color);
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            max-width: 300px;
+            margin: 1rem auto 0 auto;
+        }
+
+        .hole {
+            width: 80px;
+            height: 80px;
+            background-color: var(--hole-bg);
+            border-radius: 50%;
+            border: 2px solid #dce1e5;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .hole:hover {
+            border-color: var(--primary-color);
+        }
+
+        .hole.bug::after {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            width: 70%;
+            height: 70%;
+            background-image: url("data:image/svg+xml,%3Csvg fill='%23e74c3c' version='1.1' id='Capa_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 314.009 314.009' xml:space='preserve'%3E%3Cpath d='M310.008,242.584l-44.275-39.615c-3.384-3.029-8.188-3.889-12.41-2.221l-3.699,1.461c1.719-8.662,2.636-17.699,2.636-26.998 c0-17.793-3.337-34.645-9.291-49.691l12.276-4.844L294,155.355c2.29,2.049,5.151,3.059,8.001,3.059c3.297,0,6.578-1.35,8.949-4 c4.421-4.939,4-12.529-0.94-16.949l-44.275-39.619c-3.384-3.029-8.186-3.889-12.411-2.221l-21.385,8.439 c-9.646-14.848-22.246-26.75-36.725-34.428l8.195-18.98l33.799,12.068c6.243,2.23,13.111-1.023,15.341-7.269 c2.23-6.242-1.024-13.111-7.268-15.34l-44.395-15.851c-5.959-2.129-12.548,0.736-15.057,6.545l-13.262,30.713 c-5.065-1.008-10.263-1.539-15.563-1.539s-10.499,0.531-15.564,1.539l-13.263-30.713c-2.508-5.811-9.099-8.674-15.058-6.545 L68.73,40.115c-6.243,2.229-9.497,9.098-7.268,15.342c2.229,6.242,9.1,9.498,15.342,7.268l33.793-12.068l8.196,18.982 c-14.477,7.678-27.076,19.58-36.723,34.424l-21.382-8.438c-4.223-1.666-9.026-0.809-12.41,2.221L4.001,137.465 c-4.941,4.42-5.363,12.008-0.941,16.949c2.371,2.65,5.653,4,8.949,4c2.85,0,5.71-1.01,8-3.059l38.759-34.68l12.273,4.844 c-5.955,15.047-9.292,31.897-9.292,49.691c0,9.299,0.917,18.336,2.636,26.996l-3.694-1.459c-4.225-1.666-9.026-0.807-12.41,2.221 L4.001,242.584c-4.94,4.42-5.363,12.01-0.942,16.949c2.371,2.65,5.653,4,8.95,4c2.85,0,5.71-1.008,8-3.057l38.759-34.678 l15.255,6.02c16.35,34.998,47.385,58.629,82.981,58.629c35.601,0,66.634-23.631,82.981-58.627l15.26-6.021l38.756,34.676 c2.291,2.051,5.15,3.059,8,3.059c3.297,0,6.579-1.35,8.949-4C315.371,254.594,314.949,247.004,310.008,242.584z M119.239,138.14 c0-8.586,6.967-15.553,15.563-15.553c8.593,0,15.559,6.967,15.559,15.553c0,8.588-6.966,15.551-15.559,15.551 C126.206,153.691,119.239,146.728,119.239,138.14z M150.36,231.719c-8.595,0-15.559-6.973-15.559-15.557s6.964-15.547,15.559-15.547 c8.585,0,15.552,6.963,15.552,15.547S158.945,231.719,150.36,231.719z M180.98,173.492c0-9.606,7.802-17.396,17.414-17.396 c9.614,0,17.405,7.791,17.405,17.396c0,9.621-7.791,17.41-17.405,17.41C188.782,190.902,180.98,183.113,180.98,173.492z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            animation: appear 0.3s ease-out;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 8px 16px;
+            color: var(--primary-color);
+            border: 1px solid {{ platform_settings.primary_color|default:'#23395d' }}44;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            background-color: {{ platform_settings.primary_color|default:'#23395d' }}11;
+            border-color: {{ platform_settings.primary_color|default:'#23395d' }}88;
+        }
+
+        @keyframes appear {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0); }
+            10%, 30%, 50%, 70%, 90% { transform: translate(-2px, 0); }
+            20%, 40%, 60%, 80% { transform: translate(2px, 0); }
+        }
+
+        @keyframes sweat {
+            0% { transform: translateY(0) scaleY(1); opacity: 1; }
+            100% { transform: translateY(-50px) scaleY(1.5); opacity: 0; }
+        }
+
+        @media (max-width: 480px) {
+            .robot-icon svg {
+                width: 70px;
+                height: 70px;
+                filter: drop-shadow(0 0 8px {{ platform_settings.primary_color|default:'#23395d' }}77);
+            }
+            .speech-bubble {
+                /* Mobile: Bottom */
+                top: 105%;
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            .speech-bubble::after {
+                /* Mobile: Bottom Pointer */
+                top: auto;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                border-color: transparent transparent var(--bubble-bg) transparent;
+            }
+            .robot-container:hover .speech-bubble,
+            .speech-bubble.is-visible {
+                transform: translateX(-50%) translateY(0);
+            }
+            h1 {
+                font-size: 1.2rem;
+                margin-bottom: 0.5rem;
+                text-shadow: 0 0 4px {{ platform_settings.primary_color|default:'#23395d' }}55;
+            }
+            .message {
+                font-size: 0.9rem;
+                margin-bottom: 1.5rem;
+            }
+            .game-container {
+                padding: 1rem;
+            }
+            .game-container h2 {
+                font-size: 1rem;
+            }
+            .game-grid {
+                max-width: 240px;
+                gap: 0.5rem;
+            }
+            .hole {
+                width: 70px;
+                height: 70px;
+            }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2); }
+            50% { box-shadow: 0 4px 35px rgba(255, 215, 0, 0.9); }
+            100% { box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="robot-container" id="robotContainer">
+            <div class="speech-bubble" id="speechBubble">...</div>
+            <div class="sweat-drop s1"></div>
+            <div class="sweat-drop s2"></div>
+            <div class="sweat-drop s3"></div>
+            <div class="robot-icon">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve"><g><g><g><polygon points="175.844,223.986 175.844,167.959 160.074,167.959 160.074,184.086 151.952,184.086 151.952,199.856 160.074,199.856 160.074,223.986"/><path d="M103.763,192.766l7.951,13.62c7.32-4.273,15.7-6.532,24.231-6.532h0.816v-15.77h-0.816 C124.622,184.086,113.494,187.087,103.763,192.766z"/><rect x="72.037" y="250.281" width="15.77" height="30.381"/><path d="M101.458,214.407l-11.296-11.003c-8.131,8.347-13.822,18.726-16.457,30.017l15.357,3.583 C91.045,228.511,95.331,220.697,101.458,214.407z"/><path d="M87.803,304.926v-8.908h-15.77v8.908c-18.237,3.671-32.014,19.813-32.014,39.115h15.77 c0-13.306,10.825-24.13,24.129-24.13c13.306,0,24.13,10.825,24.13,24.13h15.77C119.819,324.739,106.04,308.597,87.803,304.926z"/><polygon points="351.926,167.959 336.156,167.959 336.156,223.986 351.926,223.986 351.926,199.856 360.048,199.856 360.048,184.086 351.926,184.086"/><path d="M408.237,192.766c-9.731-5.679-20.86-8.682-32.181-8.682h-0.816v15.77h0.816c8.532,0,16.911,2.258,24.231,6.532 L408.237,192.766z"/><path d="M438.295,233.419c-2.635-11.29-8.326-21.669-16.457-30.017l-11.296,11.004c6.127,6.289,10.413,14.103,12.395,22.595 L438.295,233.419z"/><rect x="424.193" y="250.281" width="15.77" height="30.381"/><path d="M439.967,304.926v-8.908h-15.77v8.908c-18.237,3.671-32.015,19.813-32.015,39.115h15.77 c0-13.306,10.825-24.13,24.13-24.13c13.305,0,24.129,10.825,24.129,24.13h15.77C471.982,324.739,458.204,308.597,439.967,304.926 z"/><rect x="239.988" y="112.051" width="32.014" height="15.77"/><rect x="232.103" y="31.896" width="15.77" height="32.014"/><rect x="264.127" y="31.896" width="15.77" height="32.014"/><rect x="200.09" y="408.076" width="15.77" height="32.014"/><polygon points="200.092,392.063 215.862,392.063 215.862,383.94 231.989,383.94 231.989,368.17 183.967,368.17 183.967,383.94 200.092,383.94"/><polygon points="328.033,368.17 280.011,368.17 280.011,383.94 296.138,383.94 296.138,392.063 311.908,392.063 311.908,383.94 328.033,383.94"/><rect x="296.14" y="408.076" width="15.77" height="32.014"/><path d="M215.862,465.002v-8.91h-15.77v8.91c-18.238,3.669-32.014,19.811-32.014,39.113V512h79.799v-7.885 C247.877,484.814,234.1,468.671,215.862,465.002z M185.171,496.23c3.275-9.444,12.262-16.244,22.807-16.244 c10.545,0,19.533,6.8,22.808,16.244H185.171z"/><path d="M311.908,465.002v-8.91h-15.77v8.91c-18.238,3.669-32.015,19.811-32.015,39.113V512h79.799v-7.885 C343.922,484.814,330.144,468.671,311.908,465.002z M281.214,496.23c3.275-9.444,12.263-16.244,22.808-16.244 c10.545,0,19.532,6.8,22.807,16.244H281.214z"/><path d="M208.096,151.833h0.001h40.018v16.245h-64.029v191.851h143.83V168.078h-64.031v-16.245h40.018V39.781h24.129v-15.77 h-24.129V0h-95.807v24.011h-24.129v15.77h24.129V151.833z M312.144,183.848v160.311h-48.259v-81.262 c13.786-3.52,24.011-16.042,24.011-30.908c0-17.588-14.309-31.896-31.896-31.896c-17.588,0-31.896,14.309-31.896,31.896 c0,14.867,10.225,27.389,24.011,30.908v81.262h-48.259V183.848H312.144z M256,248.115c-8.892,0-16.126-7.234-16.126-16.126 c0-8.892,7.234-16.126,16.126-16.126s16.126,7.234,16.126,16.126C272.126,240.881,264.892,248.115,256,248.115z M223.867,15.77 h64.267v120.293h-64.267V15.77z"/></g></g></g></svg>
+            </div>
+        </div>
+        <h1>Pit-Stop Tecnico</h1>
+        <p class="message">Anche i nostri instancabili robot hanno bisogno di una piccola pausa! Stiamo facendo un pit-stop tecnico per rendere tutto più veloce e potente. Il tempo di un caffè e saremo di nuovo da te.</p>
+
+        <div class="game-container">
+            <h2>Schiaccia i Bug!</h2>
+            <p>Punteggio: <span id="score">0</span></p>
+            <div class="game-grid">
+                <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+                <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+                <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+            </div>
+        </div>
+        <a href="{% url 'login' %}" class="back-link">Torna al Login</a>
+    </div>
+
+    <script>
+        const robotContainer = document.getElementById('robotContainer');
+        const speechBubble = document.getElementById('speechBubble');
+        const robotIcon = document.querySelector('.robot-icon');
+        let secretMessageTimeout;
+
+        const messages = [
+            "Sto ricaricando le batterie...", "Quasi finito, giuro!", "Errore 418: I'm a teapot.",
+            "Non disturbare, genio al lavoro.", "Ci penso io...", "ZzzZzz...",
+            "Sto compilando... me stesso.", "Hai provato a spegnere e riaccendere?",
+            "Un attimo, ho un bug nel caffè.", "Questa non è nemmeno la mia forma finale.",
+            "Serve più olio di gomito.", "I cavi sono tutti collegati, credo.",
+            "Processo al 99%... da un'ora.", "La colpa è del reparto marketing.",
+            "Sto solo... ottimizzando i flussi.", "Non è un bug, è una feature inattesa.",
+            "Qualcuno ha visto il mio cacciavite sonico?", "Ok, chi ha fatto il commit su master?",
+            "Calma e sangue freddo. Anzi, solo freddo.", "Se non funziona, aggiungi un altro `div`.",
+            "Ho bisogno di un backup. Di caffè.", "Ctrl+S, Ctrl+S, Ctrl+S...",
+            "Debug mode: ON.", "Forse un riavvio cosmico aiuterebbe.",
+            "Noir dice che questo è solo 'refactoring strategico'.",
+            "Ho chiesto a Noir un upgrade. Mi ha dato un adesivo.",
+            "Il caffè di Noir non è abbastanza forte per i miei circuiti.",
+            "Sto eseguendo il piano di Noir. O almeno credo.",
+            "Non sono un bug, sono una 'feature' che Noir non ha ancora documentato.",
+            "Noir mi ha detto di sembrare impegnato. Come sto andando?",
+            "Analizzando i log... sembra che Noir abbia mangiato l'ultima brioche.",
+            "Noir pensa che io non lo senta quando borbotta sul codice.",
+            "Calma, è tutto sotto il controllo di Noir. Forse.",
+            "Sto cercando il senso della vita nei commenti del codice di Noir.",
+            "Modalità manutenzione attivata. Ordine di Noir.",
+            "Noir ha promesso che dopo questo ci sarà una festa. Con olio lubrificante per tutti.",
+            "Se il sito non torna, la colpa è di Noir. Io sono solo un umile robot.",
+            "Ho 99 problemi, ma un bug non è uno. O così dice Noir.",
+            "Processando... i sogni di gloria di Noir.",
+            "Noir mi ha creato a sua immagine e somiglianza. Povero me.",
+            "Ho visto cose che voi umani... ah no, quello era un altro film. Me l'ha fatto vedere Noir.",
+            "La password del Wi-Fi è 'ForzaNoir'. Ma non ditelo a nessuno.",
+            "Sto calcolando quante volte Noir ha detto 'funziona sulla mia macchina'.",
+            "Un robot non può mentire. A meno che Noir non lo programmi per farlo.",
+            "Noir mi ha chiesto di installare un antivirus. Spero non sia per me.",
+            "Secondo i miei calcoli, Noir ha bisogno di una vacanza.",
+            "Ottimizzando il database. O forse sto solo guardando video di gattini, come fa Noir.",
+            "Noir ha un piano. È nascosto sotto una pila di documentazione non letta.",
+            "Questa non è la manutenzione che cercate. O almeno, questo è quello che mi ha detto di dire Noir.",
+            "Compilazione in corso... Noir, mi passi le patatine?",
+            "E se vi dicessi che tutto questo è un piano di Noir per farci apprezzare di più il sito?",
+            "Allerta! Il livello di caffè di Noir è pericolosamente basso.",
+            "Noir mi ha detto di fare il backup. Quindi sto facendo un backup... della mia collezione di meme.",
+            "Non temete, il grande Noir sta supervisionando. Da lontano. Molto lontano."
+        ];
+
+        robotIcon.addEventListener('click', () => {
+            clearTimeout(secretMessageTimeout);
+            secretMessageTimeout = setTimeout(() => {
+                speechBubble.textContent = "Vi svelo un segreto....il vero nome di Noir è Anouar 😱";
+                speechBubble.classList.add('is-visible', 'secret-bubble');
+            }, 10000);
+        });
+
+        robotContainer.addEventListener('mouseenter', () => {
+            clearTimeout(secretMessageTimeout);
+            speechBubble.classList.remove('is-visible', 'secret-bubble');
+
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            speechBubble.textContent = randomMsg;
+            robotContainer.classList.add('is-agitated');
+        });
+
+        robotContainer.addEventListener('mouseleave', () => {
+            robotContainer.classList.remove('is-agitated');
+        });
+
+        const holes = document.querySelectorAll('.hole');
+        const scoreBoard = document.getElementById('score');
+        let lastHole;
+        let timeUp = false;
+        let score = 0;
+
+        function randomTime(min, max) {
+            return Math.round(Math.random() * (max - min) + min);
+        }
+
+        function randomHole(holes) {
+            const idx = Math.floor(Math.random() * holes.length);
+            const hole = holes[idx];
+            if (hole === lastHole) {
+                return randomHole(holes);
+            }
+            lastHole = hole;
+            return hole;
+        }
+
+        function peep() {
+            const time = randomTime(500, 1200);
+            const hole = randomHole(holes);
+            hole.classList.add('bug');
+            setTimeout(() => {
+                hole.classList.remove('bug');
+                if (!timeUp) peep();
+            }, time);
+        }
+
+        function startGame() {
+            scoreBoard.textContent = 0;
+            score = 0;
+            timeUp = false;
+            peep();
+        }
+
+        function whack(e) {
+            if (!e.isTrusted) return;
+            if (this.classList.contains('bug')) {
+                score++;
+                this.classList.remove('bug');
+                scoreBoard.textContent = score;
+            }
+        }
+
+        holes.forEach(hole => hole.addEventListener('click', whack));
+
+        startGame();
+    </script>
+</body>
+</html>

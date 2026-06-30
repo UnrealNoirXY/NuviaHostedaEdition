@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nuovo ticket di manutenzione</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; color: #0f172a;">
+    <h2>Nuovo ticket di manutenzione</h2>
+    <p>È stato aperto un nuovo ticket da gestire.</p>
+    <ul>
+      <li><strong>ID:</strong> #{{ ticket.id }}</li>
+      <li><strong>Titolo:</strong> {{ ticket.title }}</li>
+      {% if ticket.resort %}
+      <li><strong>Struttura:</strong> {{ ticket.resort.name }}</li>
+      {% endif %}
+      {% if ticket.room %}
+      <li><strong>Camera:</strong> {{ ticket.room.name }}</li>
+      {% endif %}
+      <li><strong>Priorità:</strong> {{ ticket.get_priority_display }}</li>
+      <li><strong>Creato da:</strong> {{ ticket.created_by.username }}</li>
+    </ul>
+    <p>{{ ticket.description|linebreaksbr }}</p>
+    <p>
+      <a href="{{ absolute_url }}" style="color: #1d4ed8;">Apri ticket</a>
+    </p>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Conferma Eliminazione Competitor{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card dashboard-card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0 fw-bold">Conferma Eliminazione</h5>
+                </div>
+                <div class="card-body">
+                    <p class="fs-5">Sei sicuro di voler eliminare il competitor "<strong>{{ object.name }}</strong>"?</p>
+                    <p class="text-muted">Questa azione non può essere annullata. Verranno eliminati anche tutti i link di scraping e i dati raccolti associati.</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-danger">Sì, Confermo Eliminazione</button>
+                            <a href="{% url 'competitors:competitor-list' %}" class="btn btn-secondary">Annulla</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

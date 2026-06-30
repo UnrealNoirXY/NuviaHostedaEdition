@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Gestione URL di Scraping per {{ resort.name }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <h1 class="dashboard-title mb-2">Gestione URL di Scraping</h1>
+    <h2 class="h4 text-muted mb-4">Resort: {{ resort.name }}</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Form to add new URL -->
+    <div class="card bg-light mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Aggiungi Nuovo URL</h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label for="{{ form.source.id_for_label }}" class="form-label">Piattaforma</label>
+                        {{ form.source }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.url.id_for_label }}" class="form-label">URL Completo</label>
+                        {{ form.url }}
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Aggiungi</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table of existing URLs -->
+    <h3 class="h5">URL Esistenti</h3>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Piattaforma</th>
+                    <th>URL</th>
+                    <th class="text-end">Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scraping_url in scraping_urls %}
+                <tr>
+                    <td><strong>{{ scraping_url.source.name }}</strong></td>
+                    <td><a href="{{ scraping_url.url }}" target="_blank">{{ scraping_url.url|truncatechars:80 }}</a></td>
+                    <td class="text-end">
+                        <form method="post" action="{% url 'reviews:delete_scraping_url' scraping_url.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Sei sicuro di voler eliminare questo URL?');">
+                                <i class="fas fa-trash"></i> Elimina
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center py-5">
+                        <p class="mb-0">Nessun URL di scraping impostato per questo resort.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="{% url 'core:resort_list' %}" class="btn btn-secondary mt-3">
+        <i class="fas fa-arrow-left"></i> Torna alla Lista Resort
+    </a>
+</div>
+{% endblock %}

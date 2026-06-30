@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ card.first_name }} {{ card.last_name }} | Business Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: {{ card.template.primary_color|default:"#111111" }};
+      --secondary: {{ card.template.secondary_color|default:"#ffffff" }};
+      --bg: #050505;
+      --card-bg: #0a0a0a;
+      --text-muted: #888888;
+      --font-family: '{{ card.template.font_family|default:"Inter" }}', sans-serif;
+      --radius: {{ card.template.border_radius|default:"16px" }};
+      --gold: #c5a059;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg);
+      color: var(--secondary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background Patterns */
+    {% if card.template.background_pattern == 'grain' %}
+    body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.05; pointer-events: none; background-image: url("https://grainy-gradients.vercel.app/noise.svg"); z-index: 1; }
+    {% elif card.template.background_pattern == 'mesh' %}
+    body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; pointer-events: none; background: radial-gradient(at 0% 0%, var(--primary) 0, transparent 50%), radial-gradient(at 100% 0%, #000 0, transparent 50%); z-index: 1; }
+    {% elif card.template.background_pattern == 'silk' %}
+    body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.03; pointer-events: none; background-image: url('data:image/svg+xml,<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><path d="M0 100 Q 50 50 100 100 T 200 100" stroke="white" fill="transparent"/></svg>'); z-index: 1; }
+    {% endif %}
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+      border: 1px solid rgba(255,255,255,0.05);
+      animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      z-index: 2;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .stagger-in { opacity: 0; animation: fadeIn 0.8s ease forwards; }
+    .stagger-1 { animation-delay: 0.2s; }
+    .stagger-2 { animation-delay: 0.4s; }
+    .stagger-3 { animation-delay: 0.6s; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header {
+      background: var(--primary);
+      {% if card.template.header_image %}
+      background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url("{{ card.template.header_image.url }}");
+      background-size: cover;
+      background-position: center;
+      {% elif card.template.header_gradient_enabled %}
+      background: linear-gradient(135deg, var(--primary) 0%, #000 100%);
+      {% endif %}
+      padding: 60px 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    /* Layout Variations */
+    {% if card.template.layout_type == 'creative' %}
+    .header { padding-top: 100px; text-align: left; }
+    .avatar-placeholder { margin-left: 0; width: 80px; height: 80px; }
+    .company-badge { right: auto; left: 30px; top: 30px; }
+    {% elif card.template.layout_type == 'minimal' %}
+    .header { background: transparent !important; padding-bottom: 0; }
+    .avatar-placeholder { border-color: var(--primary); }
+    .container { background: transparent; border: none; box-shadow: none; }
+    {% endif %}
+
+    .company-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.1);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      backdrop-filter: blur(4px);
+    }
+    .avatar-placeholder {
+      width: 110px;
+      height: 110px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      margin: 0 auto 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 44px;
+      font-weight: bold;
+      border: 3px solid var(--secondary);
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+    }
+    .avatar-placeholder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .name {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .role {
+      font-size: 16px;
+      opacity: 0.8;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+    .content {
+      padding: 30px;
+    }
+    .info-group {
+      margin-bottom: 24px;
+    }
+    .info-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .info-value {
+      font-size: 16px;
+      text-decoration: none;
+      color: var(--secondary);
+      display: block;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 30px;
+    }
+    .btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--secondary);
+      font-size: 12px;
+      font-weight: 700;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    }
+
+    /* Button Styles */
+    .btn-filled {
+      background: var(--secondary);
+      color: var(--primary);
+      border: none;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-soft {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.03);
+      backdrop-filter: blur(10px);
+    }
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #ffffff;
+      color: #000000;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 1000;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+    .btn i {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .btn-primary-action {
+      grid-column: span 2;
+      background: var(--secondary);
+      color: var(--primary);
+      border: none;
+    }
+    .btn-cta-special {
+        grid-column: span 2;
+        background: var(--gold);
+        color: #000;
+        border: none;
+        font-weight: 800;
+    }
+
+    .skill-pill {
+        font-size: 10px;
+        background: rgba(255,255,255,0.08);
+        padding: 4px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.05);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .lead-form {
+        margin-top: 40px;
+        padding: 30px;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        background: rgba(0,0,0,0.2);
+    }
+    .lead-form input, .lead-form textarea {
+        width: 100%;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 12px;
+        border-radius: 8px;
+        color: #fff;
+        margin-bottom: 12px;
+        font-family: inherit;
+    }
+
+    .disabled-wallet {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(1);
+    }
+    .qr-section {
+      text-align: center;
+      padding: 30px;
+      background: rgba(0,0,0,0.2);
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .qr-container {
+      background: white;
+      padding: 15px;
+      border-radius: 16px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    .qr-container img {
+      display: block;
+      width: 150px;
+      height: 150px;
+    }
+    .qr-text {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .footer {
+      padding: 20px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="company-badge">{{ card.template.company_name|default:"Azienda" }}</div>
+      <div class="avatar-placeholder">
+        {% if card.avatar %}
+          <img src="{{ card.avatar.url }}" alt="{{ card.first_name }}">
+        {% else %}
+          {{ card.first_name|first }}{{ card.last_name|first }}
+        {% endif %}
+      </div>
+      <h1 class="name stagger-in stagger-1" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">{{ card.first_name }} {{ card.last_name }}</h1>
+      <p class="role stagger-in stagger-2">{{ card.role }}</p>
+      {% if card.bio %}
+      <p class="bio stagger-in stagger-3" style="font-size: 13px; margin-top: 16px; opacity: 0.9; font-weight: 300; max-width: 280px; margin-left: auto; margin-right: auto; line-height: 1.6;">{{ card.bio }}</p>
+      {% endif %}
+
+      {% if card.skills_list %}
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 20px;" class="stagger-in stagger-3">
+          {% for skill in card.skills_list %}
+          <span class="skill-pill">{{ skill }}</span>
+          {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="content">
+      <div class="info-group stagger-in stagger-3">
+        <div class="info-label">Email</div>
+        <a href="mailto:{{ card.email }}" class="info-value">{{ card.email }}</a>
+      </div>
+
+      {% if card.phone %}
+      <div class="info-group stagger-in stagger-3">
+        <div class="info-label">Telefono</div>
+        <a href="tel:{{ card.phone }}" class="info-value">{{ card.phone }}</a>
+      </div>
+      {% endif %}
+
+      {% if card.department %}
+      <div class="info-group stagger-in stagger-3">
+        <div class="info-label">Reparto</div>
+        <div class="info-value">{{ card.department }}</div>
+      </div>
+      {% endif %}
+
+      <div class="actions">
+        {% with b_style=card.template.button_style|default:"filled" %}
+
+        {% if card.cta_text and card.cta_url %}
+        <a href="{{ card.cta_url }}" class="btn btn-cta-special stagger-in stagger-3" target="_blank">
+          <span>{{ card.cta_text }}</span>
+        </a>
+        {% endif %}
+
+        {% if card.show_linkedin and card.linkedin_url %}
+        <a href="{{ card.linkedin_url }}" class="btn btn-{{ b_style }} stagger-in stagger-3" target="_blank">
+          <span>LinkedIn</span>
+        </a>
+        {% endif %}
+
+        {% if card.show_whatsapp and card.whatsapp_number %}
+        <a href="https://wa.me/{{ card.whatsapp_number_cleaned }}" class="btn btn-{{ b_style }} stagger-in stagger-3" target="_blank">
+          <span>WhatsApp</span>
+        </a>
+        {% endif %}
+
+        {% if card.show_website and card.website_url %}
+        <a href="{{ card.website_url }}" class="btn btn-{{ b_style }} stagger-in stagger-3" target="_blank" style="grid-column: span 2;">
+          <span>Sito Web</span>
+        </a>
+        {% endif %}
+
+        <a href="{% url 'profile_cards:public_vcard' token=token %}" class="btn btn-primary-action stagger-in stagger-3">
+          <span>SALVA IN RUBRICA</span>
+        </a>
+
+        {% if show_apple and card.show_apple_wallet %}
+        <a href="{% url 'profile_cards:public_apple_pass' token=token %}" class="btn btn-{{ b_style }} stagger-in stagger-3 {% if not wallet_available %}disabled-wallet{% endif %}">
+          <span>Apple Wallet</span>
+          {% if not wallet_available %}<small style="font-size: 8px; opacity: 0.6;">(Configurazione in corso)</small>{% endif %}
+        </a>
+        {% endif %}
+
+        {% if show_google and card.show_google_wallet %}
+        <a href="{% url 'profile_cards:public_google_wallet' token=token %}" class="btn btn-{{ b_style }} stagger-in stagger-3">
+          <span>Google Wallet</span>
+        </a>
+        {% endif %}
+
+        <button id="share-contact" class="btn btn-{{ b_style }} stagger-in stagger-3" style="grid-column: span 2; width: 100%; cursor: pointer;">
+          <span>CONDIVIDI CONTATTO</span>
+        </button>
+
+        {% endwith %}
+      </div>
+    </div>
+
+    {% if card.enable_lead_capture %}
+    <div class="lead-form stagger-in stagger-3" id="lead-section">
+        <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; text-align: center;">Lasciami un messaggio</h3>
+        <form id="lead-form">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="Il tuo nome" required>
+            <input type="email" name="email" placeholder="La tua email" required>
+            <textarea name="message" placeholder="Come posso aiutarti?" rows="3" required></textarea>
+            <button type="submit" class="btn btn-primary-action" style="width: 100%;" id="lead-submit">Invia Messaggio</button>
+        </form>
+        <div id="lead-success" style="display:none; text-align:center; padding: 20px; color: var(--gold); font-weight: 700;">
+            Grazie! Il tuo messaggio è stato inviato correttamente.
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="qr-section stagger-in stagger-3">
+      <div class="qr-container">
+        <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+      </div>
+      <p class="qr-text">Inquadra per salvare il contatto</p>
+    </div>
+
+    <div class="footer">
+      Powered by Noir Tools Kit
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Link copiato negli appunti!</div>
+
+  <script>
+    {% if card.enable_lead_capture %}
+    const leadForm = document.getElementById("lead-form");
+    if (leadForm) {
+        leadForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("lead-submit");
+            const successDiv = document.getElementById("lead-success");
+            btn.disabled = true;
+            btn.textContent = "Invio in corso...";
+
+            const formData = new FormData(leadForm);
+            try {
+                const response = await fetch("{% url 'profile_cards:public_submit_lead' token=token %}", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRFToken": formData.get("csrfmiddlewaretoken")
+                    }
+                });
+                if (response.ok) {
+                    leadForm.style.display = "none";
+                    successDiv.style.display = "block";
+                } else {
+                    alert("Errore durante l'invio. Riprova più tardi.");
+                    btn.disabled = false;
+                    btn.textContent = "Invia Messaggio";
+                }
+            } catch (err) {
+                alert("Errore di connessione.");
+                btn.disabled = false;
+                btn.textContent = "Invia Messaggio";
+            }
+        });
+    }
+    {% endif %}
+
+    const shareBtn = document.getElementById("share-contact");
+    const shareUrl = window.location.href;
+    shareBtn.addEventListener("click", async () => {
+      const track = "{% url 'profile_cards:public_track_event' token=token %}?event=share";
+      try { navigator.sendBeacon(track); } catch (e) {}
+      const sharePayload = {
+        title: "{{ card.first_name }} {{ card.last_name }} | Business Card",
+        text: "Ecco il mio contatto professionale.",
+        url: shareUrl,
+      };
+      if (navigator.share) {
+        try { await navigator.share(sharePayload); return; } catch (err) {}
+      }
+      if (navigator.clipboard) {
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            const toast = document.getElementById("toast");
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 3000);
+        } catch (err) {}
+      }
+    });
+  </script>
+</body>
+</html>

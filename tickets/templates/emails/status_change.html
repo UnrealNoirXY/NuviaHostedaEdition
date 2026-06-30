@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Aggiornamento Stato Ticket</title>
+</head>
+<body>
+    <h2>Aggiornamento sul tuo ticket: #{{ ticket.id }}</h2>
+    <p>Lo stato del ticket "{{ ticket.title }}" è stato aggiornato.</p>
+
+    <ul>
+        <li><strong>Stato Precedente:</strong> {{ old_status }}</li>
+        <li><strong>Nuovo Stato:</strong> {{ new_status }}</li>
+    </ul>
+
+    <p>Puoi visualizzare i dettagli completi del ticket al seguente link:</p>
+    <p><a href="{{ absolute_url }}">Vedi Dettagli Ticket</a></p>
+
+    <p>Grazie,</p>
+    <p>Il Team di Gestione Manutenzioni</p>
+</body>
+</html>

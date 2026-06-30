@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0 dashboard-title">
+            {{ review.title|default:"Dettaglio Recensione" }}
+        </h1>
+        <a href="{% url 'reviews:dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Torna alla Dashboard
+        </a>
+    </div>
+
+    <div class="card dashboard-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <span class="fw-bold">Autore:</span>
+                {% if review.author == 'Anonimo' or review.author == 'N/A' %}
+                    <em class="text-muted fw-normal">Anonimo</em>
+                {% else %}
+                    {{ review.author }}
+                {% endif %}
+            </h5>
+            <span class="text-muted">{{ review.review_date|date:"d F Y, H:i" }}</span>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4 align-items-center">
+                <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+                    <p class="mb-1"><strong class="d-block text-muted">Resort:</strong> {{ review.resort.name }}</p>
+                    <p class="mb-0"><strong class="d-block text-muted">Piattaforma:</strong> {{ review.source.name }}</p>
+                </div>
+                <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 text-center">
+                    <p class="mb-1"><strong class="d-block text-muted">Rating</strong></p>
+                    <h2 class="display-4 fw-bold text-primary">{{ review.rating|floatformat:1 }}</h2>
+                </div>
+                <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 text-center">
+                    <p class="mb-1"><strong class="d-block text-muted">Sentiment</strong></p>
+                    {% with sentiment_label=review.analysis.sentiment_label %}
+                        {% if sentiment_label == 'positive' %}
+                            <h2 class="display-4 text-success"><i class="fas fa-smile"></i></h2>
+                            <span class="badge rounded-pill bg-success fs-6">Positivo</span>
+                        {% elif sentiment_label == 'negative' %}
+                            <h2 class="display-4 text-danger"><i class="fas fa-frown"></i></h2>
+                            <span class="badge rounded-pill bg-danger fs-6">Negativo</span>
+                        {% else %}
+                            <h2 class="display-4 text-warning"><i class="fas fa-meh"></i></h2>
+                            <span class="badge rounded-pill bg-warning text-dark fs-6">Neutrale</span>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+
+            <hr>
+
+            <h5 class="mt-4">Testo della Recensione</h5>
+            <p class="lead" style="overflow-wrap: break-word;">
+                {{ review.text|linebreaksbr }}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

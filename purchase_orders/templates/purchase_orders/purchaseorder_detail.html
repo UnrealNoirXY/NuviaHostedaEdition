@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+{% load po_extras %}
+{% block title %}Dettaglio Ordine #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="dashboard-title mb-0">Dettaglio Ordine #{{ order.id }}</h2>
+            <p class="text-muted">Creato da {{ order.created_by.username }} il {{ order.created_at|date:"d/m/Y H:i" }}</p>
+        </div>
+        <span class="badge fs-6 {{ order.status|status_badge }}">{{ order.get_status_display }}</span>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Dettagli Fornitore</h4>
+            <p>
+                <strong>Nome:</strong> {{ order.supplier.name }}<br>
+                {% if order.supplier.contact_person %}<strong>Contatto:</strong> {{ order.supplier.contact_person }}<br>{% endif %}
+                {% if order.supplier.email %}<strong>Email:</strong> {{ order.supplier.email }}<br>{% endif %}
+                {% if order.supplier.phone_number %}<strong>Telefono:</strong> {{ order.supplier.phone_number }}{% endif %}
+            </p>
+        </div>
+        <div class="col-md-6">
+            <h4>Dettagli Struttura</h4>
+            <p>
+                <strong>Resort:</strong> {{ order.resort.name }}<br>
+                <strong>Società:</strong> {{ order.resort.company.name }}
+            </p>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <h4>Articoli Ordinati</h4>
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="table-light">
+                <tr>
+                    <th>Prodotto</th>
+                    <th>Codice</th>
+                    <th class="text-center">Quantità</th>
+                    <th class="text-end">Prezzo Unitario</th>
+                    <th class="text-end">Prezzo Totale</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.product_code|default:"-" }}</td>
+                    <td class="text-center">{{ item.quantity }}</td>
+                    <td class="text-end">€ {{ item.unit_price|floatformat:2 }}</td>
+                    <td class="text-end">€ {{ item.total_price|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">Nessun articolo in questo ordine.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="table-light">
+                    <td colspan="4" class="text-end"><strong>Importo Totale</strong></td>
+                    <td class="text-end"><strong>€ {{ order.total_amount|floatformat:2 }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'purchase_orders:list' %}" class="btn btn-secondary">Torna alla Lista</a>
+        <a href="{% url 'purchase_orders:update' order.pk %}" class="btn btn-primary">Modifica Ordine</a>
+        <a href="{% url 'purchase_orders:export_pdf' order.pk %}" class="btn btn-info" target="_blank">
+            <i class="fas fa-file-pdf me-2"></i> Esporta PDF
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Riepilogo Check-in</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        .section h2 {
+            font-size: 14pt;
+            background-color: #f2f2f2;
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f9f9f9;
+        }
+        .footer {
+            position: fixed;
+            bottom: -1.5cm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 8pt;
+            color: #777;
+        }
+        .signature-box {
+            margin-top: 40px;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .signature-box p {
+            font-size: 9pt;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="footer">
+        Documento generato il {{ generation_date|date:"d/m/Y H:i" }} - Pagina <pdf:page-number /> di <pdf:page-count />
+    </div>
+
+    <h1>Riepilogo Check-in Online</h1>
+
+    <div class="section">
+        <h2>Dettagli Prenotazione</h2>
+        <table>
+            <tr>
+                <th>Riferimento Prenotazione</th>
+                <td>#{{ booking.id }}</td>
+            </tr>
+            <tr>
+                <th>Cliente Principale</th>
+                <td>{{ booking.guest_name }} ({{ booking.guest_email }})</td>
+            </tr>
+            <tr>
+                <th>Resort</th>
+                <td>{{ booking.resort.name }}</td>
+            </tr>
+            <tr>
+                <th>Periodo Soggiorno</th>
+                <td>Dal {{ booking.check_in_date|date:"d/m/Y" }} al {{ booking.check_out_date|date:"d/m/Y" }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Ospiti Registrati</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Data di Nascita</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for guest in guests %}
+                <tr>
+                    <td>{{ guest.first_name }}</td>
+                    <td>{{ guest.last_name }}</td>
+                    <td>{{ guest.date_of_birth|date:"d/m/Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section signature-box">
+        <h2>Conferma e Accettazione</h2>
+        <p>
+            Il cliente, <strong>{{ booking.guest_name }}</strong>, dichiara che le informazioni fornite sono veritiere e complete.
+        </p>
+        <p>
+            Con la firma digitale di questo documento, si accettano i Termini e Condizioni del soggiorno e l'Informativa sulla Privacy.
+        </p>
+        <br>
+        <p><strong>Firmato digitalmente tramite la piattaforma di check-in online.</strong></p>
+        <p><strong>Timestamp:</strong> {{ signature_meta.ts }}</p>
+        <p><strong>Indirizzo IP:</strong> {{ signature_meta.ip }}</p>
+        <p><strong>Hash SHA256 del Documento:</strong><br><small>{{ signature_meta.doc_sha256 }}</small></p>
+    </div>
+
+</body>
+</html>

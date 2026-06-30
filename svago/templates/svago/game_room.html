@@ -1,0 +1,139 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Tris Multiplayer{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'svago/css/tris.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="game-container">
+    <h1 class="h3 mb-3">Tris</h1>
+    <p id="status-text" class="lead mb-3">Caricamento della partita...</p>
+
+    <div class="board" id="board">
+        {% for i in "012345678" %}
+            <div class="cell" data-index="{{ i }}"></div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'svago:lobby' %}" class="btn btn-secondary">Torna alla Lobby</a>
+    </div>
+</div>
+
+{{ game.id|json_script:"game-id" }}
+{{ request.user.id|json_script:"user-id" }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- CONFIG ---
+    const boardElement = document.getElementById('board');
+    const statusText = document.getElementById('status-text');
+    const cells = document.querySelectorAll('.cell');
+
+    const gameId = JSON.parse(document.getElementById('game-id').textContent);
+    const currentUserId = JSON.parse(document.getElementById('user-id').textContent);
+    const gameStateUrl = `{% url 'svago:game_state' game.id %}`;
+    const makeMoveUrl = `{% url 'svago:make_move' game.id %}`;
+
+    let pollInterval;
+
+    // --- UTILS ---
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            for (const cookie of document.cookie.split(';')) {
+                const trimmedCookie = cookie.trim();
+                if (trimmedCookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(trimmedCookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    // --- RENDER FUNCTIONS ---
+    function renderBoard(boardState) {
+        cells.forEach((cell, index) => {
+            const symbol = boardState[index]; // 'X', 'O', or null
+            cell.textContent = symbol || '';
+            cell.classList.remove('x', 'o');
+            if (symbol) {
+                cell.classList.add(symbol.toLowerCase());
+            }
+        });
+    }
+
+    function renderStatus(game) {
+        if (game.status === 'finished') {
+            clearInterval(pollInterval);
+            statusText.textContent = game.winner_id === currentUserId ? "Hai Vinto!" : `Ha vinto ${game.winner_username}!`;
+        } else if (game.status === 'draw') {
+            clearInterval(pollInterval);
+            statusText.textContent = "Pareggio!";
+        } else if (game.status === 'active') {
+            statusText.textContent = game.current_turn_id === currentUserId ? "È il tuo turno!" : `In attesa di ${game.current_turn_username}...`;
+        }
+    }
+
+    // --- API CALLS ---
+    async function fetchGameState() {
+        try {
+            const response = await fetch(gameStateUrl);
+            if (!response.ok) {
+                console.error("Failed to fetch game state");
+                statusText.textContent = "Errore di connessione.";
+                return;
+            }
+            const gameState = await response.json();
+            renderBoard(gameState.board_state);
+            renderStatus(gameState);
+        } catch (error) {
+            console.error("Error fetching game state:", error);
+        }
+    }
+
+    async function handleCellClick(event) {
+        const cell = event.target.closest('.cell');
+        if (!cell) return; // Click was not on a cell
+
+        const index = cell.dataset.index;
+        if (index === undefined) return;
+
+        // Prevent clicking on non-empty cells
+        if (cell.textContent !== '') return;
+
+        try {
+            const response = await fetch(makeMoveUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({ cell_index: parseInt(index, 10) }),
+            });
+
+            if (response.ok) {
+                await fetchGameState();
+            } else {
+                const errorData = await response.json();
+                console.error("Server error:", errorData.error);
+            }
+        } catch (error) {
+            console.error("Network or script error:", error);
+        }
+    }
+
+    // --- INITIALIZATION ---
+    boardElement.addEventListener('click', handleCellClick);
+    fetchGameState(); // Initial fetch to setup the board
+    pollInterval = setInterval(fetchGameState, 3000); // Poll for updates every 3 seconds
+});
+</script>
+{% endblock %}

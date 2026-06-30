@@ -1,0 +1,82 @@
+{% extends 'core/base.html' %}
+{% load custom_tags %}
+
+{% block title %}Gestione Competitor{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 dashboard-title">Gestione Competitor</h1>
+        <div>
+            <a href="{% url 'competitors:scraping-panel' %}" class="btn btn-info">
+                <i class="fas fa-play-circle me-2"></i>Avvia Scraper
+            </a>
+            <a href="{% url 'competitors:competitor-create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Aggiungi Competitor
+            </a>
+        </div>
+    </div>
+
+    <div class="card dashboard-card">
+        <div class="card-header">
+            <h5 class="card-title mb-0 fw-bold">Elenco Competitor ({{ page_obj.paginator.count }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Nome Competitor</th>
+                            <th>Sito Web</th>
+                            <th>Creato il</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for competitor in competitors %}
+                        <tr>
+                            <td><strong>{{ competitor.name }}</strong></td>
+                            <td><a href="{{ competitor.website }}" target="_blank" rel="noopener noreferrer">{{ competitor.website }}</a></td>
+                            <td>{{ competitor.created_at|date:"d M Y, H:i" }}</td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-info"
+                                        hx-get="{% url 'competitors:manage-links-modal' competitor.pk %}"
+                                        hx-target="#modal-content"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#link-manager-modal">
+                                    <i class="fas fa-link me-1"></i> Gestisci Link
+                                </button>
+                                <a href="{% url 'competitors:competitor-update' competitor.pk %}" class="btn btn-sm btn-outline-warning" title="Modifica Anagrafica"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'competitors:competitor-delete' competitor.pk %}" class="btn btn-sm btn-outline-danger" title="Elimina Competitor"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <p class="mb-0">Nessun competitor trovato.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer">
+            {% if page_obj.has_other_pages %}
+                {% include 'core/partials/_pagination.html' %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Modal Placeholder -->
+<div class="modal fade" id="link-manager-modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" id="modal-content">
+      <!-- Content will be loaded here by HTMX -->
+    </div>
+  </div>
+</div>
+{% endblock %}

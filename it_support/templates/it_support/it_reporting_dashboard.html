@@ -1,0 +1,70 @@
+{% extends 'core/base.html' %}
+{% load it_support_extras %}
+{% block title %}Report Supporto IT{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <h2 class="dashboard-title mb-4">Reportistica Supporto IT</h2>
+    <p class="text-muted">Riepilogo delle attività e delle performance del team di supporto.</p>
+</div>
+
+<div class="row mt-4">
+    <!-- Total Tickets -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Ticket Totali</h5>
+                <p class="display-4">{{ total_tickets }}</p>
+            </div>
+        </div>
+    </div>
+    <!-- Tickets by Status -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header text-center">Ticket per Stato</div>
+            <ul class="list-group list-group-flush">
+                {% for item in tickets_by_status %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ item.status|get_status_display_from_key }}
+                        <span class="badge bg-primary rounded-pill">{{ item.count }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">Nessun dato</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <!-- Tickets by Priority -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header text-center">Ticket per Priorità</div>
+            <ul class="list-group list-group-flush">
+                {% for item in tickets_by_priority %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ item.priority|get_priority_display_from_key }}
+                        <span class="badge bg-primary rounded-pill">{{ item.count }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">Nessun dato</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <!-- Tickets by Device -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header text-center">Ticket per Dispositivo</div>
+            <ul class="list-group list-group-flush">
+                {% for item in tickets_by_device %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ item.device_type|get_device_display_from_key }}
+                        <span class="badge bg-primary rounded-pill">{{ item.count }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">Nessun dato</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifica OTP - Check-in Online</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .otp-container {
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+        }
+        .otp-header h2 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .otp-header p {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+        }
+        .form-control-lg {
+            letter-spacing: 0.5em;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="otp-container">
+        <div class="otp-header">
+            <h2>Verifica la tua identità</h2>
+            <p>Abbiamo inviato un codice a 6 cifre all'indirizzo <strong>{{ booking.guest_email }}</strong>. Inseriscilo qui sotto per continuare.</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="{{ form.otp_code.id_for_label }}" class="form-label">{{ form.otp_code.label }}</label>
+                {{ form.otp_code }}
+                {% if form.otp_code.errors %}
+                    <div class="text-danger small mt-2">{{ form.otp_code.errors.0 }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg">Verifica e Completa</button>
+        </form>
+
+        <div class="mt-3">
+            <div id="otp-countdown" class="text-muted small"></div>
+            <div class="text-muted small">Tentativi rimanenti: {{ otp_attempts_remaining }}</div>
+        </div>
+
+        <div class="mt-4">
+            <small class="text-muted">Non hai ricevuto il codice? Controlla la cartella spam o attendi qualche minuto.</small>
+            <div class="mt-2">
+                <button type="button" id="resend-otp-btn" class="btn btn-link btn-sm" disabled>Reinvia Codice</button>
+                <span id="resend-timer" class="text-muted small ms-2"></span>
+                <div id="resend-message" class="small mt-1"></div>
+            </div>
+        </div>
+
+        <!-- Contenitore per il componente React di validazione documenti -->
+        <div id="document-validation-container" class="mt-4"></div>
+    </div>
+
+    <!-- Includi React e il componente -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <!-- Passa i dati da Django a React -->
+    <script type="text/javascript">
+        window.bookingData = {
+            token: "{{ token }}",
+            docIds: JSON.parse('{{ doc_ids_json|escapejs }}')
+        };
+        window.otpMeta = {
+            expiresAt: "{{ otp_expires_at|date:'c' }}",
+            lockedUntil: "{{ otp_locked_until|date:'c' }}",
+            attemptsRemaining: {{ otp_attempts_remaining|default:0 }},
+            resendCooldown: {{ otp_resend_cooldown|default:60 }},
+            lastSentAt: "{{ otp_last_sent_at|date:'c' }}"
+        };
+    </script>
+
+    <!-- Il tuo componente React (in produzione, questo sarebbe un file JS compilato) -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const DocumentStatus = ({ docId, token }) => {
+            const [status, setStatus] = useState('pending');
+            const [confidence, setConfidence] = useState(null);
+
+            useEffect(() => {
+                const pollStatus = setInterval(async () => {
+                    try {
+                        const response = await fetch(`/api/bookings/documents/${docId}/status/${token}/`);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        const data = await response.json();
+
+                        if (data.scanned_at) {
+                            setStatus(data.scan_result);
+                            setConfidence(data.ocr_confidence);
+                            clearInterval(pollStatus);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching document status:', error);
+                        setStatus('error');
+                        clearInterval(pollStatus);
+                    }
+                }, 3000); // Poll ogni 3 secondi
+
+                return () => clearInterval(pollStatus);
+            }, [docId, token]);
+
+            const getStatusBadge = () => {
+                switch (status) {
+                    case 'clean':
+                        return <span className="badge bg-success">Verificato</span>;
+                    case 'pending':
+                        return <span className="badge bg-secondary">In analisi...</span>;
+                    case 'error_ocr':
+                    case 'infected':
+                        return <span className="badge bg-danger">Revisione Richiesta</span>;
+                    default:
+                        return <span className="badge bg-warning">Errore</span>;
+                }
+            };
+
+            return (
+                <li className="list-group-item d-flex justify-content-between align-items-center">
+                    Documento #{docId}
+                    {getStatusBadge()}
+                </li>
+            );
+        };
+
+        const ValidationApp = ({ docIds, token }) => {
+            return (
+                <div className="card mt-4">
+                    <div className="card-header">
+                        Stato di convalida dei documenti
+                    </div>
+                    <ul className="list-group list-group-flush">
+                        {docIds.map(docId => (
+                            <DocumentStatus key={docId} docId={docId} token={token} />
+                        ))}
+                    </ul>
+                </div>
+            );
+        };
+
+        const container = document.getElementById('document-validation-container');
+        const root = ReactDOM.createRoot(container);
+        root.render(<ValidationApp docIds={window.bookingData.docIds} token={window.bookingData.token} />);
+    </script>
+
+    <!-- Script per il reinvio dell'OTP -->
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const resendBtn = document.getElementById('resend-otp-btn');
+            const timerEl = document.getElementById('resend-timer');
+            const messageEl = document.getElementById('resend-message');
+            const countdownEl = document.getElementById('otp-countdown');
+            let countdown = window.otpMeta.resendCooldown || 60;
+            let timerInterval;
+            let otpCountdownInterval;
+
+            let parsedExpiry = window.otpMeta.expiresAt ? new Date(window.otpMeta.expiresAt) : null;
+            const parsedLockedUntil = window.otpMeta.lockedUntil ? new Date(window.otpMeta.lockedUntil) : null;
+            const parsedLastSent = window.otpMeta.lastSentAt ? new Date(window.otpMeta.lastSentAt) : null;
+
+            const updateOtpCountdown = () => {
+                if (!parsedExpiry) return;
+                const now = new Date();
+                const diffMs = parsedExpiry - now;
+                if (diffMs <= 0) {
+                    countdownEl.textContent = 'Codice scaduto. Richiedi un nuovo OTP.';
+                    clearInterval(otpCountdownInterval);
+                    return;
+                }
+                const totalSeconds = Math.floor(diffMs / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                countdownEl.textContent = `Il codice scade tra ${minutes}m ${seconds.toString().padStart(2, '0')}s`;
+            };
+
+            const startTimer = () => {
+                resendBtn.disabled = true;
+                timerInterval = setInterval(() => {
+                    countdown--;
+                    timerEl.textContent = `Attendi ${countdown}s`;
+                    if (countdown <= 0) {
+                        clearInterval(timerInterval);
+                        timerEl.textContent = '';
+                        resendBtn.disabled = false;
+                        countdown = window.otpMeta.resendCooldown; // Reset for next time
+                    }
+                }, 1000);
+            };
+
+            if (parsedLockedUntil && parsedLockedUntil > new Date()) {
+                resendBtn.disabled = true;
+                timerEl.textContent = 'Accesso bloccato temporaneamente.';
+            }
+
+            if (parsedLastSent) {
+                const elapsed = (Date.now() - parsedLastSent.getTime()) / 1000;
+                if (elapsed < window.otpMeta.resendCooldown) {
+                    countdown = Math.ceil(window.otpMeta.resendCooldown - elapsed);
+                }
+            }
+
+            resendBtn.addEventListener('click', async () => {
+                messageEl.textContent = 'Invio in corso...';
+                messageEl.className = 'text-muted small';
+
+                try {
+                    const response = await fetch(`/api/bookings/otp/resend/${window.bookingData.token}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        const payload = await response.json();
+                        messageEl.textContent = 'Nuovo codice inviato con successo!';
+                        messageEl.className = 'text-success small';
+                        if (payload.expires_at) {
+                            window.otpMeta.expiresAt = payload.expires_at;
+                            parsedExpiry = new Date(payload.expires_at);
+                            clearInterval(otpCountdownInterval);
+                            otpCountdownInterval = setInterval(updateOtpCountdown, 1000);
+                            updateOtpCountdown();
+                        }
+                    } else if (response.status === 429) {
+                        const errorPayload = await response.json();
+                        messageEl.textContent = errorPayload.error || 'Hai richiesto un codice troppo spesso. Riprova tra un minuto.';
+                        messageEl.className = 'text-danger small';
+                    } else {
+                        throw new Error('Errore durante l\'invio del codice.');
+                    }
+                } catch (error) {
+                    console.error('Error resending OTP:', error);
+                    messageEl.textContent = 'Si è verificato un errore. Riprova.';
+                    messageEl.className = 'text-danger small';
+                }
+
+                startTimer(); // Restart timer after click
+            });
+
+            // Imposta cooldown iniziale basato sul server
+            if (countdown < window.otpMeta.resendCooldown) {
+                startTimer();
+            } else {
+                countdown = window.otpMeta.resendCooldown;
+                startTimer();
+            }
+
+            // Mostra countdown scadenza OTP
+            if (parsedExpiry) {
+                updateOtpCountdown();
+                otpCountdownInterval = setInterval(updateOtpCountdown, 1000);
+            }
+        });
+    </script>
+</body>
+</html>

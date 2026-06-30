@@ -1,0 +1,62 @@
+Ciao,
+
+Ecco la procedura passo-passo per configurare correttamente il tuo dominio e mettere il sito in modalità produzione in modo sicuro.
+
+Segui attentamente questi comandi.
+
+---
+
+### **PROCEDURA DEFINITIVA**
+
+**1. Apri il file di configurazione corretto con l'editor `nano`:**
+
+Copia e incolla questo comando nel tuo terminale e premi Invio. Questo è il file che contiene le variabili d'ambiente per Gunicorn.
+
+```bash
+sudo nano /etc/default/gunicorn
+```
+
+**2. Modifica le variabili dentro il file:**
+
+Una volta aperto l'editor, vedrai del testo. Usa i tasti freccia per muoverti. Devi trovare e modificare due righe:
+
+   a. **Trova la riga `ALLOWED_HOSTS` e modificala in questo modo:**
+      (Se la riga non esiste, aggiungila)
+
+      ```
+      ALLOWED_HOSTS="noirtech.online,www.noirtech.online,srv969319.hstgr.cloud,72.60.36.75"
+      ```
+
+   b. **Trova la riga `DEBUG` e modificala in questo modo per la sicurezza:**
+      (Se la riga non esiste, aggiungila)
+
+      ```
+      DEBUG=False
+      ```
+
+**3. Salva il file e chiudi l'editor:**
+
+   - Premi `Ctrl + X` sulla tastiera.
+   - L'editor ti chiederà "Salvare il buffer modificato?".
+   - Premi il tasto `S` (per "Sì" o `Y` for "Yes" a seconda della lingua del sistema).
+   - L'editor ti chiederà il nome del file da salvare. Premi semplicemente `Invio` per confermare il nome esistente.
+
+**4. Ricarica la configurazione e riavvia Gunicorn:**
+
+Adesso che le modifiche sono salvate, esegui questi due comandi, uno dopo l'altro, per applicarle.
+
+   a. **Ricarica il gestore dei servizi:**
+
+      ```bash
+      sudo systemctl daemon-reload
+      ```
+
+   b. **Riavvia il servizio Gunicorn:**
+
+      ```bash
+      sudo systemctl restart gunicorn.service
+      ```
+
+---
+
+A questo punto, il tuo sito dovrebbe essere accessibile dai nuovi domini (`noirtech.online` e `www.noirtech.online`) e configurato in modo sicuro per la produzione.

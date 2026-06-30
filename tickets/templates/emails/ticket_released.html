@@ -1,0 +1,20 @@
+{% load i18n %}
+<html>
+  <body style="font-family: 'Helvetica Neue', Arial, sans-serif; color: #222;">
+    <h2 style="color:#f97316;">Ticket disponibile</h2>
+    <p>
+      {% blocktrans with id=ticket.id title=ticket.title releaser=releaser.get_full_name|default:releaser.username %}
+      Il ticket #{{ id }} - "{{ title }}" è stato rilasciato da {{ releaser }} ed è di nuovo disponibile per la presa in carico.
+      {% endblocktrans %}
+    </p>
+    {% if ticket.due_date %}
+      <p>
+        Scadenza attuale: <strong>{{ ticket.due_date|date:"d/m/Y H:i" }}</strong>
+      </p>
+    {% endif %}
+    <p>
+      Accedi al ticket per prenderlo in carico:
+      <a href="{{ absolute_url }}" style="color:#1d4ed8;">Apri ticket</a>
+    </p>
+  </body>
+</html>

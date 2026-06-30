@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+{% block title %}Inventario Asset{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title mb-0">Inventario Asset</h2>
+        <div>
+            <a href="{% url 'assets:category-list' %}" class="btn btn-secondary">Gestisci Categorie</a>
+            <a href="{% url 'assets:asset-create' %}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i> Aggiungi Asset
+            </a>
+        </div>
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="table-responsive d-none d-lg-block">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Seriale</th>
+                    <th>Resort</th>
+                    <th class="text-end">Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asset in assets %}
+                <tr>
+                    <td><strong><a href="{{ asset.get_absolute_url }}">{{ asset.name }}</a></strong></td>
+                    <td>{{ asset.category.name }}</td>
+                    <td>{{ asset.serial_number|default:"-" }}</td>
+                    <td>{{ asset.resort.name|default:"-" }}</td>
+                    <td class="text-end">
+                        <a href="{{ asset.get_absolute_url }}" class="btn btn-sm btn-outline-info">Dettagli</a>
+                        <a href="{% url 'assets:asset-update' asset.pk %}" class="btn btn-sm btn-outline-primary">Modifica</a>
+                        <a href="{% url 'assets:asset-delete' asset.pk %}" class="btn btn-sm btn-outline-danger">Elimina</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4">Nessun asset trovato.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="d-lg-none">
+        {% for asset in assets %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title mb-1">
+                    <a href="{{ asset.get_absolute_url }}">{{ asset.name }}</a>
+                </h5>
+                <p class="card-text mb-2">
+                    <small class="text-muted">{{ asset.category.name }}</small>
+                </p>
+                <p class="card-text">
+                    <strong>Seriale:</strong> {{ asset.serial_number|default:"N/D" }}<br>
+                    <strong>Resort:</strong> {{ asset.resort.name|default:"N/D" }}
+                </p>
+                <hr>
+                <a href="{{ asset.get_absolute_url }}" class="btn btn-sm btn-info">Dettagli</a>
+                <a href="{% url 'assets:asset-update' asset.pk %}" class="btn btn-sm btn-primary">Modifica</a>
+                <a href="{% url 'assets:asset-delete' asset.pk %}" class="btn btn-sm btn-danger">Elimina</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info">Nessun asset trovato.</div>
+        {% endfor %}
+    </div>
+
+    {% include 'partials/_pagination.html' %}
+</div>
+{% endblock %}

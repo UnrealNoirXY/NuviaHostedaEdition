@@ -1,0 +1,176 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .room-card {
+        border: 1px solid #dee2e6;
+        border-left: 5px solid var(--theme-color-main);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.25s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .room-card:hover {
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        transform: translateY(-4px);
+    }
+    .room-card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .room-card-title {
+        font-weight: 600;
+        font-size: 1.25rem;
+        margin-bottom: 0;
+    }
+    .room-card-icon {
+        font-size: 1.5rem;
+        color: var(--theme-color-secondary);
+    }
+    .room-card-description {
+        color: #6c757d;
+        font-size: 0.9rem;
+        min-height: 40px;
+    }
+    .room-card-body {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 150px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+    }
+    .qr-code-placeholder {
+        color: #6c757d;
+    }
+    .room-card-footer {
+        border-top: 1px solid #eee;
+        padding-top: 1rem;
+        margin-top: auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .empty-state {
+        border: 2px dashed #e0e0e0;
+        border-radius: 12px;
+        padding: 3rem;
+        text-align: center;
+        color: #6c757d;
+        background-color: #f8f9fa;
+    }
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="dashboard-title mb-0">{{ title }}</h2>
+            <p class="text-muted mb-0">Visualizza e gestisci le camere per questa struttura.</p>
+        </div>
+        {% if user.role == ROLES.SUPERADMIN %}
+        <a href="{% url 'core:room_bulk_create' resort.id %}" class="btn btn-success">
+            <i class="fas fa-plus me-2"></i>Crea Camere Multiple
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        {% for room in rooms %}
+            <div class="col-md-6 col-lg-4">
+                <div class="room-card">
+                    <div class="room-card-header">
+                        <i class="fas fa-door-open fa-fw me-3 room-card-icon"></i>
+                        <h5 class="room-card-title">{{ room.name }}</h5>
+                    </div>
+                    <p class="room-card-description">{{ room.description|default:"Nessuna descrizione." }}</p>
+
+                    <div class="room-card-body" id="qr-container-{{ room.id }}">
+                        <span class="qr-code-placeholder">Il QR code apparirà qui</span>
+                    </div>
+
+                    <div class="room-card-footer">
+                        <button class="btn btn-primary btn-sm generate-qr-btn" data-room-id="{{ room.id }}" data-resort-id="{{ resort.id }}">
+                            <i class="fas fa-qrcode me-1"></i>Genera QR
+                        </button>
+                        {% if user.role == ROLES.SUPERADMIN %}
+                        <a href="{% url 'core:room_update' room.id %}" class="btn btn-secondary btn-sm"><i class="fas fa-edit me-1"></i>Modifica</a>
+                        <a href="{% url 'core:room_delete' room.id %}" class="btn btn-danger btn-sm"><i class="fas fa-trash me-1"></i>Elimina</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-circle empty-state-icon"></i>
+                    <h4>Nessuna Camera Trovata</h4>
+                    <p>Non ci sono camere configurate per questa struttura. Puoi aggiungerle usando il pulsante in alto a destra (se hai i permessi).</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script id="js-urls" type="application/json">
+    {
+        "createTicket": "{% url 'ticket_create' %}"
+    }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const URLS = JSON.parse(document.getElementById('js-urls').textContent);
+
+    document.querySelectorAll('.generate-qr-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const roomId = this.dataset.roomId;
+            const resortId = this.dataset.resortId;
+            const container = document.getElementById(`qr-container-${roomId}`);
+
+            if (!container) return;
+
+            container.innerHTML = ''; // Clear previous QR code or placeholder
+
+            const ticketUrl = `{{ request.scheme }}://{{ request.get_host }}${URLS.createTicket}?resort_id=${resortId}&room_id=${roomId}`;
+
+            new QRCode(container, {
+                text: ticketUrl,
+                width: 128,
+                height: 128,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            this.textContent = 'Generato!';
+            this.disabled = true;
+            setTimeout(() => {
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-qrcode me-1';
+                button.textContent = 'Genera QR';
+                button.prepend(icon);
+                button.disabled = false;
+            }, 3000);
+        });
+    });
+});
+</script>
+{% endblock %}

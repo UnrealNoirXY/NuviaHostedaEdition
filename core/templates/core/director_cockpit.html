@@ -1,0 +1,294 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ page_title|default:"Cruscotto Direzione" }}{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title mb-0">{{ page_title }}</h2>
+    </div>
+
+    <!-- Date Filter Form -->
+    <form method="get" class="row g-3 align-items-end mb-4">
+        <div class="col-md-4">
+            <label for="start_date" class="form-label">Data Inizio</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+        </div>
+        <div class="col-md-4">
+            <label for="end_date" class="form-label">Data Fine</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">Filtra</button>
+        </div>
+    </form>
+</div>
+
+<!-- KPI Cards -->
+<div class="row mt-2">
+    <div class="col-md-6 col-xl-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2 text-muted">Ticket Manut. Aperti</h6>
+                <p class="display-5">{{ kpis.maintenance_tickets_open }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2 text-muted">Ticket IT Aperti</h6>
+                <p class="display-5">{{ kpis.it_tickets_open }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2 text-muted">Costo Totale Asset</h6>
+                <p class="display-5">€{{ kpis.total_asset_cost|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2 text-muted">Costo Interventi IT</h6>
+                <p class="display-5">€{{ kpis.total_intervention_cost|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Budget KPI Cards -->
+<div class="row mt-2">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2 text-muted">Budget Mese Corrente</h6>
+                <p class="display-5">€{{ kpis.budget_total|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2 text-muted">Spesa Mese Corrente</h6>
+                <p class="display-5 text-danger">€{{ kpis.budget_spent|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="dashboard-card p-4 mt-2">
+    <h4 class="mb-3">Trend Creazione Ticket (Periodo Selezionato)</h4>
+    <canvas id="ticketTrendChart"></canvas>
+</div>
+
+<!-- Competitor Analysis Section -->
+<div class="dashboard-card p-4 mt-4">
+    <h4 class="mb-3">Analisi Competitor</h4>
+
+    <form method="get" class="row g-3 align-items-end mb-4">
+        <!-- Hidden fields to preserve date filters -->
+        <input type="hidden" name="start_date" value="{{ start_date }}">
+        <input type="hidden" name="end_date" value="{{ end_date }}">
+
+        {% if competitor_user_resorts.count > 1 %}
+        <div class="col-md-5">
+            <label for="competitor_resort_id" class="form-label">Seleziona Resort</label>
+            <select name="competitor_resort_id" class="form-select" onchange="this.form.submit()">
+                {% for resort in competitor_user_resorts %}
+                    <option value="{{ resort.pk }}" {% if competitor_selected_resort.pk == resort.pk %}selected{% endif %}>{{ resort.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        {% if competitor_available %}
+        <div class="col-md-5">
+            <label for="competitor_id" class="form-label">Seleziona Competitor</label>
+            <select name="competitor_id" class="form-select" onchange="this.form.submit()">
+                <option value="">--- Dati Aggregati ---</option>
+                {% for comp in competitor_available %}
+                    <option value="{{ comp.pk }}" {% if selected_competitor_id|add:0 == comp.pk %}selected{% endif %}>{{ comp.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+    </form>
+
+    {% if competitor_selected_data %}
+        <h5>Dati per: {{ competitor_selected_data.name }}</h5>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Titolo/Testo</th>
+                        <th class="text-center">Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in competitor_selected_data.data %}
+                    <tr>
+                        <td class="text-nowrap">{{ item.publication_date|date:"d M Y" }}</td>
+                        <td>
+                            <strong>{{ item.title|default_if_none:"" }}</strong>
+                            <p class="text-muted small mb-0">{{ item.text|truncatechars:150|default_if_none:"" }}</p>
+                        </td>
+                        <td class="text-center">
+                            {% if item.rating is not None %}<span class="badge rounded-pill bg-info fs-6">{{ item.rating|floatformat:1 }}</span>{% else %}<span class="badge rounded-pill bg-secondary">N/A</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="text-center p-4">Nessun dato scansionato trovato per questo competitor.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% elif competitor_selected_resort %}
+        <div class="alert alert-info">Seleziona un competitor dal menu per visualizzare i dati.</div>
+    {% endif %}
+
+    <!-- Chart Row -->
+    {% if competitor_selected_data %}
+    <div class="row mt-4">
+        <div class="col-lg-6">
+            <h5 class="mb-3">Andamento Rating Mensile</h5>
+            <canvas id="competitorRatingTrendChart"></canvas>
+        </div>
+        <div class="col-lg-6">
+            <h5 class="mb-3">Ripartizione Sentiment</h5>
+            <canvas id="competitorSentimentChart"></canvas>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{{ chart_labels|json_script:"chart-labels" }}
+{{ maintenance_data|json_script:"maintenance-data" }}
+{{ it_data|json_script:"it-data" }}
+{{ rating_trend_data|json_script:"rating-trend-data" }}
+{{ sentiment_breakdown_data|json_script:"sentiment-breakdown-data" }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const chartLabels = JSON.parse(document.getElementById('chart-labels').textContent);
+    const maintenanceData = JSON.parse(document.getElementById('maintenance-data').textContent);
+    const itData = JSON.parse(document.getElementById('it-data').textContent);
+    const ratingTrendData = JSON.parse(document.getElementById('rating-trend-data').textContent);
+    const sentimentBreakdownData = JSON.parse(document.getElementById('sentiment-breakdown-data').textContent);
+
+    const ctx = document.getElementById('ticketTrendChart').getContext('2d');
+    const ticketTrendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartLabels,
+            datasets: [
+                {
+                    label: 'Ticket Manutenzione',
+                    data: maintenanceData,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: true,
+                    tension: 0.1
+                },
+                {
+                    label: 'Ticket IT',
+                    data: itData,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: true,
+                    tension: 0.1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+
+    // --- Competitor Charts ---
+    if (document.getElementById('competitorRatingTrendChart')) {
+        const ratingTrendCtx = document.getElementById('competitorRatingTrendChart').getContext('2d');
+
+        const trendLabels = Object.keys(ratingTrendData.my_resort || {}).concat(Object.keys(ratingTrendData.competitor || {})).filter((v, i, a) => a.indexOf(v) === i).sort();
+        const myResortRatings = trendLabels.map(label => (ratingTrendData.my_resort || {})[label]);
+        const competitorRatings = trendLabels.map(label => (ratingTrendData.competitor || {})[label]);
+
+        new Chart(ratingTrendCtx, {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [
+                    {
+                        label: 'Tuo Resort',
+                        data: myResortRatings,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Competitor',
+                        data: competitorRatings,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: false, suggestedMin: 1, suggestedMax: 5 } } }
+        });
+    }
+
+    if (document.getElementById('competitorSentimentChart')) {
+        const sentimentCtx = document.getElementById('competitorSentimentChart').getContext('2d');
+        const myResortSentiment = sentimentBreakdownData.my_resort || {};
+        const competitorSentiment = sentimentBreakdownData.competitor || {};
+
+        new Chart(sentimentCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Positivo', 'Neutrale', 'Negativo'],
+                datasets: [
+                    {
+                        label: 'Tuo Resort',
+                        data: [
+                            myResortSentiment.positive || 0,
+                            myResortSentiment.neutral || 0,
+                            myResortSentiment.negative || 0
+                        ],
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    },
+                    {
+                        label: 'Competitor',
+                        data: [
+                            competitorSentiment.positive || 0,
+                            competitorSentiment.neutral || 0,
+                            competitorSentiment.negative || 0
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    }
+                ]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+        });
+    }
+});
+</script>
+{% endblock %}

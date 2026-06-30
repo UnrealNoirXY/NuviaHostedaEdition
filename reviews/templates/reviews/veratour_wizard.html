@@ -1,0 +1,204 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card noir-card border-0 shadow-lg">
+                <div class="card-header bg-dark text-white py-3">
+                    <h4 class="mb-0"><i class="fas fa-file-import me-2 text-warning"></i>Integrazione Veratour - Upload Dati</h4>
+                </div>
+                <div class="card-body p-4">
+
+                    <!-- Wizard Steps -->
+                    <div class="d-flex justify-content-between mb-4 position-relative">
+                        <div class="step-line position-absolute w-100 bg-secondary" style="height: 2px; top: 15px; z-index: 0;"></div>
+                        <div class="step-item text-center" style="z-index: 1;">
+                            <div class="step-circle rounded-circle bg-primary text-white mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 32px; height: 32px;">1</div>
+                            <small class="fw-bold">Resort</small>
+                        </div>
+                        <div class="step-item text-center" style="z-index: 1;">
+                            <div class="step-circle rounded-circle {% if step >= 2 %}bg-primary text-white{% else %}bg-secondary text-light{% endif %} mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 32px; height: 32px;">2</div>
+                            <small class="{% if step >= 2 %}fw-bold{% endif %}">Files</small>
+                        </div>
+                        <div class="step-item text-center" style="z-index: 1;">
+                            <div class="step-circle rounded-circle {% if step >= 3 %}bg-primary text-white{% else %}bg-secondary text-light{% endif %} mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 32px; height: 32px;">3</div>
+                            <small class="{% if step >= 3 %}fw-bold{% endif %}">Processo</small>
+                        </div>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data" id="wizardForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="step" value="{{ step }}">
+
+                        {% if step == 1 %}
+                            <div class="mb-4">
+                                <label class="form-label h5 mb-3">Seleziona il Resort di riferimento</label>
+                                <select name="resort_id" class="form-select noir-input p-3" required>
+                                    <option value="">Scegli un resort...</option>
+                                    {% for r in resorts %}
+                                        <option value="{{ r.id }}">{{ r.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <p class="text-muted small mt-2">I dati caricati verranno associati a questa struttura.</p>
+                            </div>
+                        {% elif step == 2 %}
+                            <input type="hidden" name="resort_id" value="{{ resort_id }}">
+                            <div class="alert alert-info border-0 bg-opacity-10 py-3 mb-4">
+                                <i class="fas fa-hotel me-2"></i>Struttura selezionata: <strong>{{ resort_name }}</strong>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">1. Capienza Massima Struttura</label>
+                                <input type="number" name="max_capacity" class="form-control noir-input" placeholder="Es: 15000" required>
+                                <div class="form-text">Inserire la capienza totale della struttura per la stagione/anno.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">2. File REPORT (Dati Quantitativi)</label>
+                                <input type="file" name="file_report" class="form-control noir-input" accept=".xlsx" required>
+                                <div class="form-text">Caricare il file Excel contenente il totale ospiti e il periodo.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">3. File VOTA_COMMENTI (Testi)</label>
+                                <input type="file" name="file_commenti" class="form-control noir-input" accept=".xlsx" required>
+                                <div class="form-text">Caricare il file Excel contenente i commenti testuali per la Sentiment Analysis.</div>
+                            </div>
+                        {% elif step == 3 %}
+                            <div class="text-center py-4" id="processingStatus">
+                                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <h5 class="mb-3" id="statusMessage">Elaborazione in corso...</h5>
+                                <div class="progress noir-progress mb-3" style="height: 25px;">
+                                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;">0%</div>
+                                </div>
+                                <p class="text-muted small">L'operazione potrebbe richiedere alcuni minuti a causa della Sentiment Analysis dei commenti.</p>
+                            </div>
+
+                            <div class="text-center py-4 d-none" id="successPanel">
+                                <div class="rounded-circle bg-success text-white mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                                    <i class="fas fa-check fa-2x"></i>
+                                </div>
+                                <h4 class="text-success mb-3">Caricamento Completato!</h4>
+                                <p id="successSummary"></p>
+                                <div class="mt-4">
+                                    <a href="{% url 'reviews:analysis_center' %}" class="btn btn-primary px-4 py-2 me-2">
+                                        <i class="fas fa-chart-line me-2"></i>Vai al Centro Analisi
+                                    </a>
+                                    <a href="{% url 'reviews:veratour_upload' %}" class="btn btn-outline-secondary px-4 py-2">
+                                        Carica Altri
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="text-center py-4 d-none" id="errorPanel">
+                                <div class="rounded-circle bg-danger text-white mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                                    <i class="fas fa-times fa-2x"></i>
+                                </div>
+                                <h4 class="text-danger mb-3">Si è verificato un errore</h4>
+                                <p id="errorMessage" class="text-muted"></p>
+                                <div class="mt-4">
+                                    <button type="button" onclick="window.location.reload()" class="btn btn-secondary px-4 py-2">
+                                        Riprova
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+                            {% if step == 1 %}
+                                <a href="{% url 'reviews:scraping_panel' %}" class="btn btn-light px-4 py-2">Annulla</a>
+                                <button type="submit" class="btn btn-primary px-5 py-2">Avanti <i class="fas fa-arrow-right ms-2"></i></button>
+                            {% elif step == 2 %}
+                                <button type="button" onclick="history.back()" class="btn btn-light px-4 py-2">Indietro</button>
+                                <button type="submit" class="btn btn-success px-5 py-2">Inizia Elaborazione <i class="fas fa-rocket ms-2"></i></button>
+                            {% endif %}
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if step == 3 %}
+<script>
+    const taskId = "{{ task_id }}";
+    const statusUrl = "{% url 'reviews:veratour_task_status' 'TASK_ID' %}".replace('TASK_ID', taskId);
+
+    function pollStatus() {
+        fetch(statusUrl)
+            .then(response => response.json())
+            .then(data => {
+                const progressBar = document.getElementById('progressBar');
+                const statusMessage = document.getElementById('statusMessage');
+
+                if (data.state === 'PROGRESS') {
+                    const percent = data.result.percent || 0;
+                    progressBar.style.width = percent + '%';
+                    progressBar.textContent = percent + '%';
+                    statusMessage.textContent = data.result.message || 'In elaborazione...';
+                    setTimeout(pollStatus, 2000);
+                }
+                else if (data.state === 'SUCCESS') {
+                    progressBar.style.width = '100%';
+                    progressBar.textContent = '100%';
+                    progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
+                    progressBar.classList.add('bg-success');
+
+                    document.getElementById('processingStatus').classList.add('d-none');
+                    document.getElementById('successPanel').classList.remove('d-none');
+                    document.getElementById('successSummary').textContent = `Dati elaborati per ${data.result.resort}. Totale ospiti registrati: ${data.result.guests}.`;
+                }
+                else if (data.state === 'FAILURE' || data.state === 'REVOKED') {
+                    document.getElementById('processingStatus').classList.add('d-none');
+                    document.getElementById('errorPanel').classList.remove('d-none');
+                    document.getElementById('errorMessage').textContent = data.result.message || 'Errore sconosciuto durante l\'elaborazione.';
+                }
+                else {
+                    // Pending or other states
+                    setTimeout(pollStatus, 2000);
+                }
+            })
+            .catch(error => {
+                console.error('Polling error:', error);
+                setTimeout(pollStatus, 5000);
+            });
+    }
+
+    pollStatus();
+</script>
+{% endif %}
+
+<style>
+    .noir-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .noir-input {
+        border: 2px solid #eee;
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+    .noir-input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    }
+    .noir-progress {
+        background-color: #eee;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .step-circle {
+        transition: all 0.3s;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

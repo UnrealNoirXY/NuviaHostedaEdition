@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggiornamento Prenotazione / Booking Update</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            background-color: #f8f9fa;
+        }
+        .email-wrapper {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 550px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .header {
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .logo-container {
+            margin-bottom: 25px;
+        }
+        .logo-container img {
+            max-width: 180px;
+            height: auto;
+        }
+        .header h1 {
+            font-size: 28px;
+            color: #23395d;
+            margin: 0;
+            font-weight: 600;
+        }
+        .content {
+            padding: 35px 40px;
+            line-height: 1.6;
+            color: #555;
+            font-size: 16px;
+        }
+        .content p {
+            margin: 0 0 18px;
+        }
+        .booking-details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: left;
+        }
+        .booking-details ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+         .booking-details li {
+            margin-bottom: 8px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #0d6efd;
+            color: #ffffff !important;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 12px;
+            color: #999;
+            background-color: #f1f1f1;
+        }
+        .footer a {
+            color: #23395d;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .separator {
+            border-top: 1px solid #e0e0e0;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="container">
+            <div class="header">
+                <div class="logo-container">
+                    {% if company_logo_url %}
+                        <img src="{{ company_logo_url }}" alt="NoirTech Logo">
+                    {% endif %}
+                </div>
+                <h1>Prenotazione Aggiornata</h1>
+            </div>
+            <div class="content">
+                <!-- Sezione Italiana -->
+                <p>Gentile {{ guest_name }},</p>
+                <p>La tua prenotazione presso <strong>{{ resort_name }}</strong> è stata aggiornata. Ecco i nuovi dettagli:</p>
+                <div class="booking-details">
+                    <ul>
+                        <li><strong>Check-in:</strong> {{ check_in_date }}</li>
+                        <li><strong>Check-out:</strong> {{ check_out_date }}</li>
+                    </ul>
+                </div>
+                <p style="margin-top: 25px;">Se desideri, puoi completare il check-in online in qualsiasi momento prima del tuo arrivo.</p>
+                <a href="{{ checkin_link }}" class="button" style="color: #ffffff;">VAI AL CHECK-IN ONLINE</a>
+
+                <div class="separator"></div>
+
+                <!-- Sezione Inglese -->
+                <h1>Booking Updated</h1>
+                <p>Dear {{ guest_name }},</p>
+                <p>Your booking at <strong>{{ resort_name }}</strong> has been updated. Here are the new details:</p>
+                <div class="booking-details">
+                    <ul>
+                        <li><strong>Check-in:</strong> {{ check_in_date }}</li>
+                        <li><strong>Check-out:</strong> {{ check_out_date }}</li>
+                    </ul>
+                </div>
+                <p style="margin-top: 25px;">If you wish, you can complete the online check-in at any time before your arrival.</p>
+                 <a href="{{ checkin_link }}" class="button" style="color: #ffffff;">GO TO ONLINE CHECK-IN</a>
+            </div>
+            <div class="footer">
+                <p>Questa è un'email automatica. Per favore, non rispondere. / This is an automated email. Please do not reply.</p>
+                <p style="margin-top: 15px;">&copy; 2025 NoirTech. Tutti i diritti riservati.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

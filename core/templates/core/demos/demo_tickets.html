@@ -1,0 +1,19 @@
+{% extends 'core/base_demo.html' %}
+
+{% block demo_content %}
+    <h3 class="mb-4">Anteprima Ticket Manutenzione</h3>
+    <div class="list-group">
+        {% for ticket in tickets %}
+            <div class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ ticket.title }}</h5>
+                    <small>{{ ticket.created_at|date:"d M Y" }}</small>
+                </div>
+                <p class="mb-1">Stato: <span class="badge bg-{{ ticket.status|lower }}">{{ ticket.get_status_display }}</span> | Priorità: {{ ticket.get_priority_display }}</p>
+                <small>Assegnato a: {{ ticket.assigned_to.get_full_name|default:"Non assegnato" }}</small>
+            </div>
+        {% empty %}
+            <p>Nessun ticket demo da mostrare.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

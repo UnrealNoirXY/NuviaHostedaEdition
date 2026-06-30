@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+{% block title %}Gestione Resort{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title mb-0">Gestione Resort</h2>
+        <a href="{% url 'core:resort_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Aggiungi Resort
+        </a>
+    </div>
+
+    <!-- Desktop Table -->
+    <div class="table-responsive d-none d-lg-block">
+        <table class="table table-striped table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Località</th>
+                    <th scope="col">Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for resort in resorts %}
+                <tr>
+                    <td><strong>{{ resort.name }}</strong></td>
+                    <td>{{ resort.location }}</td>
+                    <td>
+                        {% if user.is_superuser %}
+                        <a href="{% url 'competitors:manage-associations' resort.pk %}" class="btn btn-sm btn-outline-secondary" title="Associa Competitor"><i class="fas fa-poll"></i></a>
+                        {% endif %}
+                        <a href="{% url 'reviews:manage_scraping_urls' resort.pk %}" class="btn btn-sm btn-outline-info" title="Gestisci URL Recensioni"><i class="fas fa-link"></i></a>
+                        <a href="{% url 'core:resort_update' resort.pk %}" class="btn btn-sm btn-outline-primary" title="Modifica"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'core:resort_delete' resort.pk %}" class="btn btn-sm btn-outline-danger" title="Elimina"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">Nessun resort trovato.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="d-lg-none">
+        {% for resort in resorts %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title mb-0">{{ resort.name }}</h5>
+                        <p class="card-text text-muted">{{ resort.location }}</p>
+                    </div>
+                    <div>
+                        {% if user.is_superuser %}
+                        <a href="{% url 'competitors:manage-associations' resort.pk %}" class="btn btn-sm btn-outline-secondary" title="Associa Competitor"><i class="fas fa-poll"></i></a>
+                        {% endif %}
+                        <a href="{% url 'reviews:manage_scraping_urls' resort.pk %}" class="btn btn-sm btn-outline-info" title="Gestisci URL Recensioni"><i class="fas fa-link"></i></a>
+                        <a href="{% url 'core:resort_update' resort.pk %}" class="btn btn-sm btn-outline-primary" title="Modifica"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'core:resort_delete' resort.pk %}" class="btn btn-sm btn-outline-danger" title="Elimina"><i class="fas fa-trash"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info">Nessun resort trovato.</div>
+        {% endfor %}
+    </div>
+    <a href="{% url 'core:management_dashboard' %}" class="btn btn-secondary mt-3">
+        <i class="fas fa-arrow-left"></i> Torna alla Dashboard di Gestione
+    </a>
+</div>
+{% endblock %}

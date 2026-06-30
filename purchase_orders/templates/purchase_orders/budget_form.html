@@ -1,0 +1,24 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}{% if object %}Modifica Budget{% else %}Nuovo Budget{% endif %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4 fade-in">
+    <h2 class="dashboard-title mb-4">
+        {% if object %}
+            Modifica Budget per {{ object.resort.name }} - {{ object.month }}/{{ object.year }}
+        {% else %}
+            Imposta Nuovo Budget
+        {% endif %}
+    </h2>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Salva</button>
+            <a href="{% url 'purchase_orders:budget_list' %}" class="btn btn-secondary">Annulla</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

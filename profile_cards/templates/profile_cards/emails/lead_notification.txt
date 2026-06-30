@@ -1,0 +1,12 @@
+Hai ricevuto un nuovo messaggio tramite la tua Business Card Noir.
+
+Dettagli del Lead:
+Nome: {{ lead.name }}
+Email: {{ lead.email }}
+Data: {{ lead.created_at|date:"d/m/Y H:i" }}
+
+Messaggio:
+{{ lead.message }}
+
+---
+Noir Studio | Business Intelligence Unit

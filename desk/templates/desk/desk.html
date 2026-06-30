@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load django_vite %}
+
+{% block title %}
+    {{ page_title|default:"Home Desk" }} | {{ platform_name }}
+{% endblock %}
+
+{% block additional_styles %}
+    {# The new React app will handle its own styling. We can add global styles here if needed. #}
+    <style>
+      /* Ensure the react root takes up full space if needed */
+      #root {
+        height: 100%;
+        width: 100%;
+        padding: 1rem;
+      }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+{# This is the main container where the React application will be mounted. #}
+<div id="root">
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%; flex-direction: column;">
+        <i class="fas fa-spinner fa-spin fa-3x"></i>
+        <p style="margin-top: 1rem;">Caricamento della nuova Home Desk...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_scripts %}
+{# This tag loads the compiled React application. #}
+{% vite_asset 'src/main.jsx' %}
+{% endblock %}

@@ -1,0 +1,104 @@
+# Configurazione dei smoke test per la verifica documenti
+endpoint: http://localhost:8000/document_verification/verify/
+default_min_field_accuracy: 0.9
+default_allowed_statuses: [VERIFIED, NEEDS_REVIEW]
+default_ocr_provider: mock
+
+# Ogni caso può usare image_id (mock) o image_path (upload file)
+tests:
+  - name: ita_id_card_happy_path
+    image_id: VALID_ID_CARD
+    issuer_country: ITA
+    document_type: ID_CARD
+    expected_status: VERIFIED
+    expected_fields:
+      document_number: CA1234567
+      first_name: MARIO
+      last_name: ROSSI
+      birth_date: 1980-01-15
+      expiry_date: 2030-01-14
+      issuer_country: ITA
+    min_field_accuracy: 0.95
+
+  - name: ita_passport_low_confidence
+    image_id: LOW_CONFIDENCE_PASSPORT
+    issuer_country: ITA
+    document_type: PASSPORT
+    expected_status: NEEDS_REVIEW
+    expected_fields:
+      document_number: YA8765432
+      first_name: LUIGI
+      last_name: VERDI
+      birth_date: 1992-05-20
+      expiry_date: 2028-05-19
+      issuer_country: ITA
+    min_field_accuracy: 0.8
+
+  - name: ita_driver_license_missing_field
+    image_id: MISSING_FIELDS_DRIVER_LICENSE
+    issuer_country: ITA
+    document_type: DRIVER_LICENSE
+    expected_status: NEEDS_REVIEW
+    expected_fields:
+      document_number: U1A234567B
+      first_name: ANNA
+      last_name: BIANCHI
+      birth_date: 1985-11-30
+      issuer_country: ITA
+    min_field_accuracy: 0.85
+
+  - name: ita_passport_with_valid_mrz
+    image_id: PASSPORT_WITH_VALID_MRZ
+    issuer_country: ITA
+    document_type: PASSPORT
+    expected_status: VERIFIED
+    expected_fields:
+      document_number: YA1234567
+      first_name: MARIO
+      last_name: ROSSI
+      birth_date: 1980-01-15
+      expiry_date: 2030-01-14
+      issuer_country: ITA
+    min_field_accuracy: 0.95
+
+  - name: ita_passport_with_invalid_mrz
+    image_id: PASSPORT_WITH_INVALID_MRZ
+    issuer_country: ITA
+    document_type: PASSPORT
+    expected_status: NEEDS_REVIEW
+    expected_fields:
+      document_number: YA1234567
+      first_name: MARIO
+      last_name: ROSSI
+      birth_date: 1980-01-15
+      expiry_date: 2030-01-14
+      issuer_country: ITA
+    min_field_accuracy: 0.9
+
+  - name: esp_passport_missing_mrz
+    image_id: SPANISH_PASSPORT_WITHOUT_MRZ
+    issuer_country: ESP
+    document_type: PASSPORT
+    expected_status: NEEDS_REVIEW
+    expected_fields:
+      document_number: ABC123456
+      first_name: JUAN
+      last_name: GARCIA
+      birth_date: 1990/07/12
+      expiry_date: 2030/07/11
+      issuer_country: ESP
+    min_field_accuracy: 0.9
+
+  - name: fra_id_card_dotted_date
+    image_id: FRENCH_ID_WITH_DOTS
+    issuer_country: FRA
+    document_type: ID_CARD
+    expected_status: VERIFIED
+    expected_fields:
+      document_number: 123456789012
+      first_name: JULIE
+      last_name: DURAND
+      birth_date: 1995-12-31
+      expiry_date: 2030-12-31
+      issuer_country: FRA
+    min_field_accuracy: 0.95

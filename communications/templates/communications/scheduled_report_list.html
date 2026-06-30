@@ -1,0 +1,117 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Gestione Report Programmati{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title mb-0">Gestione Report Email Programmati</h2>
+        <a href="{% url 'communications:scheduled_report_create' %}" class="btn btn-success">
+            <i class="fas fa-plus me-2"></i> Nuovo Report Programmato
+        </a>
+    </div>
+
+    <p class="text-muted">
+        Usa questa sezione per creare, modificare e gestire i report automatici inviati via email.
+        Le attività programmate vengono eseguite da Celery Beat. Assicurati che il servizio sia in esecuzione sul server.
+    </p>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome Report</th>
+                    <th>Stato</th>
+                    <th>Frequenza</th>
+                    <th>Destinatari</th>
+                    <th>Resort Inclusi</th>
+                    <th class="text-end">Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td><strong>{{ report.name }}</strong></td>
+                    <td>
+                        {% if report.is_active %}
+                            <span class="badge bg-success">Attivo</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Disattivato</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if report.periodic_task %}
+                            {{ report.periodic_task.crontab.hour|stringformat:"02d" }}:{{ report.periodic_task.crontab.minute|stringformat:"02d" }} (Ogni Giorno)
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ report.get_recipient_names|truncatechars:40 }}</td>
+                    <td>{{ report.get_resort_names|truncatechars:40 }}</td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#sendNowModal-{{ report.pk }}">
+                            <i class="fas fa-paper-plane"></i> Invia Ora...
+                        </button>
+                        <a href="{% url 'communications:scheduled_report_update' report.pk %}" class="btn btn-sm btn-outline-primary" title="Modifica">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'communications:scheduled_report_delete' report.pk %}" class="btn btn-sm btn-outline-danger" title="Elimina">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5">
+                        <p class="mb-0">Nessun report programmato trovato.</p>
+                        <a href="{% url 'communications:scheduled_report_create' %}" class="btn btn-primary mt-3">Crea il tuo primo report</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modals for Instant Send -->
+{% for report in reports %}
+<div class="modal fade" id="sendNowModal-{{ report.pk }}" tabindex="-1" aria-labelledby="sendNowModalLabel-{{ report.pk }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'communications:scheduled_report_send_now' report.pk %}" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sendNowModalLabel-{{ report.pk }}">Invio Istantaneo: {{ report.name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Puoi inviare immediatamente un report per il <strong>giorno precedente</strong>, oppure specificare un intervallo di date personalizzato.
+                    </p>
+                    <hr>
+                    <div class="mb-3">
+                        <a href="{% url 'communications:scheduled_report_send_now' report.pk %}" class="btn btn-primary w-100">Invia Report di Ieri</a>
+                    </div>
+                    <hr>
+                    <p class="text-center"><strong>Oppure invia per un periodo personalizzato:</strong></p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="start_date-{{ report.pk }}" class="form-label">Data Inizio</label>
+                            <input type="date" class="form-control" name="start_date" id="start_date-{{ report.pk }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="end_date-{{ report.pk }}" class="form-label">Data Fine</label>
+                            <input type="date" class="form-control" name="end_date" id="end_date-{{ report.pk }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="submit" class="btn btn-success">Invia Report Personalizzato</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

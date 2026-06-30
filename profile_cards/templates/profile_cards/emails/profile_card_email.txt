@@ -1,0 +1,9 @@
+Ciao,
+
+è stata condivisa con te una scheda contatto professionale.
+
+{{ card.first_name }} {{ card.last_name }}
+Ruolo: {{ card.role }}
+Email: {{ card.email }}
+
+Apri la scheda: {{ public_url }}

@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fw-bold">{{ page_title }}</h5>
+                </div>
+                <div class="card-body">
+                    <p>Usa questo pannello per avviare manualmente lo scraping per uno o più competitor. Verranno scansionati tutti i loro link di scraping attivi.</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-play-circle me-2"></i>Avvia Scraping
+                            </button>
+                            <a href="{% url 'competitors:competitor-list' %}" class="btn btn-secondary">Annulla</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

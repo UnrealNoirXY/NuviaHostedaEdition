@@ -1,0 +1,69 @@
+{% if block_id == 'logo' %}
+    {% if blocks.logo.enabled %}
+        <div class="header-block" key="logo">
+            {% if menu.layout.logo %}
+                <img src="{{ menu.layout.logo.path }}" alt="Logo" class="logo">
+            {% endif %}
+        </div>
+    {% endif %}
+
+{% elif block_id == 'info' %}
+    {% if blocks.info.enabled %}
+        <div class="header-block" key="info">
+            <h1>{{ menu.nome }}</h1>
+            <div class="info-subtitle">
+                {% if menu.data_evento %}{{ menu.data_evento|date:"d F Y" }} &bull;{% endif %}
+                {{ menu.get_turno_display }}
+            </div>
+            {% if menu.ospiti_target %}
+                <div style="margin-top: 5px; font-size: 10pt; opacity: 0.8;">{{ menu.ospiti_target }}</div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+{% elif block_id == 'sections' %}
+    {% if blocks.sections.enabled %}
+        <div key="sections">
+            {% for categoria, lista in piatti_per_categoria.items %}
+                <div class="category-section">
+                    <h2 class="category-title">{{ categoria }}</h2>
+                    {% for piatto in lista %}
+                        <div class="dish-item">
+                            <div class="dish-header">
+                                <span class="dish-price">{% if piatto.prezzo %}{{ piatto.prezzo }} &euro;{% endif %}</span>
+                                <span class="dish-name">{{ piatto.nome }}</span>
+                            </div>
+                            {% if piatto.descrizione %}
+                                <div class="dish-description">{{ piatto.descrizione }}</div>
+                            {% endif %}
+                            {% if piatto.allergeni.exists or piatto.allergen_summary %}
+                                <div class="dish-allergens">
+                                    <strong>Allergeni:</strong>
+                                    {% for allergene in piatto.allergeni.all %}
+                                        {{ allergene.nome }}{% if not forloop.last or piatto.allergen_summary %}, {% endif %}
+                                    {% endfor %}
+                                    {% if piatto.allergen_summary %}{{ piatto.allergen_summary }}{% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+{% elif block_id == 'legend' %}
+    {% if blocks.legend.enabled and allergeni %}
+        <div class="legend-block" key="legend">
+            <div class="legend-title">Legenda allergeni</div>
+            <ul class="legend-list">
+                {% for allergene in allergeni %}
+                    <li>
+                        <strong>{{ allergene.nome }}</strong>
+                        {% if allergene.descrizione %}: {{ allergene.descrizione }}{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endif %}

@@ -1,0 +1,165 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h2 mb-4 dashboard-title">{{ page_title }}</h1>
+
+    <div class="card dashboard-card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Avvia un nuovo processo di scraping</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text">
+                Seleziona i resort per cui vuoi scaricare le recensioni. Puoi anche specificare una data di inizio
+                per scaricare solo le recensioni più recenti di quella data.
+            </p>
+
+            <form id="scrapingForm" method="post" class="mt-4">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">{{ form.resorts.label }}</label>
+                    <div class="form-check-container border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                        {{ form.resorts }}
+                    </div>
+                    {% if form.resorts.help_text %}
+                        <div class="form-text">{{ form.resorts.help_text }}</div>
+                    {% endif %}
+                    {% for error in form.resorts.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">{{ form.sources.label }}</label>
+                            <div class="form-check-container border rounded p-3">
+                                {{ form.sources }}
+                            </div>
+                             {% if form.sources.help_text %}
+                                <div class="form-text">{{ form.sources.help_text }}</div>
+                            {% endif %}
+                            {% for error in form.sources.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <!-- Max reviews for Booking.com -->
+                        <div class="mb-4" id="max-reviews-booking-wrapper" style="display: none;">
+                            <label for="{{ form.max_reviews_booking.id_for_label }}" class="form-label fw-bold">{{ form.max_reviews_booking.label }}</label>
+                            {{ form.max_reviews_booking }}
+                            {% if form.max_reviews_booking.help_text %}<div class="form-text">{{ form.max_reviews_booking.help_text }}</div>{% endif %}
+                            {% for error in form.max_reviews_booking.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <!-- Max reviews for Google -->
+                        <div class="mb-4" id="max-reviews-google-wrapper" style="display: none;">
+                            <label for="{{ form.max_reviews_google.id_for_label }}" class="form-label fw-bold">{{ form.max_reviews_google.label }}</label>
+                            {{ form.max_reviews_google }}
+                            {% if form.max_reviews_google.help_text %}<div class="form-text">{{ form.max_reviews_google.help_text }}</div>{% endif %}
+                            {% for error in form.max_reviews_google.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <!-- Max reviews for Tripadvisor -->
+                        <div class="mb-4" id="max-reviews-tripadvisor-wrapper" style="display: none;">
+                            <label for="{{ form.max_reviews_tripadvisor.id_for_label }}" class="form-label fw-bold">{{ form.max_reviews_tripadvisor.label }}</label>
+                            {{ form.max_reviews_tripadvisor }}
+                            {% if form.max_reviews_tripadvisor.help_text %}<div class="form-text">{{ form.max_reviews_tripadvisor.help_text }}</div>{% endif %}
+                            {% for error in form.max_reviews_tripadvisor.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <!-- Start date for scraping -->
+                        <div class="mb-4" id="start-date-wrapper" style="display: none;">
+                            <label for="{{ form.start_date.id_for_label }}" class="form-label fw-bold">{{ form.start_date.label }}</label>
+                            {{ form.start_date }}
+                            {% if form.start_date.help_text %}<div class="form-text">{{ form.start_date.help_text }}</div>{% endif %}
+                            {% for error in form.start_date.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-play-circle me-2"></i>Avvia Scraping
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-5">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5 class="mt-4 mb-0" id="loadingModalLabel">Scraping in corso...</h5>
+                <p class="text-muted mt-2">Questa operazione potrebbe richiedere alcuni minuti. Non chiudere la pagina.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('scrapingForm');
+    const sourceCheckboxes = document.querySelectorAll('input[name="sources"]');
+
+    // Wrappers for our conditional fields
+    const maxReviewsBookingWrapper = document.getElementById('max-reviews-booking-wrapper');
+    const maxReviewsGoogleWrapper = document.getElementById('max-reviews-google-wrapper');
+    const maxReviewsTripadvisorWrapper = document.getElementById('max-reviews-tripadvisor-wrapper');
+    const startDateWrapper = document.getElementById('start-date-wrapper');
+
+    // Checkbox elements
+    const bookingCheckbox = Array.from(sourceCheckboxes).find(cb => cb.parentElement.textContent.includes('Booking.com'));
+    const googleCheckbox = Array.from(sourceCheckboxes).find(cb => cb.parentElement.textContent.includes('Google'));
+    const tripadvisorCheckbox = Array.from(sourceCheckboxes).find(cb => cb.parentElement.textContent.includes('Tripadvisor'));
+
+    function toggleConditionalFields() {
+        if (bookingCheckbox && maxReviewsBookingWrapper) {
+            maxReviewsBookingWrapper.style.display = bookingCheckbox.checked ? '' : 'none';
+        }
+        if (googleCheckbox && maxReviewsGoogleWrapper) {
+            maxReviewsGoogleWrapper.style.display = googleCheckbox.checked ? '' : 'none';
+        }
+        if (tripadvisorCheckbox && maxReviewsTripadvisorWrapper) {
+            maxReviewsTripadvisorWrapper.style.display = tripadvisorCheckbox.checked ? '' : 'none';
+        }
+        if (startDateWrapper && bookingCheckbox && tripadvisorCheckbox) {
+            startDateWrapper.style.display = (bookingCheckbox.checked || tripadvisorCheckbox.checked) ? '' : 'none';
+        }
+    }
+
+    sourceCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', toggleConditionalFields);
+    });
+
+    // Initial check on page load
+    toggleConditionalFields();
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Basic validation before showing modal
+            const resortsChecked = form.querySelector('input[name="resorts"]:checked');
+            const sourcesChecked = form.querySelector('input[name="sources"]:checked');
+            if (!resortsChecked || !sourcesChecked) {
+                // Let browser handle HTML5 validation
+                return;
+            }
+            var loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+            loadingModal.show();
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ menu.nome }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            font-family: '{{ menu.layout.font_principale|default:"serif" }}', 'Georgia', 'Times New Roman', serif;
+            color: {{ menu.layout.colore_font|default:"#1a1a1a" }};
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            position: relative;
+            background-color: white;
+            background-size: 100% 100%;
+            background-position: center;
+            overflow: hidden;
+            box-sizing: border-box;
+            padding: 20mm; /* Default padding if not in free mode, can be overridden */
+        }
+
+        /* Presets */
+        .preset-gala {
+            background-color: #0c0c0c !important;
+            color: #d4af37 !important;
+            border: 10mm double #d4af37 !important;
+        }
+        .preset-gala h1, .preset-gala .category-title, .preset-gala .dish-name {
+            color: #d4af37 !important;
+        }
+        .preset-gala .category-title { border-color: #d4af37 !important; }
+
+        .preset-bistro {
+            background-color: #fdfaf6 !important;
+            font-family: 'Courier New', Courier, monospace !important;
+            border: 2mm solid #333 !important;
+        }
+
+        .preset-modern {
+            border-left: 15mm solid #38bdf8 !important;
+            background: linear-gradient(135deg, #fff 0%, #f0f4f8 100%) !important;
+        }
+
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 120pt;
+            color: rgba(0, 0, 0, 0.03);
+            font-weight: bold;
+            z-index: -1;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .menu-container {
+            width: 100%;
+        }
+
+        /* Column handling */
+        {% if layout.struttura_blocchi.columns == 2 %}
+        .columns-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .menu-column {
+            width: 47%;
+        }
+        {% else %}
+        .menu-column {
+            width: 100%;
+        }
+        {% endif %}
+
+        .header-block {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+            position: relative;
+        }
+
+        .logo {
+            max-width: 120px;
+            max-height: 80px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28pt;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 800;
+            color: #000;
+        }
+
+        .info-subtitle {
+            font-size: 11pt;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #666;
+        }
+
+        .category-section {
+            margin-top: 35px;
+            page-break-inside: avoid;
+        }
+
+        h2.category-title {
+            font-size: 16pt;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .dish-item {
+            margin-bottom: 22px;
+            page-break-inside: avoid;
+        }
+
+        .dish-header {
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .dish-name {
+            font-size: 13pt;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .dish-price {
+            float: right;
+            font-weight: 700;
+            font-size: 12pt;
+        }
+
+        .dish-description {
+            font-size: 10.5pt;
+            color: #444;
+            font-style: italic;
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+
+        .dish-allergens {
+            font-size: 8pt;
+            color: #888;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .legend-block {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            page-break-inside: avoid;
+        }
+
+        .legend-title {
+            font-size: 12pt;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .legend-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 9pt;
+            color: #666;
+        }
+
+        .legend-list li {
+            margin-bottom: 4px;
+        }
+
+        .legend-list strong {
+            color: #333;
+        }
+
+        .footer-note {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 9pt;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    {% if not menu.is_published %}
+    <div class="watermark">BOZZA</div>
+    {% endif %}
+
+    {% with layout=menu.layout %}
+    {% with metadata=layout.metadata %}
+    <div class="a4-page {{ metadata.preset }}" style="{% if menu.layout.background_image %}background-image: url('{{ menu.layout.background_image.path }}');{% elif metadata.background_image_url %}background-image: url('{{ metadata.background_image_url }}');{% endif %} {% if metadata.border_style %}border: {{ metadata.border_style }};{% endif %} {% if metadata.is_free_mode %}padding: 0;{% endif %}">
+
+        <div class="menu-container">
+            {% if metadata.is_free_mode %}
+                {% for block_id, pos in metadata.positions.items %}
+                    <div style="position: absolute; left: {{ pos.x }}pt; top: {{ pos.y }}pt; width: {{ pos.width }}pt; height: {{ pos.height }}pt; overflow: hidden;">
+                        {% include "menu_generator/pdf/blocks_renderer.html" with block_id=block_id blocks=layout.struttura_blocchi.blocks %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% with blocks=layout.struttura_blocchi.blocks %}
+                {% with order=layout.struttura_blocchi.order %}
+                {% with columns=layout.struttura_blocchi.columns|default:1 %}
+
+                <div class="columns-container">
+                    <!-- Column 1 -->
+                    <div class="menu-column">
+                        {% for block_id in order.1 %}
+                            {% include "menu_generator/pdf/blocks_renderer.html" with block_id=block_id %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Column 2 (if present) -->
+                    {% if columns == 2 %}
+                    <div class="menu-column">
+                        {% for block_id in order.2 %}
+                            {% include "menu_generator/pdf/blocks_renderer.html" with block_id=block_id %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% endwith %}
+                {% endwith %}
+                {% endwith %}
+            {% endif %}
+        </div>
+    </div>
+    {% endwith %}
+    {% endwith %}
+</body>
+</html>

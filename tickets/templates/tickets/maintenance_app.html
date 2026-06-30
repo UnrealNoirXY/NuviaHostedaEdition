@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+{% load django_vite %}
+{% block title %}Manutenzione React{% endblock %}
+
+{% block content %}
+<div id="maintenance-root"></div>
+{% endblock %}
+
+{% block extra_js %}
+    {% if vite_entry %}
+        {% vite_asset vite_entry %}
+    {% else %}
+        {% vite_asset 'src/maintenance_entry.jsx' %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Associa Competitor a {{ resort.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h2 dashboard-title">Associa Competitor a <span class="text-primary">{{ resort.name }}</span></h1>
+    <p class="mb-4">Usa questa pagina per gestire quali competitor vengono monitorati per questo resort.</p>
+
+    <div class="row">
+        <!-- Colonna per associare nuovi competitor -->
+        <div class="col-md-4">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fw-bold">Aggiungi Associazione</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_competitor" class="form-label">Seleziona Competitor da Associare</label>
+                            <select name="competitor" id="id_competitor" class="form-select">
+                                <option value="">--- Scegli un Competitor ---</option>
+                                {% for comp in available_competitors %}
+                                <option value="{{ comp.id }}">{{ comp.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Aggiungi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonna con la lista dei competitor già associati -->
+        <div class="col-md-8">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fw-bold">Competitor Attualmente Associati ({{ associated_competitors.count }})</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Nome Competitor</th>
+                                    <th>Associato il</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for assoc in associated_competitors %}
+                                <tr>
+                                    <td>{{ assoc.competitor.name }}</td>
+                                    <td>{{ assoc.created_at|date:"d M Y" }}</td>
+                                    <td class="text-end">
+                                        <form action="{% url 'competitors:remove-association' assoc.pk %}" method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Sei sicuro di voler rimuovere questa associazione?');">
+                                                <i class="fas fa-trash"></i> Rimuovi
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-5">
+                                        <p class="mb-0">Nessun competitor associato a questo resort.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4">
+        <a href="{% url 'core:resort_list' %}" class="btn btn-secondary">Torna alla Lista Resort</a>
+    </div>
+</div>
+{% endblock %}

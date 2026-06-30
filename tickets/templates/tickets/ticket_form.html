@@ -1,0 +1,130 @@
+{% extends 'core/base.html' %}
+{% block title %}Nuova Richiesta di Manutenzione{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <h2 class="dashboard-title mb-4">Nuova Richiesta di Manutenzione</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.title.label }}</label>
+            {{ form.title }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.priority.label }}</label>
+            {{ form.priority }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.description.label }}</label>
+            {{ form.description }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.resort.label }}</label>
+            {{ form.resort }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.room.label }}</label>
+            {{ form.room }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.attachment.label }}</label>
+            {{ form.attachment }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.assigned_to.label }}</label>
+            {{ form.assigned_to }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">{{ form.due_date.label }}</label>
+            {{ form.due_date }}
+            {% if form.due_date.help_text %}
+                <small class="text-muted d-block">{{ form.due_date.help_text }}</small>
+            {% endif %}
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Invia Richiesta</button>
+            <a href="{{ request.META.HTTP_REFERER|default:'home' }}" class="btn btn-secondary">Annulla</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const resortSelect = document.getElementById("{{ form.resort.id_for_label }}");
+    const roomSelect = document.getElementById("{{ form.room.id_for_label }}");
+    const maintainerSelect = document.getElementById("{{ form.assigned_to.id_for_label }}");
+
+    const roomsUrl = "{% url 'ajax_load_rooms' %}";
+    const maintainersUrl = "{% url 'ajax_load_maintainers' %}";
+
+    function updateDropdowns() {
+        const resortId = resortSelect.value;
+
+        // Clear dependent dropdowns
+        roomSelect.innerHTML = '<option value="">--- Prima Seleziona un Resort ---</option>';
+        roomSelect.disabled = true;
+        maintainerSelect.innerHTML = '<option value="">--- Prima Seleziona un Resort ---</option>';
+        maintainerSelect.disabled = true;
+
+        if (!resortId) return;
+
+        // Fetch and populate rooms
+        fetch(`${roomsUrl}?resort_id=${resortId}`)
+            .then(response => response.json())
+            .then(data => {
+                roomSelect.innerHTML = '<option value="">--- Seleziona Camera (Opzionale) ---</option>';
+                data.forEach(function(room) {
+                    const option = document.createElement("option");
+                    option.value = room.id;
+                    option.textContent = room.name;
+                    roomSelect.appendChild(option);
+                });
+                roomSelect.disabled = data.length === 0;
+            })
+            .catch(error => console.error('Error loading rooms:', error));
+
+        // Fetch and populate maintainers
+        fetch(`${maintainersUrl}?resort_id=${resortId}`)
+            .then(response => response.json())
+            .then(data => {
+                maintainerSelect.innerHTML = '<option value="">--- Seleziona Manutentore (Opzionale) ---</option>';
+                data.forEach(function(maintainer) {
+                    const option = document.createElement("option");
+                    option.value = maintainer.id;
+                    option.textContent = maintainer.username;
+                    maintainerSelect.appendChild(option);
+                });
+                maintainerSelect.disabled = data.length === 0;
+            })
+            .catch(error => console.error('Error loading maintainers:', error));
+    }
+
+    if (resortSelect) {
+        resortSelect.addEventListener("change", updateDropdowns);
+
+        // If a resort is already selected on page load (e.g., for a director),
+        // trigger the update immediately.
+        if (resortSelect.value) {
+            updateDropdowns();
+        } else {
+            // If no resort is selected initially, disable the dropdowns
+            roomSelect.innerHTML = '<option value="">--- Prima Seleziona un Resort ---</option>';
+            roomSelect.disabled = true;
+            maintainerSelect.innerHTML = '<option value="">--- Prima Seleziona un Resort ---</option>';
+            maintainerSelect.disabled = true;
+        }
+    }
+});
+</script>
+{% endblock %}

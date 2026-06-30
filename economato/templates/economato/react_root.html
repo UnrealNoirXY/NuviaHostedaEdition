@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+{% load django_vite %}
+
+{% block title %}Economato Next-Gen{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div
+        id="economato-root"
+        class="economato-app-shell"
+        data-user-role="{{ request.user.role|default:'' }}"
+        data-user-name="{{ request.user.get_full_name|default:request.user.username }}"
+        data-user-role-label="{{ request.user.get_role_display|default:'' }}"
+    ></div>
+</div>
+{% vite_asset 'src/economato_entry.jsx' %}
+{% endblock %}

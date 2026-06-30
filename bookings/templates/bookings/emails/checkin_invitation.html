@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invito al Check-in Online / Online Check-in Invitation</title>
+    <style>
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        table { border-collapse: collapse !important; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f4f7f6; }
+
+        .container {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .content {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #e0e0e0;
+        }
+        .logo img {
+            max-width: 180px;
+            margin-bottom: 25px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #0d6efd; /* Colore primario di Bootstrap */
+            color: #ffffff !important; /* Colore testo forzato a bianco */
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .separator {
+            border-top: 1px solid #dddddd;
+            margin: 30px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        p {
+            color: #555;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="logo">
+                {% if company_logo_url %}
+                    <img src="{{ company_logo_url }}" alt="Company Logo">
+                {% endif %}
+            </div>
+
+            <!-- Sezione Italiana -->
+            <h1>Gentile {{ guest_name }},</h1>
+            <p>
+                Manca poco al tuo arrivo presso <strong>{{ resort_name }}</strong>!
+            </p>
+            <p>
+                Per rendere la tua accoglienza ancora più rapida e piacevole, ti invitiamo a completare il check-in online. È semplice, sicuro e ti farà risparmiare tempo prezioso alla reception.
+            </p>
+            <br>
+            <a href="{{ checkin_link }}" class="button" style="color: #ffffff;">INIZIA IL CHECK-IN ONLINE</a>
+            <br><br>
+            <p>Ti aspettiamo!</p>
+
+            <div class="separator"></div>
+
+            <!-- Sezione Inglese -->
+            <h1>Dear {{ guest_name }},</h1>
+            <p>
+                Your arrival at <strong>{{ resort_name }}</strong> is just around the corner!
+            </p>
+            <p>
+                To make your welcome smoother and more pleasant, we invite you to complete your online check-in. It's simple, secure, and will save you valuable time at the reception desk.
+            </p>
+            <br>
+            <a href="{{ checkin_link }}" class="button" style="color: #ffffff;">START ONLINE CHECK-IN</a>
+            <br><br>
+            <p>We look forward to welcoming you!</p>
+        </div>
+        <div class="footer">
+            <p>Questa è un'email automatica. Per favore, non rispondere. / This is an automated email. Please do not reply.</p>
+            <p>&copy; {{ year }} {{ resort_name }}. Tutti i diritti riservati. / All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

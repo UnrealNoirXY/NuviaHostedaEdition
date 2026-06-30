@@ -1,0 +1,91 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Dettaglio Competitor: {{ competitor.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h1 class="h2 dashboard-title">Gestione Link Scraping</h1>
+            <p class="text-muted">Competitor: <span class="fw-bold">{{ competitor.name }}</span></p>
+        </div>
+        <a href="{% url 'competitors:competitor-list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Torna alla Lista
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Colonna per aggiungere un nuovo link -->
+        <div class="col-lg-4">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fw-bold">Aggiungi Nuovo Link</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">Aggiungi Link</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonna per la lista dei link esistenti -->
+        <div class="col-lg-8">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fw-bold">Link di Scraping Esistenti ({{ scraping_links.count }})</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Piattaforma</th>
+                                    <th>URL</th>
+                                    <th class="text-center">Stato</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for link in scraping_links %}
+                                <tr>
+                                    <td>{{ link.source.name }}</td>
+                                    <td><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" title="{{ link.url }}">{{ link.url|truncatechars:40 }}</a></td>
+                                    <td class="text-center">
+                                        {% if link.is_active %}
+                                            <span class="badge bg-success">Attivo</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Inattivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        {# In a future step, we can add an 'edit' button here #}
+                                        <form action="{% url 'competitors:delete-scraping-link' link.pk %}" method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Elimina Link" onclick="return confirm('Sei sicuro di voler eliminare questo link?');">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-5">
+                                        <p class="mb-0">Nessun link di scraping configurato per questo competitor.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

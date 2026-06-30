@@ -1,0 +1,92 @@
+{% extends "core/base.html" %}
+{% load static custom_tags %}
+
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">{{ page_title }}</h1>
+        {% if request.user.role == 'superadmin' or request.user.role == 'owner' %}
+            <a href="{% url 'procedures:procedure_upload' %}" class="btn btn-primary btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-upload"></i>
+                </span>
+                <span class="text">Carica Nuova Procedura</span>
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Elenco Procedure Operative</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-cards" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Titolo</th>
+                            {% if request.user.is_superuser %}
+                                <th>Azienda</th>
+                            {% endif %}
+                            <th>Settori di pertinenza</th>
+                            <th>Ultimo Aggiornamento</th>
+                            <th class="text-center">Versione</th>
+                            <th class="text-center">Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for procedure in procedures %}
+                        <tr>
+                            <td data-label="Titolo">
+                                <a href="{% url 'procedures:procedure_viewer' procedure.pk %}">{{ procedure.title }}</a>
+                            </td>
+                            {% if request.user.is_superuser %}
+                            <td data-label="Azienda">
+                                <span class="badge bg-secondary">{{ procedure.company.name|default:"N/A" }}</span>
+                            </td>
+                            {% endif %}
+                            <td data-label="Settori">
+                                {% for sector in procedure.sectors.all %}
+                                    <span class="badge bg-dark">{{ sector.name }}</span>
+                                {% endfor %}
+                            </td>
+                            <td data-label="Aggiornato">
+                                {{ procedure.updated_at|date:"d M Y, H:i" }}
+                                <small class="text-muted d-block">({{ procedure.updated_at|timesince }} fa)</small>
+                            </td>
+                            <td data-label="Versione" class="text-center">
+                                <span class="badge bg-light text-dark">{{ procedure.version }}</span>
+                                {% if procedure.version > 1 %}
+                                    <span class="badge badge-success d-block mt-1">Nuova Versione</span>
+                                {% endif %}
+                            </td>
+                            <td data-label="Azioni">
+                                <div>
+                                    <a href="{% url 'procedures:procedure_viewer' procedure.pk %}" class="btn btn-info btn-circle btn-sm" title="Visualizza">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if request.user.role == 'superadmin' or request.user.role == 'owner' %}
+                                        <a href="{% url 'procedures:procedure_update' procedure.pk %}" class="btn btn-warning btn-circle btn-sm" title="Modifica">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                        <a href="{% url 'procedures:procedure_delete' procedure.pk %}" class="btn btn-danger btn-circle btn-sm" title="Elimina">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">Nessuna procedura trovata per il tuo settore.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% load i18n %}
+<html>
+  <body style="font-family: 'Helvetica Neue', Arial, sans-serif; color: #222;">
+    <h2 style="color:#ef4444;">Ticket senza assegnazione</h2>
+    <p>
+      {% blocktrans with id=ticket.id title=ticket.title %}
+      Il ticket #{{ id }} - "{{ title }}" è ancora in attesa di presa in carico.
+      {% endblocktrans %}
+    </p>
+    {% if formatted_due %}
+      <p>Scadenza: <strong>{{ formatted_due }}</strong></p>
+    {% endif %}
+    <p>
+      Entra nel gestionale per prenderlo in carico:
+      <a href="{{ absolute_url }}" style="color:#1d4ed8;">Apri ticket</a>
+    </p>
+  </body>
+</html>

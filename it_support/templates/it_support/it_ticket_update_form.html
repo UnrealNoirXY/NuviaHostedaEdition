@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% block title %}Modifica Ticket IT #{{ ticket.id }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4 mx-auto" style="max-width: 800px;">
+    <h2 class="dashboard-title mb-4">Modifica Ticket IT #{{ ticket.id }}</h2>
+    <p><strong>Oggetto:</strong> {{ ticket.title }}</p>
+    <hr>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <div class="mt-4 pt-3 border-top">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save me-2"></i> Salva Modifiche
+            </button>
+            <a href="{% url 'it_support:it_ticket_detail' ticket.pk %}" class="btn btn-secondary">Annulla</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% load static django_vite %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title>
+    {% vite_asset 'src/main.css' %}
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-4">
+        {% block demo_content %}{% endblock %}
+    </div>
+</body>
+</html>

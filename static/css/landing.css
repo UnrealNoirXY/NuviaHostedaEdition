@@ -1,0 +1,441 @@
+/* Landing Page Specific Styles */
+
+.landing-page {
+    font-family: 'Inter', sans-serif;
+    color: #333;
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    overflow: hidden;
+    background-image: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?fm=jpg&q=60&w=3000');
+    background-size: cover;
+    background-position: center center;
+    animation: kenburns 20s ease-out infinite alternate;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1; /* Changed z-index */
+}
+
+.hero-text {
+    z-index: 2;
+}
+
+@keyframes fadeInChar {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-title span {
+    opacity: 0;
+    display: inline-block;
+    animation: fadeInChar 0.5s forwards;
+}
+
+.hero-text h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.hero-text p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.hero-text .btn {
+    margin: 0 0.5rem;
+    padding: 0.8rem 2rem;
+    font-size: 1.2rem;
+    border-radius: 50px;
+}
+
+/* Features Section */
+.features-section {
+    padding: 6rem 2rem;
+    text-align: center;
+    background-color: #f8f9fa;
+}
+
+.features-section h2 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 3rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: var(--theme-color-secondary);
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Why Us Section */
+.why-us-section {
+    padding: 6rem 2rem;
+    background-color: #fff;
+}
+
+.why-us-section h2 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.why-us-section .lead {
+    font-size: 1.2rem;
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+.why-us-section ul li h5 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.why-us-section .fa-check-circle {
+    color: var(--theme-color-secondary);
+}
+
+/* Roles Section */
+.roles-section {
+    padding: 6rem 2rem;
+    background-color: #1a1a1a;
+    color: #f8f9fa;
+}
+
+.roles-section h2 {
+    font-weight: 600;
+}
+
+.roles-section .lead {
+    color: #adb5bd;
+}
+
+.role-card {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 15px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.role-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--theme-color-secondary);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    background-color: #333;
+}
+
+.role-icon {
+    font-size: 3rem;
+    color: var(--theme-color-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.role-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.role-description {
+    color: #adb5bd;
+    flex-grow: 1;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 6rem 2rem;
+    background-color: var(--theme-color-main);
+    color: white;
+}
+
+.cta-section h2 {
+    font-weight: 700;
+}
+
+.cta-section .lead {
+    max-width: 600px;
+    margin: 1rem auto 2rem auto;
+    color: rgba(255,255,255,0.8);
+}
+
+.cta-section .btn-primary {
+    background-color: white;
+    color: var(--theme-color-main);
+    border-color: white;
+}
+
+.cta-section .btn-primary:hover {
+    background-color: #f8f9fa;
+    color: var(--theme-color-main);
+}
+
+/* Tour Section */
+.tour-section {
+    padding: 6rem 2rem;
+    background-color: #f8f9fa;
+}
+
+.product-mockup {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    border-radius: 15px;
+    overflow: hidden;
+    padding-top: 66.66%; /* 3:2 Aspect Ratio */
+}
+
+.product-mockup-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/tour-background.jpg');
+    background-size: cover;
+    background-position: center;
+    animation: slow-pan 30s linear infinite alternate;
+}
+
+@keyframes slow-pan {
+    0% {
+        transform: scale(1) translateX(0);
+    }
+    100% {
+        transform: scale(1.05) translateX(-5%);
+    }
+}
+
+.hotspot {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: var(--theme-color-secondary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    z-index: 10;
+}
+
+.hotspot:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--theme-color-secondary);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    z-index: -1;
+}
+
+.hotspot:hover {
+    transform: scale(1.2);
+}
+
+.hotspot-label {
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.hotspot:hover .hotspot-label {
+    opacity: 1;
+    visibility: visible;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(var(--theme-color-secondary-rgb), 0.7);
+    }
+    70% {
+        transform: scale(1.5);
+        box-shadow: 0 0 0 10px rgba(var(--theme-color-secondary-rgb), 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(var(--theme-color-secondary-rgb), 0);
+    }
+}
+
+/* Feature Modal */
+.feature-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.feature-modal.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 800px;
+    width: 90%;
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.feature-modal.visible .modal-content {
+    transform: scale(1);
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-content img {
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .hero-text h1 {
+        font-size: 2.8rem;
+    }
+    .hero-text p {
+        font-size: 1.2rem;
+    }
+    .benefit-content {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-text h1 {
+        font-size: 2.2rem;
+    }
+    .hero-text .btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 1rem;
+    }
+    .features-section h2, .benefit-text h2 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-text {
+        padding: 0 1rem;
+    }
+    .hero-text h1 {
+        font-size: 1.8rem;
+    }
+    .hero-text p {
+        font-size: 1rem;
+    }
+    .hero-text .btn {
+        display: block;
+        width: 80%;
+        margin: 0.5rem auto;
+    }
+}
+
+/* Animation Styles */
+.feature-card, .why-us-section .row {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.feature-card.visible, .why-us-section .row.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        animation: none; /* Disable Ken Burns on mobile for performance */
+    }
+}

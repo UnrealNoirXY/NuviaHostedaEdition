@@ -1,0 +1,139 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="dashboard-card p-4">
+            <h2 class="dashboard-title mb-4">{{ title }}</h2>
+
+            <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+            <div id="success-message" class="alert alert-success" style="display: none;"></div>
+
+            <form id="bulk-room-form">
+                {% csrf_token %}
+                <p class="text-muted">Aggiungi i nomi delle camere e una descrizione opzionale. Le camere verranno create per la struttura: <strong>{{ resort.name }}</strong>.</p>
+
+                <h5 class="mt-4">Camere da Aggiungere</h5>
+                <div id="room-rows">
+                    <!-- Room input rows will be injected here by JavaScript -->
+                </div>
+
+                <div class="mt-3">
+                    <button type="button" id="add-room-btn" class="btn btn-info btn-sm">Aggiungi Riga</button>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">Salva Tutte le Camere</button>
+                    <a href="{% url 'core:resort_room_list' resort.id %}" class="btn btn-secondary">Annulla</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script id="js-urls" type="application/json">
+    {
+        "bulkCreateApi": "{% url 'core:api_room_bulk_create' %}"
+    }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const URLS = JSON.parse(document.getElementById('js-urls').textContent);
+    const addRoomBtn = document.getElementById('add-room-btn');
+    const roomRowsContainer = document.getElementById('room-rows');
+    const form = document.getElementById('bulk-room-form');
+    const resortId = "{{ resort.id }}";
+
+    const errorMessageDiv = document.getElementById('error-message');
+    const successMessageDiv = document.getElementById('success-message');
+
+    const addRoomRow = () => {
+        const rowId = `room-row-${Date.now()}`;
+        const newRow = document.createElement('div');
+        newRow.classList.add('row', 'mb-2', 'align-items-center');
+        newRow.id = rowId;
+        newRow.innerHTML = `
+            <div class="col-md-5">
+                <input type="text" class="form-control room-name" placeholder="Nome Camera (es. 101)" required>
+            </div>
+            <div class="col-md-5">
+                <input type="text" class="form-control room-description" placeholder="Descrizione (opzionale)">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger btn-sm remove-room-btn" data-row-id="${rowId}">Rimuovi</button>
+            </div>
+        `;
+        roomRowsContainer.appendChild(newRow);
+    };
+
+    addRoomRow();
+    addRoomBtn.addEventListener('click', addRoomRow);
+
+    roomRowsContainer.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('remove-room-btn')) {
+            document.getElementById(e.target.dataset.rowId)?.remove();
+        }
+    });
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        errorMessageDiv.style.display = 'none';
+        successMessageDiv.style.display = 'none';
+
+        const rooms = [];
+        const roomNameInputs = roomRowsContainer.querySelectorAll('.room-name');
+
+        roomNameInputs.forEach(input => {
+            const name = input.value.trim();
+            if (name) {
+                const description = input.closest('.row').querySelector('.room-description').value.trim();
+                rooms.push({ name: name, description: description });
+            }
+        });
+
+        if (rooms.length === 0) {
+            errorMessageDiv.textContent = 'Per favore, aggiungi almeno una camera con un nome.';
+            errorMessageDiv.style.display = 'block';
+            return;
+        }
+
+        const data = {
+            resort_id: resortId,
+            rooms: rooms
+        };
+
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch(URLS.bulkCreateApi, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                successMessageDiv.textContent = result.message + " Verrai reindirizzato...";
+                successMessageDiv.style.display = 'block';
+                setTimeout(() => {
+                    window.location.href = "{% url 'core:resort_room_list' resort.id %}";
+                }, 2000);
+            } else {
+                errorMessageDiv.textContent = 'Errore: ' + result.message;
+                errorMessageDiv.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorMessageDiv.textContent = 'Si è verificato un errore di rete. Controlla la console per i dettagli.';
+            errorMessageDiv.style.display = 'block';
+        });
+    });
+});
+</script>
+{% endblock %}

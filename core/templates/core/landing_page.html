@@ -1,0 +1,189 @@
+{% extends 'core/base_landing.html' %}
+{% load static %}
+
+{% block content %}
+<div class="landing-page">
+    <header class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-text">
+            <h1 class="animate-title">Gestione All-in-One per il Tuo Resort</h1>
+            <p>Innovazione e Controllo a Portata di Click</p>
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Accedi</a>
+            <a href="#why-us" class="btn btn-secondary btn-lg">Scopri di più</a>
+        </div>
+    </header>
+
+    <section id="funzionalita" class="features-section">
+        <h2>Funzionalità Principali</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h3>Ticketing Dinamico</h3>
+                <p>Assegna, traccia e risolvi le richieste di manutenzione con un sistema intelligente che ottimizza i tempi e le risorse.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-smile-beam"></i>
+                </div>
+                <h3>Sentiment Analysis</h3>
+                <p>Ascolta la voce dei tuoi clienti. La nostra AI analizza le recensioni per darti un quadro chiaro della soddisfazione degli ospiti.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h3>KPI in Tempo Reale</h3>
+                <p>Prendi decisioni strategiche basate su dati reali. Le nostre dashboard trasformano i numeri in insight immediatamente azionabili.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-dolly-flatbed"></i>
+                </div>
+                <h3>Inventario Intelligente</h3>
+                <p>Controlla le scorte, prevedi i fabbisogni e riduci gli sprechi. La gestione del magazzino non è mai stata così semplice.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="why-us" class="why-us-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <img src="https://images.unsplash.com/photo-1556745753-b2904692b3cd?fm=jpg&q=60&w=3000" class="img-fluid rounded shadow-lg" alt="Hotel management software on a screen">
+                </div>
+                <div class="col-lg-6">
+                    <h2>Perché Scegliere La Nostra Piattaforma?</h2>
+                    <p class="lead">Andiamo oltre la semplice gestione. Trasformiamo le operazioni quotidiane in un vantaggio competitivo, liberando il potenziale del tuo team e migliorando l'esperienza dei tuoi ospiti.</p>
+                    <ul class="list-unstyled">
+                        <li class="d-flex align-items-start mb-3">
+                            <i class="fas fa-check-circle text-primary fa-2x me-3"></i>
+                            <div>
+                                <h5>Centralizzazione Totale</h5>
+                                <p>Dalle manutenzioni alle recensioni, tutto è in un unico posto. Dì addio ai fogli di calcolo e alle comunicazioni frammentate.</p>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-start mb-3">
+                            <i class="fas fa-check-circle text-primary fa-2x me-3"></i>
+                            <div>
+                                <h5>Decisioni Basate sui Dati</h5>
+                                <p>Le nostre dashboard intuitive trasformano i dati grezzi in insight preziosi, permettendoti di agire con precisione e tempismo.</p>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-start">
+                            <i class="fas fa-check-circle text-primary fa-2x me-3"></i>
+                            <div>
+                                <h5>Efficienza e Produttività</h5>
+                                <p>Automatizza i flussi di lavoro, assegna compiti con un click e monitora i progressi in tempo reale. Il risultato? Meno tempo sprecato, più valore creato.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="roles-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2>Una Piattaforma, Infiniti Vantaggi</h2>
+                <p class="lead">Progettato per potenziare ogni ruolo all'interno della tua struttura.</p>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch">
+                    <div class="role-card">
+                        <div class="role-icon"><i class="fas fa-user-tie"></i></div>
+                        <h4 class="role-title">Direttori</h4>
+                        <p class="role-description">Visione strategica e controllo completo con dashboard KPI personalizzabili.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch">
+                    <div class="role-card">
+                        <div class="role-icon"><i class="fas fa-crown"></i></div>
+                        <h4 class="role-title">Proprietari</h4>
+                        <p class="role-description">Massimizzazione dei profitti e della soddisfazione del cliente attraverso l'analisi dei dati.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch">
+                    <div class="role-card">
+                        <div class="role-icon"><i class="fas fa-hard-hat"></i></div>
+                        <h4 class="role-title">Manutentori</h4>
+                        <p class="role-description">Interventi rapidi, efficienti e tracciati con un sistema di ticketing intelligente.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch">
+                    <div class="role-card">
+                        <div class="role-icon"><i class="fas fa-concierge-bell"></i></div>
+                        <h4 class="role-title">Receptionist</h4>
+                        <p class="role-description">Comunicazione fluida e gestione impeccabile delle richieste per un'esperienza ospite superiore.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tour-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2>Esplora la Piattaforma</h2>
+                <p class="lead">Un'anteprima interattiva delle nostre funzionalità principali.</p>
+            </div>
+            <div class="product-mockup">
+                <div class="product-mockup-background"></div>
+                <div class="hotspot" style="top: 20%; left: 30%;" data-feature="ticketing">
+                    <span>1</span>
+                    <div class="hotspot-label">Ticketing</div>
+                </div>
+                <div class="hotspot" style="top: 40%; left: 60%;" data-feature="reviews">
+                    <span>2</span>
+                    <div class="hotspot-label">Analisi Recensioni</div>
+                </div>
+                <div class="hotspot" style="top: 65%; left: 45%;" data-feature="dashboard">
+                    <span>3</span>
+                    <div class="hotspot-label">Dashboard KPI</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Modals -->
+    <div class="feature-modal" id="modal-ticketing">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <img src="{% static 'img/demos/tickets_demo.png' %}" alt="Ticketing Screenshot">
+            <h3>Ticketing Dinamico</h3>
+            <p>Gestisci ogni richiesta con un sistema centralizzato. Assegna compiti, imposta priorità e monitora lo stato di avanzamento in tempo reale, assicurando che nulla venga trascurato.</p>
+        </div>
+    </div>
+    <div class="feature-modal" id="modal-reviews">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <img src="{% static 'img/demos/reviews_demo.png' %}" alt="Reviews Screenshot">
+            <h3>Sentiment Analysis</h3>
+            <p>Vai oltre le semplici valutazioni a stelle. La nostra intelligenza artificiale analizza il testo delle recensioni per identificare i punti di forza e le aree di miglioramento, trasformando il feedback in azioni concrete.</p>
+        </div>
+    </div>
+    <div class="feature-modal" id="modal-dashboard">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <img src="{% static 'img/demos/dashboard_demo.png' %}" alt="Dashboard Screenshot">
+            <h3>Dashboard KPI in Tempo Reale</h3>
+            <p>Tieni sotto controllo le performance della tua struttura con dashboard chiare e personalizzabili. Dai tempi di risoluzione dei ticket alla soddisfazione media degli ospiti, hai tutti i dati che contano a portata di click.</p>
+        </div>
+    </div>
+
+
+    <section class="cta-section">
+        <div class="container text-center">
+            <h2>Pronto a Trasformare la Tua Gestione?</h2>
+            <p class="lead">Unisciti ai leader del settore che hanno scelto di innovare. Semplifica le operazioni, migliora l'esperienza degli ospiti e aumenta la redditività.</p>
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Accedi Ora</a>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/landing.js' %}"></script>
+{% endblock %}

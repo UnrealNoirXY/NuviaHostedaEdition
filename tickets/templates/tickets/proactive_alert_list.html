@@ -1,0 +1,41 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title mb-0">{{ page_title }}</h2>
+    </div>
+
+    <div class="list-group">
+        {% for alert in alerts %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start mb-2">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Allerta per Camera: <strong>{{ alert.room.name }} ({{ alert.room.resort.name }})</strong></h5>
+                    <small class="text-muted">{{ alert.created_at|date:"d/m/Y H:i" }}</small>
+                </div>
+                <p class="mb-1 mt-2"><strong>Motivo:</strong> {{ alert.reason }}</p>
+                <small class="text-muted">Ultimo ticket rilevante:
+                    {% if alert.last_ticket %}
+                        <a href="{% url 'ticket_detail' alert.last_ticket.pk %}">#{{ alert.last_ticket.pk }} - {{ alert.last_ticket.title }}</a>
+                    {% else %}
+                        N/D
+                    {% endif %}
+                </small>
+                <div class="mt-3">
+                    <form method="POST" action="{% url 'mark_alert_addressed' alert.pk %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-success">
+                            <i class="fas fa-check me-2"></i>Segna come Gestita
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <div class="list-group-item">
+                <p class="text-center text-muted mb-0">Nessuna allerta di manutenzione proattiva al momento.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

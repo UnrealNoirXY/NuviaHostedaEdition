@@ -1,0 +1,31 @@
+{% extends 'core/base_demo.html' %}
+
+{% block demo_content %}
+    <h3 class="mb-4">Anteprima Dashboard KPI</h3>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">Ticket Aperti</h5>
+                    <p class="card-text display-4">{{ kpis.maintenance_tickets_open }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">Sentiment Medio</h5>
+                    <p class="card-text display-4">{{ kpis.avg_sentiment|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">Valutazione Media</h5>
+                    <p class="card-text display-4">{{ kpis.avg_rating|floatformat:1 }}/5</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

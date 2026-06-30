@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Promemoria Scadenza Ticket</title>
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .cta { display: inline-block; padding: 10px 20px; background-color: #1f4f8d; color: #fff; text-decoration: none; border-radius: 4px; }
+        .cta:hover { background-color: #163a66; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Promemoria scadenza ticket</h2>
+        <p>Ciao,</p>
+        <p>il ticket <strong>#{{ ticket.id }} - {{ ticket.title }}</strong> scadrà il <strong>{{ formatted_due }}</strong>.</p>
+        <p>Assicurati di completare l'attività o aggiornare la scadenza se necessario.</p>
+        <p>
+            <a class="cta" href="{{ absolute_url }}">Apri il ticket</a>
+        </p>
+        <p>Grazie,<br>Il team manutenzione</p>
+    </div>
+</body>
+</html>

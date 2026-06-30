@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+{% block title %}Conferma Eliminazione Ordine{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4 fade-in">
+    <h2 class="dashboard-title mb-4">Conferma Eliminazione</h2>
+
+    <p>Sei sicuro di voler eliminare il buono d'ordine <strong>#{{ order.id }}</strong> per il resort <strong>{{ order.resort.name }}</strong>?</p>
+    <p class="text-danger">Questa azione non può essere annullata.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sì, Elimina</button>
+        <a href="{% url 'purchase_orders:detail' order.pk %}" class="btn btn-secondary">Annulla</a>
+    </form>
+</div>
+{% endblock %}

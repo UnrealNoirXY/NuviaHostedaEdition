@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ piatto.nome }} - Dettagli</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0c0c0c;
+            color: #e0e0e0;
+            font-family: 'Poppins', sans-serif;
+            padding: 20px;
+        }
+        .piatto-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .piatto-img {
+            width: 100%;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        .badge-allergene {
+            background-color: #d4af37;
+            color: #000;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        h1 { color: #38bdf8; }
+    </style>
+</head>
+<body>
+    <div class="piatto-card text-center">
+        {% if piatto.immagine %}
+            <img src="{{ piatto.immagine.url }}" class="piatto-img" alt="{{ piatto.nome }}">
+        {% endif %}
+        <h1 class="h2 fw-bold mb-3">{{ piatto.nome }}</h1>
+        <p class="lead text-muted-soft mb-4">{{ piatto.descrizione }}</p>
+
+        <div class="mb-4">
+            <h5 class="text-uppercase smallest ls-1 mb-2">Ingredienti</h5>
+            <p class="small">
+                {% for ing in ingredienti %}
+                    {{ ing.nome }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    Nessun ingrediente specificato.
+                {% endfor %}
+            </p>
+        </div>
+
+        <div>
+            <h5 class="text-uppercase smallest ls-1 mb-2">Allergeni</h5>
+            {% for al in allergeni %}
+                <span class="badge badge-allergene">{{ al.nome }}</span>
+            {% empty %}
+                <span class="text-muted small">Nessun allergene dichiarato.</span>
+            {% endfor %}
+            {% if piatto.allergen_summary %}
+                <p class="mt-2 small text-muted italic">{{ piatto.allergen_summary }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mt-5 pt-4 border-top border-white border-opacity-10">
+            <p class="smallest text-muted-soft mb-0">Powered by Nuvia OS - Menu Creation Studio</p>
+        </div>
+    </div>
+</body>
+</html>

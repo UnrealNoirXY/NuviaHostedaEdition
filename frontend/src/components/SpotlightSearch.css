@@ -1,0 +1,195 @@
+.spotlight-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: center;
+    padding-top: 15vh;
+    z-index: 11000;
+    animation: spotlight-fade-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes spotlight-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.spotlight-container {
+    width: min(650px, 90vw);
+    height: fit-content;
+    background: rgba(15, 23, 42, 0.85) !important;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 24px;
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    animation: spotlight-slide-down 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes spotlight-slide-down {
+    from { opacity: 0; transform: translateY(-30px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.spotlight-header {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    gap: 1.25rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.spotlight-icon {
+    font-size: 1.6rem;
+    color: #38bdf8;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+}
+
+.spotlight-header input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 500;
+    outline: none;
+}
+
+.spotlight-header input::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.spotlight-hint {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 0.35rem 0.6rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    letter-spacing: 0.05em;
+}
+
+.spotlight-results {
+    max-height: 480px;
+    overflow-y: auto;
+    padding: 0.75rem;
+}
+
+/* Custom Scrollbar for Results */
+.spotlight-results::-webkit-scrollbar {
+    width: 6px;
+}
+.spotlight-results::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.2);
+    border-radius: 3px;
+}
+
+.spotlight-result-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.spotlight-result-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.spotlight-result-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+    transform: translateX(4px);
+}
+
+.spotlight-result-item:hover::before {
+    opacity: 1;
+}
+
+.result-icon-bg {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1) !important;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.spotlight-result-item:hover .result-icon-bg {
+    background: rgba(56, 189, 248, 0.2) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+.result-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    position: relative;
+    z-index: 1;
+}
+
+.result-name {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.result-type {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #38bdf8;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+}
+
+.spotlight-welcome {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.spotlight-welcome i {
+    font-size: 2.5rem;
+    opacity: 0.2;
+    margin-bottom: 0.5rem;
+}
+
+.spotlight-no-results {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: rgba(248, 113, 113, 0.6);
+    font-size: 1rem;
+}
+
+.command-tag {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    padding: 0.1rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    margin-right: 0.5rem;
+}

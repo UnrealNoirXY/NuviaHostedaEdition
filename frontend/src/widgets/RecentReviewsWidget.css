@@ -1,0 +1,130 @@
+.recent-reviews-widget {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px;
+}
+
+.review-item {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.review-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #dee2e6;
+}
+
+.review-header {
+    display: grid;
+    grid-template-areas:
+        "indicator title stars"
+        "indicator source source";
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0 10px;
+}
+
+.review-title {
+    grid-area: title;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #343a40;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.review-meta {
+    grid-area: stars;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.star-rating {
+    color: #ffc107;
+}
+
+.review-source {
+    grid-area: source;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.sentiment-indicator {
+    grid-area: indicator;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    align-self: start;
+    margin-top: 6px;
+}
+
+.sentiment-indicator.positive { background-color: #28a745; }
+.sentiment-indicator.neutral { background-color: #ffc107; }
+.sentiment-indicator.negative { background-color: #dc3545; }
+
+.review-body {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f3f5;
+}
+
+.review-text {
+    font-size: 0.9rem;
+    color: #495057;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.review-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #adb5bd;
+}
+
+.review-footer a {
+    color: #6c757d;
+    transition: color 0.2s;
+}
+
+.review-footer a:hover {
+    color: #343a40;
+}
+
+/* Loading and error states */
+.widget-loading, .widget-error, .widget-empty {
+    padding: 20px;
+    text-align: center;
+    color: #6c757d;
+}
+
+/* Responsive Styles for Mobile */
+@media (max-width: 768px) {
+    .review-header {
+        grid-template-areas:
+            "indicator title title"
+            "indicator stars source";
+        grid-template-columns: auto 1fr auto;
+    }
+
+    .review-title {
+        font-size: 0.9rem;
+    }
+
+    .star-rating {
+        font-size: 0.8rem;
+    }
+
+    .review-source {
+        justify-self: end;
+    }
+}

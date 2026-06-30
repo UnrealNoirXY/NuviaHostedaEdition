@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4 mx-auto" style="max-width: 600px;">
+    <h2 class="dashboard-title mb-4">{{ page_title }}</h2>
+
+    <p>
+        Sei sicuro di voler eliminare la programmazione di scraping "<strong>{{ object.name }}</strong>"?
+    </p>
+    <p class="text-danger">
+        Questa azione è irreversibile. L'attività non verrà più eseguita.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mt-4">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash-alt me-2"></i> Conferma Eliminazione
+            </button>
+            <a href="{% url 'reviews:scheduled_scraping_list' %}" class="btn btn-secondary">Annulla</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

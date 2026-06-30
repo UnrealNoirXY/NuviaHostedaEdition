@@ -1,0 +1,96 @@
+{% extends 'core/base.html' %}
+{% block title %}Snapshot Finanziari{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4 gap-3">
+        <div>
+            <h2 class="dashboard-title mb-1">Snapshot Finanziari</h2>
+            <p class="text-muted mb-0">Storico di budget, consuntivi e confronto anno su anno per periodi e strutture.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'financials:period_create' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-calendar-plus me-2"></i>Nuovo Periodo
+            </a>
+            <a href="{% url 'financials:snapshot_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Nuovo Snapshot
+            </a>
+        </div>
+    </div>
+
+    <form method="get" class="mb-4 p-3 border rounded bg-light">
+        <div class="row g-3 align-items-end">
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label" for="id_company">Società</label>
+                {{ filter_form.company }}
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label" for="id_resort">Struttura</label>
+                {{ filter_form.resort }}
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <label class="form-label" for="id_year">Anno</label>
+                {{ filter_form.year }}
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <label class="form-label" for="id_period_type">Periodicità</label>
+                {{ filter_form.period_type }}
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <label class="form-label" for="id_snapshot_type">Tipologia</label>
+                {{ filter_form.snapshot_type }}
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter me-2"></i>Filtra</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Periodo</th>
+                    <th>Tipo</th>
+                    <th class="text-end">Ricavi</th>
+                    <th class="text-end">Costi</th>
+                    <th class="text-end">Margine</th>
+                    <th>Sorgente</th>
+                    <th>Aggiornato</th>
+                    <th class="text-end">Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for snapshot in snapshots %}
+                <tr>
+                    <td>
+                        <div class="fw-semibold">{{ snapshot.period.label }}</div>
+                        {% if snapshot.period.resort %}<div class="text-muted small">{{ snapshot.period.resort.name }}</div>{% endif %}
+                    </td>
+                    <td><span class="badge bg-secondary">{{ snapshot.get_snapshot_type_display }}</span></td>
+                    <td class="text-end">€ {{ snapshot.total_revenue|floatformat:2 }}</td>
+                    <td class="text-end">€ {{ snapshot.total_costs|floatformat:2 }}</td>
+                    <td class="text-end fw-semibold {% if snapshot.gross_margin >= 0 %}text-success{% else %}text-danger{% endif %}">€ {{ snapshot.gross_margin|floatformat:2 }}</td>
+                    <td>{{ snapshot.data_source|default:'Manuale' }}</td>
+                    <td>{{ snapshot.updated_at|date:"d/m/Y H:i" }}</td>
+                    <td class="text-end">
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'financials:snapshot_update' snapshot.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'financials:snapshot_delete' snapshot.pk %}" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">Nessun snapshot disponibile per i filtri selezionati.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

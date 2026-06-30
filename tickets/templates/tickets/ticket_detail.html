@@ -1,0 +1,243 @@
+{% extends 'core/base.html' %}
+{% load ticket_extras %}
+{% block title %}Dettaglio Ticket | {{ platform_name }}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Main content -->
+        <div class="col-md-8">
+            <div class="dashboard-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="dashboard-title mb-0">{{ ticket.title }}</h2>
+                    <span class="badge fs-6
+                        {% if ticket.status == 'open' %}bg-warning
+                        {% elif ticket.status == 'in_progress' %}bg-info
+                        {% elif ticket.status == 'resolved' %}bg-success
+                        {% elif ticket.status == 'closed' %}bg-secondary
+                        {% endif %}">
+                        {{ ticket.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Descrizione</h5>
+                        <p>{{ ticket.description }}</p>
+
+                        {% if ticket.attachment %}
+                            <hr>
+                            <h5 class="card-title mt-3">Allegato</h5>
+                            {% if attachment_type == 'image' %}
+                                <a href="{{ ticket.attachment.url }}" target="_blank">
+                                    <img src="{{ ticket.attachment.url }}" alt="Allegato" class="img-fluid rounded" style="max-height: 400px;">
+                                </a>
+                            {% elif attachment_type == 'video' %}
+                                <video controls preload="metadata" class="img-fluid rounded" style="max-height: 400px;">
+                                    <source src="{{ ticket.attachment.url }}">
+                                    Il tuo browser non supporta il tag video.
+                                </video>
+                            {% elif attachment_type == 'pdf' %}
+                                <a href="{{ ticket.attachment.url }}" target="_blank" class="btn btn-outline-danger">
+                                    <i class="fas fa-file-pdf me-2"></i>Visualizza PDF
+                                </a>
+                            {% else %}
+                                <a href="{{ ticket.attachment.url }}" class="btn btn-outline-secondary" download>
+                                    <i class="fas fa-download me-2"></i>Scarica Allegato
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if can_edit %}
+                <div class="card mb-4">
+                    <div class="card-header">Aggiorna il ticket</div>
+                    <div class="card-body">
+                        {% if closure_photo_error %}
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                Per chiudere il ticket è obbligatorio caricare una foto del lavoro finito.
+                            </div>
+                        {% endif %}
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Cambia stato</label>
+                                {{ update_form.status }}
+                                {% if update_form.status.errors %}
+                                    <div class="text-danger small">{{ update_form.status.errors|join:', ' }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Note interne</label>
+                                {{ update_form.notes }}
+                                {% if update_form.notes.errors %}
+                                    <div class="text-danger small">{{ update_form.notes.errors|join:', ' }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Scadenza</label>
+                                {{ update_form.due_date }}
+                                {% if update_form.due_date.help_text %}
+                                    <small class="text-muted d-block">{{ update_form.due_date.help_text }}</small>
+                                {% endif %}
+                                {% if update_form.due_date.errors %}
+                                    <div class="text-danger small">{{ update_form.due_date.errors|join:', ' }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Conferma scadenza manutentore</label>
+                                {{ update_form.acknowledged_due_date }}
+                                {% if ticket.acknowledged_by %}
+                                    <small class="text-muted d-block">Confermata da {{ ticket.acknowledged_by.get_full_name|default:ticket.acknowledged_by.username }} il {{ ticket.acknowledged_at|date:'d/m/Y H:i' }}</small>
+                                {% elif update_form.acknowledged_due_date.help_text %}
+                                    <small class="text-muted d-block">{{ update_form.acknowledged_due_date.help_text }}</small>
+                                {% endif %}
+                                {% if update_form.acknowledged_due_date.errors %}
+                                    <div class="text-danger small">{{ update_form.acknowledged_due_date.errors|join:', ' }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Motivazione proroga</label>
+                                {{ update_form.deadline_justification }}
+                                {% if update_form.deadline_justification.errors %}
+                                    <div class="text-danger small">{{ update_form.deadline_justification.errors|join:', ' }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Foto lavoro completato</label>
+                                {{ update_form.completion_photo }}
+                                <span class="d-none" data-role="completion-photo-hint">Per chiudere il ticket è obbligatorio caricare una foto del lavoro finito.</span>
+                                {% if update_form.completion_photo.errors %}
+                                    <div class="text-danger small">{{ update_form.completion_photo.errors|join:', ' }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Aggiungi una nota</label>
+                                {{ comment_form.comment }}
+                            </div>
+                             <div class="mb-3">
+                                <label class="form-label">Aggiungi allegato</label>
+                                {{ comment_form.attachment }}
+                            </div>
+                            <button type="submit" class="btn btn-primary">Salva modifiche</button>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="card">
+                    <div class="card-header">Commenti</div>
+                    <div class="card-body" id="comments-container">
+                        {% for c in comments %}
+                            <div class="d-flex mb-3">
+                                <div class="flex-shrink-0 me-3">
+                                    {% if c.author.avatar %}
+                                        <img src="{{ c.author.avatar.url }}" class="rounded-circle" width="50" height="50" alt="{{ c.author.username }}" style="object-fit: cover;">
+                                    {% else %}
+                                        <img src="https://ui-avatars.com/api/?name={{ c.author.username|first|upper }}&background=random&color=fff" class="rounded-circle" width="50" height="50" alt="{{ c.author.username }}">
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <strong>{{ c.author.username }}</strong>
+                                    <small class="text-muted float-end">{{ c.created_at|timesince }} fa</small>
+                                    {% if c.comment %}<p>{{ c.comment|linebreaksbr }}</p>{% endif %}
+
+                                    {% with file_type=c.attachment|get_file_type %}
+                                        {% if file_type == 'image' %}
+                                            <a href="{{ c.attachment.url }}" target="_blank">
+                                                <img src="{{ c.attachment.url }}" alt="Allegato commento" class="img-fluid rounded mb-2" style="max-height: 200px; max-width: 100%;">
+                                            </a>
+                                        {% elif file_type == 'video' %}
+                                            <video controls preload="metadata" class="img-fluid rounded mb-2" style="max-height: 200px; max-width: 100%;">
+                                                <source src="{{ c.attachment.url }}">
+                                                Il tuo browser non supporta il tag video.
+                                            </video>
+                                        {% elif file_type == 'file' %}
+                                            <p>
+                                                <a href="{{ c.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-paperclip"></i> Visualizza Allegato
+                                                </a>
+                                            </p>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted" id="no-comments-message">Nessun commento ancora.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <a href="{{ request.META.HTTP_REFERER|default:'home' }}" class="btn btn-secondary mt-3">Indietro</a>
+
+                {% if request.user == ticket.created_by and ticket.status == 'resolved' %}
+                <form action="{% url 'reopen_ticket' ticket.pk %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning mt-3">Riapri Ticket</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <div class="dashboard-card p-3 mb-3">
+                <h5>Dettagli</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Priorità:</strong>
+                        <span class="badge
+                            {% if ticket.priority == 'urgent' %}bg-danger
+                            {% elif ticket.priority == 'high' %}bg-warning
+                            {% elif ticket.priority == 'medium' %}bg-info
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ ticket.get_priority_display }}
+                        </span>
+                    </li>
+                    <li class="list-group-item"><strong>Resort:</strong> {{ ticket.resort.name }}</li>
+                    {% if ticket.room %}
+                    <li class="list-group-item"><strong>Camera:</strong> {{ ticket.room.name }}</li>
+                    {% else %}
+                    <li class="list-group-item"><strong>Area:</strong> Struttura Generale</li>
+                    {% endif %}
+                    <li class="list-group-item"><strong>Creato da:</strong> {{ ticket.created_by.username }}</li>
+                    <li class="list-group-item"><strong>Assegnato a:</strong> {{ ticket.assigned_to.username|default:"Non assegnato" }}</li>
+                    <li class="list-group-item"><strong>Creato il:</strong> {{ ticket.created_at|date:"d/m/Y H:i" }}</li>
+                    <li class="list-group-item"><strong>Ultimo aggiornamento:</strong> {{ ticket.updated_at|date:"d/m/Y H:i" }}</li>
+                    <li class="list-group-item"><strong>Scadenza:</strong> {% if ticket.due_date %}{{ ticket.due_date|date:"d/m/Y H:i" }}{% else %}<span class="text-muted">Non impostata</span>{% endif %}</li>
+                </ul>
+            </div>
+            {% if ticket.completion_photo %}
+            <div class="dashboard-card p-3 mt-3">
+                <h5>Foto del lavoro finito</h5>
+                <img src="{{ ticket.completion_photo.url }}" alt="Foto completamento" class="img-fluid rounded" />
+            </div>
+            {% endif %}
+            <div class="dashboard-card p-3">
+                <h5>Cronologia</h5>
+                <ul class="list-unstyled">
+                    {% for h in history %}
+                    <li class="mb-3">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                                {% if "Stato" in h.action %}
+                                    <i class="fas fa-flag-checkered"></i>
+                                {% else %}
+                                    <i class="fas fa-comment"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <strong>{{ h.author.username|default:"Sistema" }}</strong> {{ h.action|lower }}
+                                <div class="small text-muted">{{ h.timestamp|timesince }} fa</div>
+                            </div>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li>Nessuna attività registrata.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

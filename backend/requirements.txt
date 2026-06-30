@@ -1,0 +1,11 @@
+fastapi
+langchain
+openai
+pinecone-client
+uvicorn
+python-dotenv
+langchain_community
+langchain_openai
+langchain_pinecone
+sentence-transformers
+torch

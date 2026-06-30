@@ -1,0 +1,310 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}
+    Dashboard Analisi Recensioni
+    {% if selected_resort %}
+        - {{ selected_resort.name }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0 dashboard-title">
+            Dashboard Recensioni
+            {% if selected_resort %}
+                <span class="text-muted fs-4">| {{ selected_resort.name }}</span>
+            {% else %}
+                <span class="text-muted fs-4">| Tutti i Resort</span>
+            {% endif %}
+        </h1>
+        <div class="d-flex align-items-center">
+            {% if request.user.can_export_review_reports %}
+            <a href="{% url 'reviews:report_builder' %}" class="btn btn-info ms-3">
+                <i class="fas fa-file-pdf me-2"></i> Crea Report PDF
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card dashboard-card mb-4">
+        <div class="card-body">
+            <form method="get" action="{% url 'reviews:dashboard' %}" class="row g-3 align-items-end">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label for="q" class="form-label">Cerca recensione</label>
+                    <input type="text" name="q" id="q" class="form-control" placeholder="Cerca per parola chiave...">
+                </div>
+                {% if user.is_superuser and companies %}
+                <div class="col-12 col-md-6 col-lg-2">
+                    <label for="company_id" class="form-label">Società</label>
+                    <select name="company_id" id="company_id" class="form-select">
+                        <option value="">Tutte</option>
+                        {% for company in companies %}
+                            <option value="{{ company.id }}" {% if selected_company.id == company.id %}selected{% endif %}>{{ company.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                <div class="col-12 col-md-4 col-lg-2">
+                    <label for="resort_id" class="form-label">Resort</label>
+                    <select name="resort_id" id="resort_id" class="form-select">
+                        <option value="">Tutti</option>
+                        {% for resort in all_resorts %}
+                            <option value="{{ resort.id }}" {% if selected_resort.id == resort.id %}selected{% endif %}>{{ resort.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-4 col-lg-2">
+                    <label for="source_id" class="form-label">Piattaforma</label>
+                    <select name="source_id" id="source_id" class="form-select">
+                        <option value="">Tutte</tutte>
+                        {% for source in all_sources %}
+                            <option value="{{ source.id }}" {% if selected_source.id == source.id %}selected{% endif %}>{{ source.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-4 col-lg-2">
+                    <label for="start_date" class="form-label">Da</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request.GET.start_date }}">
+                </div>
+                <div class="col-12 col-md-4 col-lg-2">
+                    <label for="end_date" class="form-label">A</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request.GET.end_date }}">
+                </div>
+                <div class="col-12 col-md-4 col-lg-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtra</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-lg-6 mb-4">
+            <div class="card dashboard-card h-100 border-start border-primary border-4">
+                <div class="card-body text-center">
+                    <div class="display-5 fw-bold stat-value">{{ total_reviews }}</div>
+                    <div class="text-muted fw-bold text-uppercase">Recensioni Totali</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 mb-4">
+            <div class="card dashboard-card h-100 border-start border-info border-4">
+                <div class="card-body text-center">
+                    <div class="display-5 fw-bold stat-value">
+                        {{ average_rating|floatformat:2 }}
+                        <span class="fs-4 text-muted">/ {{ rating_scale }}</span>
+                        {% if show_rating_normalization_info %}
+                            <span class="ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Le valutazioni di Booking.com sono state convertite da una scala 1-10 a una scala 1-5 per il confronto.">
+                                <i class="fas fa-info-circle text-muted"></i>
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="text-muted fw-bold text-uppercase">Valutazione Media</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="card dashboard-card h-100 border-start border-secondary border-4">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-center mb-3 fw-bold text-uppercase">Distribuzione Sentiment</h5>
+                    <div class="flex-grow-1" style="position: relative; height: 300px;">
+                        <canvas id="sentimentDoughnutChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fw-bold">Valutazione Media per Piattaforma</h5>
+                </div>
+                <div class="card-body" style="height: 350px;">
+                    <canvas id="ratingsBySourceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fw-bold">Andamento Recensioni Mensili</h5>
+                </div>
+                <div class="card-body" style="height: 350px;">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 fw-bold">Parole Chiave Principali</h5>
+                </div>
+                <div class="card-body">
+                    {% if top_keywords %}
+                        <ul class="list-group list-group-flush">
+                            {% for keyword, count in top_keywords %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ keyword }}
+                                    <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Nessuna parola chiave da mostrare.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Table -->
+    <div class="card dashboard-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0 fw-bold">Ultime Recensioni</h5>
+            <a href="{% url 'reviews:review_list' %}?company_id={{ selected_company.id|default:'' }}&resort_id={{ selected_resort.id|default:'' }}&source_id={{ selected_source.id|default:'' }}" id="view-all-reviews-btn" class="btn btn-sm btn-outline-primary">
+                <span class="d-none d-md-inline">Vedi tutte le recensioni </span><i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        <div class="card-body p-0">
+            {% if is_grouped %}
+                {% for source_name, reviews in reviews_for_display.items %}
+                    <div class="p-3 bg-light border-bottom">
+                        <h4 class="mb-0">{{ source_name }}</h4>
+                    </div>
+                    {% include 'reviews/partials/_review_table.html' with reviews=reviews|slice:":5" %}
+                {% empty %}
+                    <div class="text-center py-5">Nessuna recensione trovata.</div>
+                {% endfor %}
+            {% else %}
+                {% include 'reviews/partials/_review_table.html' with reviews=reviews_for_display %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{{ sentiment_breakdown|json_script:"sentiment-data" }}
+{{ ratings_by_source|json_script:"ratings-by-source-data" }}
+{{ monthly_trend_labels|json_script:"monthly-trend-labels" }}
+{{ monthly_trend_data|json_script:"monthly-trend-data" }}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    // Sentiment Doughnut Chart
+    const sentimentDataRaw = JSON.parse(document.getElementById('sentiment-data').textContent);
+    const sentimentCtx = document.getElementById('sentimentDoughnutChart').getContext('2d');
+    const sentimentData = {
+        labels: ['Positivo', 'Neutrale', 'Negativo'],
+        datasets: [{
+            label: 'Distribuzione Sentiment',
+            data: [
+                sentimentDataRaw.positive,
+                sentimentDataRaw.neutral,
+                sentimentDataRaw.negative
+            ],
+            backgroundColor: [
+                'rgba(25, 135, 84, 0.8)',
+                'rgba(255, 193, 7, 0.8)',
+                'rgba(220, 53, 69, 0.8)'
+            ],
+            borderColor: [
+                'rgba(25, 135, 84, 1)',
+                'rgba(255, 193, 7, 1)',
+                'rgba(220, 53, 69, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+    new Chart(sentimentCtx, {
+        type: 'doughnut',
+        data: sentimentData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    // Monthly Trend Chart
+    const monthlyTrendLabels = JSON.parse(document.getElementById('monthly-trend-labels').textContent);
+    const monthlyTrendData = JSON.parse(document.getElementById('monthly-trend-data').textContent);
+    const monthlyTrendCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+    const monthlyTrendChartData = {
+        labels: monthlyTrendLabels,
+        datasets: [{
+            label: 'Numero di Recensioni',
+            data: monthlyTrendData,
+            borderColor: 'rgba(54, 162, 235, 1)',
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            fill: true,
+            tension: 0.1
+        }]
+    };
+    new Chart(monthlyTrendCtx, {
+        type: 'line',
+        data: monthlyTrendChartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Ratings by Source Chart
+    const ratingsBySourceDataRaw = JSON.parse(document.getElementById('ratings-by-source-data').textContent);
+    const ratingsBySourceCtx = document.getElementById('ratingsBySourceChart').getContext('2d');
+    const ratingsBySourceData = {
+        labels: Object.keys(ratingsBySourceDataRaw),
+        datasets: [{
+            label: 'Valutazione Media',
+            data: Object.values(ratingsBySourceDataRaw),
+            backgroundColor: 'rgba(255, 159, 64, 0.8)',
+            borderColor: 'rgba(255, 159, 64, 1)',
+            borderWidth: 1
+        }]
+    };
+    new Chart(ratingsBySourceCtx, {
+        type: 'bar',
+        data: ratingsBySourceData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 5
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

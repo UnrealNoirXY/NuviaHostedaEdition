@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invito a un Evento</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            background-color: #f8f9fa;
+        }
+        .email-wrapper {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 550px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #23395d;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            color: #ffffff;
+            margin: 0;
+            font-weight: 600;
+        }
+        .content {
+            padding: 35px 40px;
+            line-height: 1.6;
+            color: #555;
+            font-size: 16px;
+        }
+        .content p {
+            margin: 0 0 18px;
+        }
+        .event-details {
+            background-color: #f1f1f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .event-details strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .button {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 12px;
+            color: #999;
+            background-color: #f1f1f1;
+        }
+        .footer a {
+            color: #23395d;
+            text-decoration: none;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="container">
+            <div class="header">
+                <h1>Nuovo Invito</h1>
+            </div>
+            <div class="content">
+                <p>Ciao {{ invitation.invitee.first_name|default:invitation.invitee.username }},</p>
+                <p><strong>{{ creator.get_full_name|default:creator.username }}</strong> ti ha invitato a un evento.</p>
+
+                <div class="event-details">
+                    <strong>{{ event.title }}</strong>
+                    <span>Dal: {{ event.start|date:"d/m/Y H:i" }}</span><br>
+                    <span>Al: {{ event.end|date:"d/m/Y H:i" }}</span>
+                </div>
+
+                <p>Puoi accettare o rifiutare l'invito dalla tua Home Desk.</p>
+
+                <div class="button-container">
+                    <a href="{{ base_url }}{% url 'desk' %}" class="button">Vai alla Home Desk</a>
+                </div>
+            </div>
+            <div class="footer">
+                <p><a href="{{ base_url }}">Visita il portale NoirTech.</a></p>
+                <p style="margin-top: 15px;">© {% now "Y" %} NoirTech. Tutti i diritti riservati.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

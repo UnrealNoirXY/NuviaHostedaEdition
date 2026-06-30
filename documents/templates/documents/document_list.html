@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+{% block title %}Gestione Documenti{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title mb-0">Gestione Documenti</h2>
+        <a href="{% url 'documents:document_upload' %}" class="btn btn-success">
+            <i class="fas fa-plus me-2"></i> Carica Documento
+        </a>
+    </div>
+
+    <form method="get"
+          hx-get="{% url 'documents:document_list' %}"
+          hx-target="#document-table-container"
+          hx-swap="innerHTML"
+          hx-trigger="keyup changed delay:500ms from:input, change from:select"
+          class="row g-3 align-items-center mb-4 p-3 border rounded bg-light">
+        {% load crispy_forms_tags %}
+        <div class="col-md-4">{{ filter_form.name|as_crispy_field }}</div>
+        <div class="col-md-3">{{ filter_form.resort|as_crispy_field }}</div>
+        <div class="col-md-3">{{ filter_form.role|as_crispy_field }}</div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Filtra</button>
+        </div>
+    </form>
+
+    <div id="document-table-container">
+        {% include 'documents/_document_table.html' %}
+    </div>
+</div>
+{% endblock %}

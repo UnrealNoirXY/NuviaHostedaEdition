@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Conferma di Check-in Online</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            max-width: 200px;
+            max-height: 100px;
+            margin-bottom: 20px;
+        }
+        .main-title {
+            font-size: 22pt;
+            color: #003366;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-size: 12pt;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .reference-box {
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .reference-box p {
+            margin: 0;
+            font-size: 11pt;
+        }
+        .reference-box strong {
+            font-size: 14pt;
+            color: #003366;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #003366;
+            border-bottom: 2px solid #003366;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .details-table td {
+            padding: 9px;
+            border-bottom: 1px solid #eee;
+        }
+        .details-table .label {
+            font-weight: bold;
+            width: 35%;
+        }
+        .guests-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .guests-table th, .guests-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .guests-table th {
+            background-color: #003366;
+            color: #ffffff;
+        }
+        .footer {
+            position: fixed;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 8pt;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        {% if booking.resort.company.logo %}
+            <img src="{{ booking.resort.company.logo.path }}" class="logo" alt="Logo Azienda">
+        {% endif %}
+        <h1 class="main-title">Conferma di Avvenuto Check-in Online</h1>
+        <p class="subtitle">Online Check-in Confirmation</p>
+    </div>
+
+    <div class="reference-box">
+        <p>Riferimento Prenotazione / Booking Reference: <strong>#{{ booking.id }}</strong></p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Riepilogo Soggiorno</h2>
+        <table class="details-table">
+            <tr>
+                <td class="label">Struttura / Resort:</td>
+                <td>{{ booking.resort.name }}</td>
+            </tr>
+            <tr>
+                <td class="label">Ospite Principale / Main Guest:</td>
+                <td>{{ booking.guest_name }}</td>
+            </tr>
+            <tr>
+                <td class="label">Email:</td>
+                <td>{{ booking.guest_email }}</td>
+            </tr>
+            <tr>
+                <td class="label">Data di Arrivo / Check-in Date:</td>
+                <td>{{ booking.check_in_date|date:"d F Y" }}</td>
+            </tr>
+            <tr>
+                <td class="label">Data di Partenza / Check-out Date:</td>
+                <td>{{ booking.check_out_date|date:"d F Y" }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Dettaglio Ospiti</h2>
+        <table class="guests-table">
+            <thead>
+                <tr>
+                    <th>Nome Cognome / Full Name</th>
+                    <th>Data di Nascita / Date of Birth</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for guest in guests %}
+                <tr>
+                    <td>{{ guest.first_name }} {{ guest.last_name }}</td>
+                    <td>{{ guest.date_of_birth|date:"d/m/Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">Nessun ospite aggiuntivo. / No additional guests.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Questo documento è una conferma generata automaticamente e non richiede firma.</p>
+        <p>&copy; {{ generation_date|date:"Y" }} {{ booking.resort.company.name }}. Tutti i diritti riservati.</p>
+    </div>
+</body>
+</html>

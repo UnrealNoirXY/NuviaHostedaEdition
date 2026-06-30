@@ -1,0 +1,88 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4 mx-auto" style="max-width: 900px;">
+    <h2 class="dashboard-title mb-4">{{ title }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                {{ form.name|as_crispy_field }}
+
+                {{ form.review_period_days|as_crispy_field }}
+
+                <hr>
+
+                <h5>Programmazione Invio</h5>
+                {{ form.frequency|as_crispy_field }}
+
+                <div id="day-of-week-field" class="mb-3">
+                    {{ form.day_of_week|as_crispy_field }}
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        {{ form.hour|as_crispy_field }}
+                    </div>
+                    <div class="col-6">
+                        {{ form.minute|as_crispy_field }}
+                    </div>
+                </div>
+
+                <hr>
+
+                {{ form.is_active|as_crispy_field }}
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">{{ form.resorts.label }}</label>
+                    <div class="card p-2" style="max-height: 200px; overflow-y: auto;">
+                        {{ form.resorts }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">{{ form.recipients.label }}</label>
+                    <div class="card p-2" style="max-height: 200px; overflow-y: auto;">
+                        {{ form.recipients }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save me-2"></i> Salva Configurazione
+            </button>
+            <a href="{% url 'communications:scheduled_report_list' %}" class="btn btn-secondary">Annulla</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const frequencySelect = document.getElementById('id_frequency');
+    const dayOfWeekField = document.getElementById('day-of-week-field');
+
+    function toggleDayOfWeekField() {
+        if (frequencySelect.value === 'weekly') {
+            dayOfWeekField.style.display = 'block';
+        } else {
+            dayOfWeekField.style.display = 'none';
+        }
+    }
+
+    // Initial check on page load
+    toggleDayOfWeekField();
+
+    // Add event listener for changes
+    frequencySelect.addEventListener('change', toggleDayOfWeekField);
+});
+</script>
+{% endblock %}

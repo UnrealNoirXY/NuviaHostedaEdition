@@ -1,0 +1,273 @@
+# Manifest dei dataset di verifica documenti.
+# Le immagini non sono versionate: indicare solo percorsi relativi, hash e ground truth.
+
+countries:
+  - code: ITA
+    document_types:
+      - type: ID_CARD
+        target_count: 12
+        samples:
+          - filename: datasets/ITA/ID_CARD/ita_id_frontal_glare_01.jpg
+            capture_tags: [frontal, glare]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: CA1234567
+              first_name: MARIO
+              last_name: ROSSI
+              birth_date: 1980-01-15
+              expiry_date: 2030-01-14
+              issuer_country: ITA
+            quality_notes: "Leggera sovraesposizione su lato destro"
+            consent_reference: synthetic
+          - filename: datasets/ITA/ID_CARD/ita_id_angle_shadow_02.jpg
+            capture_tags: [angled, shadow]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: CA7654321
+              first_name: ELISA
+              last_name: VERDI
+              birth_date: 1991-07-03
+              expiry_date: 2031-07-02
+              issuer_country: ITA
+            quality_notes: "Scatto a 20° con ombre sul bordo"
+            consent_reference: synthetic
+      - type: PASSPORT
+        target_count: 12
+        samples:
+          - filename: datasets/ITA/PASSPORT/ita_passport_mrz_ok_01.jpg
+            capture_tags: [frontal, glare]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: YA1234567
+              first_name: MARIO
+              last_name: ROSSI
+              birth_date: 1980-01-15
+              expiry_date: 2030-01-14
+              issuer_country: ITA
+            quality_notes: "Riflesso sul chip, MRZ leggibile"
+            consent_reference: synthetic
+          - filename: datasets/ITA/PASSPORT/ita_passport_partial_crop_02.jpg
+            capture_tags: [partial_crop]
+            status: needs_replacement
+            hash: ''
+            expected_fields:
+              document_number: YA8765432
+              first_name: LUIGI
+              last_name: VERDI
+              birth_date: 1992-05-20
+              expiry_date: 2028-05-19
+              issuer_country: ITA
+            quality_notes: "MRZ tagliata, utile per test fallback"
+            consent_reference: synthetic
+      - type: DRIVER_LICENSE
+        target_count: 10
+        samples:
+          - filename: datasets/ITA/DRIVER_LICENSE/ita_dl_angle_blur_01.jpg
+            capture_tags: [angled, blur]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: U1A234567B
+              first_name: ANNA
+              last_name: BIANCHI
+              birth_date: 1985-11-30
+              expiry_date: 2029-11-29
+              issuer_country: ITA
+            quality_notes: "Leggera sfocatura, bordo sinistro fuori fuoco"
+            consent_reference: synthetic
+          - filename: datasets/ITA/DRIVER_LICENSE/ita_dl_shadow_glare_02.jpg
+            capture_tags: [shadow, glare]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: U9Z765432A
+              first_name: CARLA
+              last_name: NERI
+              birth_date: 1988-09-14
+              expiry_date: 2032-09-13
+              issuer_country: ITA
+            quality_notes: "Ombre diagonali e riflesso sul timbro"
+            consent_reference: synthetic
+
+  - code: ESP
+    document_types:
+      - type: ID_CARD
+        target_count: 12
+        samples:
+          - filename: datasets/ESP/ID_CARD/esp_dni_glare_01.jpg
+            capture_tags: [frontal, glare]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: XTR123456
+              first_name: LAURA
+              last_name: GARCIA
+              birth_date: 1994-02-11
+              expiry_date: 2031-02-10
+              issuer_country: ESP
+            quality_notes: "Bagliore su ologramma"
+            consent_reference: synthetic
+          - filename: datasets/ESP/ID_CARD/esp_dni_angle_shadow_02.jpg
+            capture_tags: [angled, shadow]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: XTR654321
+              first_name: MIGUEL
+              last_name: FERNANDEZ
+              birth_date: 1989-06-22
+              expiry_date: 2029-06-21
+              issuer_country: ESP
+            quality_notes: "Scatto obliquo con ombre della mano"
+            consent_reference: synthetic
+      - type: PASSPORT
+        target_count: 12
+        samples:
+          - filename: datasets/ESP/PASSPORT/esp_passport_mrz_missing_01.jpg
+            capture_tags: [frontal, partial_crop]
+            status: needs_replacement
+            hash: ''
+            expected_fields:
+              document_number: ABC123456
+              first_name: JUAN
+              last_name: GARCIA
+              birth_date: 1990-07-12
+              expiry_date: 2030-07-11
+              issuer_country: ESP
+            quality_notes: "MRZ parzialmente fuori inquadratura"
+            consent_reference: synthetic
+          - filename: datasets/ESP/PASSPORT/esp_passport_glare_02.jpg
+            capture_tags: [glare]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: ABC654321
+              first_name: SARA
+              last_name: LOPEZ
+              birth_date: 1993-03-05
+              expiry_date: 2033-03-04
+              issuer_country: ESP
+            quality_notes: "Riflesso centrale, usato per stress test OCR"
+            consent_reference: synthetic
+      - type: DRIVER_LICENSE
+        target_count: 10
+        samples:
+          - filename: datasets/ESP/DRIVER_LICENSE/esp_dl_shadow_01.jpg
+            capture_tags: [shadow]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: ZY12345L
+              first_name: MARTA
+              last_name: RUIZ
+              birth_date: 1987-12-01
+              expiry_date: 2027-11-30
+              issuer_country: ESP
+            quality_notes: "Ombra del volante sul bordo"
+            consent_reference: synthetic
+          - filename: datasets/ESP/DRIVER_LICENSE/esp_dl_angle_02.jpg
+            capture_tags: [angled]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: ZY98765K
+              first_name: PABLO
+              last_name: MARTINEZ
+              birth_date: 1991-04-18
+              expiry_date: 2031-04-17
+              issuer_country: ESP
+            quality_notes: "Scatto laterale per verificare distorsione"
+            consent_reference: synthetic
+
+  - code: FRA
+    document_types:
+      - type: ID_CARD
+        target_count: 12
+        samples:
+          - filename: datasets/FRA/ID_CARD/fra_id_dots_date_01.jpg
+            capture_tags: [frontal, glare]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: 123456789012
+              first_name: JULIE
+              last_name: DURAND
+              birth_date: 1995-12-31
+              expiry_date: 2030-12-31
+              issuer_country: FRA
+            quality_notes: "Formato data con punti, riflesso su plastica"
+            consent_reference: synthetic
+          - filename: datasets/FRA/ID_CARD/fra_id_angle_shadow_02.jpg
+            capture_tags: [angled, shadow]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: 210987654321
+              first_name: LUC
+              last_name: MARTIN
+              birth_date: 1984-08-07
+              expiry_date: 2029-08-06
+              issuer_country: FRA
+            quality_notes: "Luce laterale con ombra, angolo 15°"
+            consent_reference: synthetic
+      - type: PASSPORT
+        target_count: 12
+        samples:
+          - filename: datasets/FRA/PASSPORT/fra_passport_glare_01.jpg
+            capture_tags: [glare]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: FR1234567
+              first_name: CLAIRE
+              last_name: LAMBERT
+              birth_date: 1990-09-09
+              expiry_date: 2030-09-08
+              issuer_country: FRA
+            quality_notes: "Bagliore forte sull'aquila"
+            consent_reference: synthetic
+          - filename: datasets/FRA/PASSPORT/fra_passport_partial_mrz_02.jpg
+            capture_tags: [partial_crop]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: FR7654321
+              first_name: HUGO
+              last_name: BERNARD
+              birth_date: 1986-01-20
+              expiry_date: 2026-01-19
+              issuer_country: FRA
+            quality_notes: "MRZ tagliata, utile per test fallback"
+            consent_reference: synthetic
+      - type: DRIVER_LICENSE
+        target_count: 10
+        samples:
+          - filename: datasets/FRA/DRIVER_LICENSE/fra_dl_glare_01.jpg
+            capture_tags: [frontal, glare]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: FRDL12345
+              first_name: ALEX
+              last_name: MOREAU
+              birth_date: 1989-10-30
+              expiry_date: 2029-10-29
+              issuer_country: FRA
+            quality_notes: "Riflesso su lamina olografica"
+            consent_reference: synthetic
+          - filename: datasets/FRA/DRIVER_LICENSE/fra_dl_shadow_angle_02.jpg
+            capture_tags: [shadow, angled]
+            status: pending
+            hash: ''
+            expected_fields:
+              document_number: FRDL98765
+              first_name: EMMA
+              last_name: ROBERT
+              birth_date: 1993-02-14
+              expiry_date: 2033-02-13
+              issuer_country: FRA
+            quality_notes: "Angolo e ombra per simulare uso notturno"
+            consent_reference: synthetic

@@ -1,0 +1,67 @@
+{% extends 'core/base.html' %}
+{% block title %}Dettaglio Articolo: {{ item.name }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="dashboard-title mb-0">{{ item.name }}</h2>
+            <p class="text-muted">{{ item.resort.name }} | Codice: {{ item.product_code|default:"N/A" }}</p>
+        </div>
+        <div>
+            <h3 class="mb-0">Giacenza: <span class="badge bg-primary">{{ item.current_stock }}</span></h3>
+        </div>
+    </div>
+
+    {% if item.description %}
+    <h4>Descrizione</h4>
+    <p>{{ item.description }}</p>
+    {% endif %}
+
+    <hr class="my-4">
+
+    <h4>Storico Movimenti di Magazzino</h4>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>Data</th>
+                    <th>Motivo</th>
+                    <th class="text-end">Variazione</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in stock_records %}
+                <tr>
+                    <td>{{ record.timestamp|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {{ record.get_reason_display }}
+                        {% if record.purchase_order %}
+                            (<a href="{% url 'purchase_orders:detail' record.purchase_order.pk %}">Ordine #{{ record.purchase_order.id }}</a>)
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if record.change > 0 %}
+                            <span class="text-success">+{{ record.change }}</span>
+                        {% else %}
+                            <span class="text-danger">{{ record.change }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ record.notes|default:"-" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">Nessun movimento registrato.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'inventory:list' %}" class="btn btn-secondary">Torna all'Inventario</a>
+        <a href="{% url 'inventory:adjust_stock' item.pk %}" class="btn btn-primary">Rettifica Giacenza</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,139 @@
+.a4-page-simulation {
+    background-color: #fff;
+    width: 210mm;
+    height: 297mm;
+    padding: 20mm;
+    margin: 0 auto;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    text-align: left;
+    line-height: 1.4;
+}
+
+.a4-page-simulation * {
+    box-sizing: border-box;
+}
+
+.a4-page-simulation .columns-container {
+    display: flex;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.a4-page-simulation .menu-column {
+    width: 100%;
+}
+
+.a4-page-simulation .columns-2 .menu-column {
+    width: 47%;
+}
+
+.a4-page-simulation .header-block {
+    text-align: center;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+    position: relative;
+}
+
+.a4-page-simulation h1 {
+    font-size: 28pt;
+    font-weight: 800;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #000;
+}
+
+.a4-page-simulation .info-subtitle {
+    font-size: 11pt;
+    opacity: 0.6;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.a4-page-simulation .category-section {
+    margin-top: 35px;
+}
+
+.a4-page-simulation .category-title {
+    font-size: 16pt;
+    border-bottom: 2px solid #000;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #000;
+}
+
+.a4-page-simulation .dish-item {
+    margin-bottom: 22px;
+}
+
+.a4-page-simulation .dish-name {
+    font-size: 13pt;
+    font-weight: 600;
+    color: #000;
+}
+
+.a4-page-simulation .dish-price {
+    float: right;
+    font-weight: 700;
+    font-size: 12pt;
+}
+
+.a4-page-simulation .dish-description {
+    font-size: 10.5pt;
+    color: #444;
+    font-style: italic;
+    margin-top: 2px;
+    line-height: 1.3;
+}
+
+.a4-page-simulation .dish-allergens {
+    font-size: 8pt;
+    color: #888;
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.a4-page-simulation .legend-block {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.a4-page-simulation .legend-title {
+    font-size: 12pt;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.a4-page-simulation .legend-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 9pt;
+    color: #666;
+}
+
+.a4-page-simulation .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 80pt;
+    color: rgba(0,0,0,0.03);
+    font-weight: bold;
+    z-index: 0;
+    pointer-events: none;
+    white-space: nowrap;
+}

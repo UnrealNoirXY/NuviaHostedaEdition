@@ -1,0 +1,45 @@
+Titolo: Guida Configurazione Router NoirTech R1
+
+Versione: 1.0
+Data: 24/09/2025
+Categoria: Manuale Tecnico
+
+Sezione 1 - Introduzione
+Il router NoirTech R1 è progettato per reti domestiche e piccoli uffici. 
+Supporta connessioni fino a 1 Gbps, Wi-Fi 6 e firewall integrato.
+
+Sezione 2 - Requisiti di sistema
+- Connessione internet attiva.
+- Browser aggiornato (Chrome, Firefox, Edge).
+- PC o smartphone per l’accesso al pannello di controllo.
+
+Sezione 3 - Collegamenti hardware
+1. Collegare il cavo di alimentazione alla presa elettrica.
+2. Collegare il cavo WAN (fornito dal provider internet) alla porta blu.
+3. Collegare eventuali PC alle porte LAN (gialle).
+
+Sezione 4 - Accesso al pannello
+- Aprire il browser e digitare: http://192.168.1.1
+- Username di default: admin
+- Password di default: noirtech123
+⚠️ Si consiglia di cambiare la password al primo accesso.
+
+Sezione 5 - Configurazione Wi-Fi
+1. Accedere a "Impostazioni Wireless".
+2. Inserire un nome di rete (SSID).
+3. Impostare una password sicura (minimo 12 caratteri).
+4. Salvare le modifiche e riavviare il router.
+
+Sezione 6 - Aggiornamento firmware
+- Dal menu "Sistema" selezionare "Aggiorna firmware".
+- Caricare il file .bin fornito sul sito ufficiale NoirTech.
+- Attendere il riavvio automatico.
+
+Sezione 7 - Troubleshooting rapido
+- Internet non funziona → verificare collegamento cavo WAN.
+- Non ricordo la password → premere il tasto RESET per 10 secondi.
+- Wi-Fi lento → cambiare canale in "Impostazioni Avanzate".
+
+Sezione 8 - Contatti utili
+Supporto tecnico: support@noirtech.online
+Telefono: +39 02 1234567

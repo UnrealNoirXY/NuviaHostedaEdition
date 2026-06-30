@@ -1,0 +1,24 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Rettifica Giacenza{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4 fade-in">
+    <h2 class="dashboard-title mb-4">Rettifica Giacenza per: {{ item.name }}</h2>
+    <p class="text-muted">Usa questo form per registrare un prelievo, un reso, o una rettifica manuale per questo articolo.</p>
+
+    <div class="alert alert-info">
+        <strong>Giacenza Attuale: {{ item.current_stock }}</strong>
+    </div>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <p>Inserisci un numero positivo per aggiungere scorte (es. per un reso) o un numero negativo per rimuoverle (es. per un prelievo).</p>
+        {{ form|crispy }}
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Registra Movimento</button>
+            <a href="{% url 'inventory:detail' item.pk %}" class="btn btn-secondary">Annulla</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

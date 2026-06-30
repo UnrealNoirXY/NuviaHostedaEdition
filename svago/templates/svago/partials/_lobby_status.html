@@ -1,0 +1,58 @@
+<!-- Gestione Inviti -->
+{% if game_invitations or pending_invitations or active_games %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Le tue Partite</h6>
+    </div>
+    <div class="card-body">
+        <!-- Inviti Ricevuti -->
+        {% if game_invitations %}
+            <h5>Inviti Ricevuti</h5>
+            <ul class="list-group mb-3">
+                {% for game in game_invitations %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Invito da <strong>{{ game.player1.gamertag }}</strong></span>
+                        <div>
+                            <form action="{% url 'svago:accept_invitation' game.id %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm">Accetta</button>
+                            </form>
+                            <form action="{% url 'svago:decline_invitation' game.id %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Rifiuta</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <!-- Inviti Inviati -->
+        {% if pending_invitations %}
+            <h5>Inviti Inviati</h5>
+            <ul class="list-group mb-3">
+                {% for game in pending_invitations %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>In attesa di risposta da <strong>{{ game.player2.gamertag }}</strong></span>
+                        <form action="{% url 'svago:cancel_invitation' game.id %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning btn-sm">Annulla</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <!-- Partite Attive -->
+        {% if active_games %}
+            <h5>Partite in Corso</h5>
+            <ul class="list-group">
+                {% for game in active_games %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Partita con <strong>{{ game.player1.gamertag|default:game.player2.gamertag }}</strong></span>
+                        <a href="{% url 'svago:game_view' game.id %}" class="btn btn-primary btn-sm">Gioca</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

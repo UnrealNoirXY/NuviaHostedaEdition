@@ -1,0 +1,146 @@
+{% extends 'core/base.html' %}
+{% block title %}Gioco del Tris{% endblock %}
+
+{% block content %}
+<style>
+    .tris-container {
+        max-width: 400px;
+        margin: auto;
+    }
+    .tris-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        aspect-ratio: 1 / 1;
+    }
+    .tris-cell {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 3rem;
+        font-weight: bold;
+        background-color: #e9ecef;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+    }
+    .tris-cell:hover {
+        background-color: #ced4da;
+    }
+    .tris-cell.x {
+        color: #0d6efd;
+    }
+    .tris-cell.o {
+        color: #dc3545;
+    }
+    .tris-status {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+</style>
+
+<div class="dashboard-card p-4 tris-container">
+    <h2 class="dashboard-title mb-4 text-center">Gioco del Tris</h2>
+
+    <div id="status-area" class="tris-status text-center mb-3">Turno di: X</div>
+
+    <div class="tris-grid" id="tris-grid">
+        {% for i in "123456789" %}
+        <div class="tris-cell" data-cell-index="{{ forloop.counter0 }}">&nbsp;</div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+        <button id="restart-button" class="btn btn-primary btn-lg">Ricomincia</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const statusArea = document.getElementById('status-area');
+    const restartButton = document.getElementById('restart-button');
+    const cells = document.querySelectorAll('.tris-cell');
+
+    let currentPlayer = 'X';
+    let gameState = ["", "", "", "", "", "", "", "", ""];
+    let gameActive = true;
+
+    const winningConditions = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+        [0, 4, 8], [2, 4, 6]             // Diagonals
+    ];
+
+    function handleCellClick(event) {
+        const clickedCell = event.target;
+        const clickedCellIndex = parseInt(clickedCell.getAttribute('data-cell-index'));
+
+        if (gameState[clickedCellIndex] !== "" || !gameActive) {
+            return;
+        }
+
+        handleCellPlayed(clickedCell, clickedCellIndex);
+        handleResultValidation();
+    }
+
+    function handleCellPlayed(clickedCell, clickedCellIndex) {
+        gameState[clickedCellIndex] = currentPlayer;
+        clickedCell.innerHTML = currentPlayer;
+        clickedCell.classList.add(currentPlayer.toLowerCase());
+    }
+
+    function handleResultValidation() {
+        let roundWon = false;
+        for (let i = 0; i < winningConditions.length; i++) {
+            const winCondition = winningConditions[i];
+            let a = gameState[winCondition[0]];
+            let b = gameState[winCondition[1]];
+            let c = gameState[winCondition[2]];
+            if (a === '' || b === '' || c === '') {
+                continue;
+            }
+            if (a === b && b === c) {
+                roundWon = true;
+                break;
+            }
+        }
+
+        if (roundWon) {
+            statusArea.innerHTML = `Vince il giocatore ${currentPlayer}!`;
+            gameActive = false;
+            return;
+        }
+
+        let roundDraw = !gameState.includes("");
+        if (roundDraw) {
+            statusArea.innerHTML = "Pareggio!";
+            gameActive = false;
+            return;
+        }
+
+        handlePlayerChange();
+    }
+
+    function handlePlayerChange() {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        statusArea.innerHTML = `Turno di: ${currentPlayer}`;
+    }
+
+    function handleRestartGame() {
+        currentPlayer = 'X';
+        gameState = ["", "", "", "", "", "", "", "", ""];
+        gameActive = true;
+        statusArea.innerHTML = `Turno di: ${currentPlayer}`;
+        cells.forEach(cell => {
+            cell.innerHTML = "&nbsp;";
+            cell.classList.remove('x', 'o');
+        });
+    }
+
+    cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+    restartButton.addEventListener('click', handleRestartGame);
+});
+</script>
+{% endblock %}

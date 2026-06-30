@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+
+{% block title %}Report Lettura Documento{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Report di Lettura</h1>
+    <p class="mb-4">Stato di lettura per il documento: "<strong>{{ document.title }}</strong>" per l'utente <strong>{{ document.user.username }}</strong>.</p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header bg-info text-white">
+            <h6 class="m-0 font-weight-bold"><i class="fas fa-eye me-2"></i>Visualizzato Da ({{ read_by_users.count }})</h6>
+        </div>
+        <div class="card-body">
+            {% if read_by_users %}
+                <ul class="list-group list-group-flush">
+                    {% for user in read_by_users %}
+                        <li class="list-group-item">{{ user.get_full_name|default:user.username }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Nessun utente ha ancora visualizzato questo documento.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="{% url 'documents:document_list' %}" class="btn btn-secondary">Torna alla Lista Documenti</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,376 @@
+.nuvia-mail-page {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.nuvia-mail-hero {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(35, 57, 93, 0.95), rgba(64, 111, 166, 0.95));
+  color: #fff;
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.2);
+}
+
+.nuvia-mail-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.nuvia-mail-subtitle { color: rgba(255, 255, 255, 0.94); max-width: 56ch; }
+.nuvia-mail-hero-card {
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  padding: 1rem;
+}
+
+.nuvia-mail-hero-card ul { list-style: none; padding: 0; margin: 0 0 1rem; }
+.nuvia-mail-hero-card li { margin-bottom: 0.55rem; display: flex; gap: 0.5rem; align-items: center; }
+
+.nuvia-mail-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1rem; }
+.nuvia-mail-panel {
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.nuvia-mail-panel__lead { color: #475569; }
+
+.nuvia-mail-steps,
+.nuvia-mail-checklist { margin: 0; padding: 0; list-style: none; }
+
+.nuvia-mail-step + .nuvia-mail-step { margin-top: 0.75rem; }
+
+.nuvia-mail-step__trigger {
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem;
+  text-align: left;
+}
+
+.nuvia-mail-step__index {
+  background: #1d4ed8;
+  color: #fff;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+
+.nuvia-mail-step__content {
+  display: none;
+  padding: 0.65rem 0.25rem 0 0.25rem;
+  color: #334155;
+}
+
+.nuvia-mail-step.is-open .nuvia-mail-step__content { display: block; }
+.nuvia-mail-step.is-open .nuvia-mail-step__trigger i { transform: rotate(180deg); }
+
+.nuvia-mail-checklist li {
+  position: relative;
+  padding-left: 1.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.nuvia-mail-checklist li::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #1d4ed8;
+  position: absolute;
+  left: 0;
+  top: 0.48rem;
+}
+
+.nuvia-mail-note { font-size: 0.9rem; color: #475569; }
+.nuvia-mail-plan {
+  background: #e0ecff;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+@media (max-width: 900px) {
+  .nuvia-mail-hero,
+  .nuvia-mail-grid { grid-template-columns: 1fr; }
+}
+
+.nuvia-mail-status {
+  margin-top: 0.85rem;
+  border-radius: 10px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 0.75rem;
+  color: #1e3a8a;
+}
+
+.nuvia-mail-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.nuvia-mail-form__grid--signature {
+  grid-template-columns: 1fr;
+}
+
+.nuvia-mail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.nuvia-mail-field label {
+  font-size: 0.85rem;
+  color: #334155;
+  font-weight: 600;
+}
+
+.nuvia-mail-field--checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.nuvia-mail-field--checkbox label {
+  margin-bottom: 0;
+}
+
+.nuvia-mail-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .nuvia-mail-form__grid { grid-template-columns: 1fr; }
+}
+
+.nuvia-mail-list {
+  margin-top: 0.9rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.7rem;
+}
+
+.nuvia-mail-list h4 {
+  font-size: 0.92rem;
+  margin-bottom: 0.5rem;
+  color: #334155;
+}
+
+.nuvia-mail-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.nuvia-mail-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.45rem 0.55rem;
+}
+
+.nuvia-mail-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.6rem;
+}
+
+.nuvia-mail-kpis > div {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.6rem;
+  text-align: center;
+}
+
+.nuvia-mail-kpis span {
+  display: block;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.nuvia-mail-kpis strong {
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+
+.nuvia-mail-inline-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.nuvia-mail-panel--client {
+  grid-column: 1 / -1;
+}
+
+.nuvia-mail-client {
+  display: grid;
+  grid-template-columns: 220px 280px 1fr;
+  border: 1px solid #dbe5f3;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  min-height: 520px;
+}
+
+.nuvia-mail-client__sidebar {
+  background: linear-gradient(180deg, #0f172a, #1e293b);
+  color: #e2e8f0;
+  padding: 0.85rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nuvia-mail-client__brand {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.nuvia-mail-client__folders {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.nuvia-mail-client__folders li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  border-radius: 10px;
+  padding: 0.45rem 0.55rem;
+  color: #cbd5e1;
+  border: 1px solid transparent;
+}
+
+.nuvia-mail-client__folders li i {
+  margin-right: 0.45rem;
+}
+
+.nuvia-mail-client__folders li.is-active {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(147, 197, 253, 0.45);
+  color: #fff;
+}
+
+.nuvia-mail-client__folders li small {
+  margin-left: auto;
+  background: rgba(148, 163, 184, 0.26);
+  border-radius: 999px;
+  padding: 0.06rem 0.4rem;
+}
+
+.nuvia-mail-client__list {
+  border-right: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.nuvia-mail-client__list header,
+.nuvia-mail-client__composer > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.nuvia-mail-client__list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0.6rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.nuvia-mail-client__list li {
+  border: 1px solid #dbe5f3;
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.5rem 0.55rem;
+}
+
+.nuvia-mail-client__list li .subject {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.nuvia-mail-client__list li .meta {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.nuvia-mail-client__list li.empty {
+  text-align: center;
+  color: #64748b;
+  padding: 1.5rem 0.75rem;
+}
+
+.nuvia-mail-client__composer {
+  background: #fff;
+}
+
+.nuvia-mail-client__composer .nuvia-mail-form,
+.nuvia-mail-client__composer .nuvia-mail-list {
+  padding: 0.85rem;
+}
+
+@media (max-width: 1200px) {
+  .nuvia-mail-client {
+    grid-template-columns: 200px 1fr;
+  }
+
+  .nuvia-mail-client__composer {
+    grid-column: 1 / -1;
+    border-top: 1px solid #e2e8f0;
+  }
+}
+
+@media (max-width: 900px) {
+  .nuvia-mail-client {
+    grid-template-columns: 1fr;
+  }
+
+  .nuvia-mail-client__list,
+  .nuvia-mail-client__sidebar {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+  }
+}

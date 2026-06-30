@@ -1,0 +1,46 @@
+{% load crispy_forms_tags %}
+
+<div class="modal-header">
+    <h5 class="modal-title" id="modalLabel">Gestisci Link per: {{ competitor.name }}</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <!-- Colonna per aggiungere un nuovo link -->
+        <div class="col-md-5">
+            <h6>Aggiungi Nuovo Link</h6>
+            <form hx-post="{% url 'competitors:manage-links-modal' competitor.pk %}" hx-target="#modal-content" hx-swap="outerHTML">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary mt-2">Salva Link</button>
+            </form>
+        </div>
+        <!-- Colonna per la lista dei link esistenti -->
+        <div class="col-md-7">
+            <h6>Link Esistenti</h6>
+            {% if scraping_links %}
+                <ul class="list-group">
+                    {% for link in scraping_links %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ link.source.name }}:</strong>
+                                <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" title="{{ link.url }}">{{ link.url|truncatechars:30 }}</a>
+                            </div>
+                            <form hx-post="{% url 'competitors:delete-scraping-link' link.pk %}" hx-target="#modal-content" hx-swap="outerHTML" hx-confirm="Sei sicuro di voler eliminare questo link?">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Elimina Link">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="alert alert-info">Nessun link di scraping configurato.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+</div>

@@ -1,0 +1,93 @@
+{% extends 'core/base.html' %}
+{% block title %}Dashboard Capomanutentore{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <h1 class="h2 mb-4">Dashboard Capomanutentore</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Budget Manutenzione (Mese Corrente)</h5>
+                    <p class="card-text fs-2">€ {{ maintenance_budget|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-white {% if maintenance_spent > maintenance_budget %}bg-danger{% else %}bg-success{% endif %}">
+                <div class="card-body">
+                    <h5 class="card-title">Spesa Manutenzione (Mese Corrente)</h5>
+                    <p class="card-text fs-2">€ {{ maintenance_spent|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recensioni Negative Recenti Rilevanti</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_negative_reviews %}
+                        <ul class="list-group">
+                            {% for review in recent_negative_reviews %}
+                                <a href="{% url 'reviews:review_detail' review.pk %}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ review.title|truncatechars:50 }}</h6>
+                                        <small>{{ review.review_date|date:"d/m/Y" }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ review.text|truncatewords:20 }}</p>
+                                    <small class="text-muted">{{ review.resort.name }} - {{ review.source.name }}</small>
+                                </a>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-center text-muted">Nessuna recensione negativa rilevante trovata negli ultimi 90 giorni.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Performance Team di Manutenzione</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Manutentore</th>
+                                    <th>Ticket Aperti</th>
+                                    <th>Ticket in Lavorazione</th>
+                                    <th>Ticket Chiusi (Mese Corrente)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stats in maintainer_stats %}
+                                <tr>
+                                    <td>{{ stats.username }}</td>
+                                    <td>{{ stats.open_tickets }}</td>
+                                    <td>{{ stats.in_progress_tickets }}</td>
+                                    <td>{{ stats.closed_tickets_month }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">Nessun manutentore trovato.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

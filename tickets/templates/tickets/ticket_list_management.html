@@ -1,0 +1,112 @@
+{% extends 'core/base.html' %}
+{% block title %}Gestione Ticket{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title mb-0">Gestione Ticket</h2>
+        <a href="{% url 'ticket_create' %}" class="btn btn-success">
+            <i class="fas fa-plus me-2"></i> Aggiungi Ticket
+        </a>
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="table-responsive d-none d-lg-block">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Titolo</th>
+                    <th>Resort</th>
+                    <th>Stato</th>
+                    <th>Priorità</th>
+                    <th>Creato il</th>
+                    <th>Assegnato a</th>
+                    <th class="text-end">Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>#{{ ticket.id }}</td>
+                    <td><strong><a href="{% url 'ticket_detail' ticket.id %}">{{ ticket.title }}</a></strong></td>
+                    <td>{{ ticket.resort.name|default:"N/D" }}</td>
+                    <td>
+                        <span class="badge
+                            {% if ticket.status == 'open' %}bg-warning
+                            {% elif ticket.status == 'in_progress' %}bg-info
+                            {% elif ticket.status == 'resolved' %}bg-success
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ ticket.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge
+                            {% if ticket.priority == 'urgent' %}bg-danger
+                            {% elif ticket.priority == 'high' %}bg-warning
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ ticket.get_priority_display }}
+                        </span>
+                    </td>
+                    <td>{{ ticket.created_at|date:"d/m/Y H:i" }}</td>
+                    <td>{{ ticket.assigned_to.username|default:"-" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-sm btn-outline-info">Dettagli</a>
+                        <a href="{% url 'core:ticket_update' ticket.pk %}" class="btn btn-sm btn-outline-primary">Modifica</a>
+                        <a href="{% url 'core:ticket_delete' ticket.pk %}" class="btn btn-sm btn-outline-danger">Elimina</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-4">Nessun ticket trovato.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="d-lg-none">
+        {% for ticket in tickets %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="card-title mb-1"><a href="{% url 'ticket_detail' ticket.id %}">{{ ticket.title }}</a></h5>
+                    <span class="badge
+                        {% if ticket.priority == 'urgent' %}bg-danger
+                        {% elif ticket.priority == 'high' %}bg-warning
+                        {% else %}bg-secondary
+                        {% endif %}">
+                        {{ ticket.get_priority_display }}
+                    </span>
+                </div>
+                <p class="card-text mb-2">
+                    <small class="text-muted">{{ ticket.resort.name|default:"N/D" }}</small>
+                </p>
+                <p class="card-text">
+                    <strong>Stato:</strong>
+                    <span class="badge
+                        {% if ticket.status == 'open' %}bg-warning
+                        {% elif ticket.status == 'in_progress' %}bg-info
+                        {% elif ticket.status == 'resolved' %}bg-success
+                        {% else %}bg-secondary
+                        {% endif %}">
+                        {{ ticket.get_status_display }}
+                    </span><br>
+                    <strong>Assegnato a:</strong> {{ ticket.assigned_to.username|default:"-" }}<br>
+                    <strong>Creato il:</strong> {{ ticket.created_at|date:"d/m/Y H:i" }}
+                </p>
+                <hr>
+                <a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-sm btn-info">Dettagli</a>
+                <a href="{% url 'core:ticket_update' ticket.pk %}" class="btn btn-sm btn-primary">Modifica</a>
+                <a href="{% url 'core:ticket_delete' ticket.pk %}" class="btn btn-sm btn-danger">Elimina</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info">Nessun ticket trovato.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

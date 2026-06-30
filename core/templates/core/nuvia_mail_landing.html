@@ -1,0 +1,275 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Nuvia Mail · Setup Guidato{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/nuvia-mail.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="nuvia-mail-page">
+    <div class="nuvia-mail-hero">
+        <div>
+            <p class="nuvia-mail-badge">Nuovo strumento · Fase 3</p>
+            <h1>Nuvia Mail</h1>
+            <p class="nuvia-mail-subtitle">Accedi alla tua email aziendale dentro la piattaforma, in modo opzionale e guidato.</p>
+        </div>
+        <div class="nuvia-mail-hero-card">
+            <h2>Per iniziare in 5 minuti</h2>
+            <ul>
+                <li><i class="fas fa-circle-check"></i> Nessun obbligo di attivazione</li>
+                <li><i class="fas fa-circle-check"></i> Procedura user-friendly IMAP/SMTP</li>
+                <li><i class="fas fa-circle-check"></i> Layout ottimizzato smartphone e desktop</li>
+            </ul>
+            <a href="#setup" class="btn btn-light">Avvia configurazione guidata</a>
+        </div>
+    </div>
+
+    <div class="nuvia-mail-grid" id="setup">
+        <article class="nuvia-mail-panel">
+            <h3>Configurazione guidata account</h3>
+            <p class="nuvia-mail-panel__lead">Segui i passaggi in ordine. Al termine, potrai leggere e inviare email da Nuvia Mail.</p>
+            <ol class="nuvia-mail-steps" data-setup-steps>
+                {% for step in setup_steps %}
+                <li class="nuvia-mail-step">
+                    <button type="button" class="nuvia-mail-step__trigger" data-step-trigger>
+                        <span class="nuvia-mail-step__index">{{ forloop.counter }}</span>
+                        <span>{{ step.title }}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="nuvia-mail-step__content" data-step-content>
+                        <p>{{ step.description }}</p>
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+        </article>
+
+        <aside class="nuvia-mail-panel nuvia-mail-panel--info">
+            <h3>Parametri IMAP/SMTP da avere pronti</h3>
+            <ul class="nuvia-mail-checklist">
+                <li>Indirizzo email aziendale completo</li>
+                <li>Server IMAP e porta (es. 993 SSL)</li>
+                <li>Server SMTP e porta (es. 465 SSL / 587 STARTTLS)</li>
+                <li>Username e password/app password</li>
+                <li>Firma email aziendale ufficiale</li>
+            </ul>
+            <p class="nuvia-mail-note">Suggerimento: se non conosci i parametri, chiedi all'IT. Nuvia Mail resta opzionale e non blocca gli altri strumenti.</p>
+            {% if mail_account %}
+            <div class="nuvia-mail-status">
+                <p class="mb-1"><strong>Ultimo test:</strong> {{ mail_account.last_test_at|default:"mai" }}</p>
+                <p class="mb-0"><strong>Stato:</strong> {{ mail_account.last_test_status|default:"non eseguito" }}</p>
+            </div>
+            {% endif %}
+        </aside>
+    </div>
+
+    <div class="nuvia-mail-grid">
+        <article class="nuvia-mail-panel">
+            <h3>Fase 1 · Configurazione account</h3>
+            <form method="post" class="nuvia-mail-form" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save_account">
+                <div class="nuvia-mail-form__grid">
+                    {% for field in account_form %}
+                    <div class="nuvia-mail-field {% if field.field.widget.input_type == 'checkbox' %}nuvia-mail-field--checkbox{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                        {% for error in field.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                    </div>
+                    {% endfor %}
+                    <div class="nuvia-mail-field">
+                        <label for="password_raw">Password / App Password</label>
+                        <input type="password" name="password_raw" id="password_raw" class="form-control" placeholder="Lascia vuoto per non modificare">
+                    </div>
+                </div>
+                <div class="nuvia-mail-actions">
+                    <button class="btn btn-primary" type="submit">Salva configurazione</button>
+                    <button class="btn btn-outline-primary" type="submit" name="action" value="test_connection">Test rete server mail</button>
+                </div>
+            </form>
+        </article>
+
+        <article class="nuvia-mail-panel">
+            <h3>Fase 1 · Firma email</h3>
+            <form method="post" class="nuvia-mail-form" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save_signature">
+                <div class="nuvia-mail-form__grid nuvia-mail-form__grid--signature">
+                    {% for field in signature_form %}
+                    <div class="nuvia-mail-field {% if field.field.widget.input_type == 'checkbox' %}nuvia-mail-field--checkbox{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-primary" type="submit">Salva firma</button>
+            </form>
+        </article>
+    </div>
+
+
+    <div class="nuvia-mail-grid">
+        <article class="nuvia-mail-panel">
+            <h3>Fase 2 · Template rapidi</h3>
+            <form method="post" class="nuvia-mail-form" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save_template">
+                <div class="nuvia-mail-form__grid nuvia-mail-form__grid--signature">
+                    {% for field in template_form %}
+                    <div class="nuvia-mail-field {% if field.field.widget.input_type == 'checkbox' %}nuvia-mail-field--checkbox{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-primary" type="submit">Salva template</button>
+            </form>
+            {% if templates %}
+            <div class="nuvia-mail-list">
+                <h4>Template disponibili</h4>
+                <ul>
+                    {% for t in templates %}
+                    <li>
+                        <strong>{{ t.name }}</strong>
+                        <a href="?template={{ t.pk }}#composer" class="btn btn-sm btn-outline-primary">Usa nel composer</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </article>
+
+        <article class="nuvia-mail-panel nuvia-mail-panel--client" id="composer">
+            <h3>Fase 2 · Mail Workspace (stile client)</h3>
+            <div class="nuvia-mail-client">
+                <aside class="nuvia-mail-client__sidebar">
+                    <div class="nuvia-mail-client__brand">Nuvia Mail</div>
+                    <button class="btn btn-primary btn-sm w-100 mb-2" type="button" onclick="document.getElementById('{{ queue_form.to_email.id_for_label }}').focus()">Nuovo messaggio</button>
+                    <ul class="nuvia-mail-client__folders">
+                        <li class="is-active"><i class="fas fa-inbox"></i><span>Inbox</span></li>
+                        <li><i class="fas fa-paper-plane"></i><span>Sent</span></li>
+                        <li><i class="fas fa-clock"></i><span>In coda</span><small>{{ analytics.queued }}</small></li>
+                        <li><i class="fas fa-triangle-exclamation"></i><span>Da approvare</span><small>{{ analytics.pending_approval|default:0 }}</small></li>
+                    </ul>
+                </aside>
+
+                <section class="nuvia-mail-client__list">
+                    <header>
+                        <strong>Attività recenti</strong>
+                        <span>{{ queue_items|length }} elementi</span>
+                    </header>
+                    <ul>
+                        {% for item in queue_items %}
+                        <li>
+                            <div class="subject">{{ item.subject|default:'(senza oggetto)' }}</div>
+                            <div class="meta">{{ item.to_email }} · {{ item.get_status_display }}</div>
+                        </li>
+                        {% empty %}
+                        <li class="empty">Nessun elemento recente in coda.</li>
+                        {% endfor %}
+                    </ul>
+                </section>
+
+                <section class="nuvia-mail-client__composer">
+                    <header>
+                        <strong>Composer</strong>
+                        <span>Invio guidato con compliance</span>
+                    </header>
+                    <form method="post" class="nuvia-mail-form" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="queue_email">
+                        <div class="nuvia-mail-form__grid nuvia-mail-form__grid--signature">
+                            {% for field in queue_form %}
+                            <div class="nuvia-mail-field">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% for error in field.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="nuvia-mail-actions">
+                            <button class="btn btn-primary" type="submit">Metti in coda invio</button>
+                            <button class="btn btn-outline-secondary" type="submit" name="action" value="process_queue_now">Processa coda ora</button>
+                        </div>
+                    </form>
+                    {% if queue_items %}
+                    <div class="nuvia-mail-list">
+                        <h4>Ultimi invii in coda</h4>
+                        <ul>
+                            {% for item in queue_items %}
+                            <li>
+                                <div>
+                                    <strong>{{ item.to_email }}</strong> · {{ item.subject }}
+                                    {% if item.compliance_flagged %}<small class="text-warning d-block">⚠ {{ item.compliance_reason|default:"Flag compliance" }}</small>{% endif %}
+                                </div>
+                                <div class="nuvia-mail-inline-actions">
+                                    <span class="badge bg-light text-dark">{{ item.get_status_display }}</span>
+                                    {% if item.status == 'failed' and not item.compliance_flagged %}
+                                    <form method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="retry_failed_item">
+                                        <input type="hidden" name="queue_item_id" value="{{ item.pk }}">
+                                        <button class="btn btn-sm btn-outline-secondary" type="submit">Ritenta</button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </section>
+            </div>
+        </article>
+    </div>
+
+    <div class="nuvia-mail-grid">
+        <article class="nuvia-mail-panel">
+            <h3>Fase 3 · Analytics operative</h3>
+            <div class="nuvia-mail-kpis">
+                <div><span>In coda</span><strong>{{ analytics.queued }}</strong></div>
+                <div><span>Inviate</span><strong>{{ analytics.sent }}</strong></div>
+                <div><span>Errori</span><strong>{{ analytics.failed }}</strong></div>
+                <div><span>Template</span><strong>{{ analytics.templates }}</strong></div>
+                <div><span>Flag DLP</span><strong>{{ analytics.flagged }}</strong></div>
+                <div><span>Pending approval</span><strong>{{ analytics.pending_approval|default:0 }}</strong></div>
+            </div>
+        </article>
+
+        <article class="nuvia-mail-panel">
+            <h3>Fase 3 · Policy compliance</h3>
+            <form method="post" class="nuvia-mail-form" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save_policy">
+                <div class="nuvia-mail-form__grid nuvia-mail-form__grid--signature">
+                    {% for field in policy_form %}
+                    <div class="nuvia-mail-field {% if field.field.widget.input_type == 'checkbox' %}nuvia-mail-field--checkbox{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                        {% for error in field.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-primary" type="submit">Salva policy</button>
+            </form>
+        </article>
+    </div>
+
+    <section class="nuvia-mail-plan">
+        <h3>Piano ultra-dettagliato per il team agente</h3>
+        <p>Il piano operativo di Fase 0 e i prossimi step sono disponibili nel documento dedicato:</p>
+        <p class="mb-0"><strong>Repository doc:</strong> <code>docs/nuvia_mail_phase0_agent_plan.md</code></p>
+    </section>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script src="{% static 'js/nuvia-mail.js' %}"></script>
+{% endblock %}

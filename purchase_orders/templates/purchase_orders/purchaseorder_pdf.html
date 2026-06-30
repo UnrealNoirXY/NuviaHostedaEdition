@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Buono d'Ordine #{{ order.id }}</title>
+    <style>
+        body { font-family: sans-serif; margin: 2cm; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .total { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Buono d'Ordine #{{ order.id }}</h1>
+    <p><strong>Data:</strong> {{ order.created_at|date:"d/m/Y" }}</p>
+    <p><strong>Resort:</strong> {{ order.resort.name }}</p>
+    <p><strong>Fornitore:</strong> {{ order.supplier.name }}</p>
+    <hr>
+    <h3>Articoli</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Prodotto</th>
+                <th>Codice</th>
+                <th>Quantità</th>
+                <th>Prezzo Unitario</th>
+                <th>Prezzo Totale</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.items.all %}
+            <tr>
+                <td>{{ item.product_name }}</td>
+                <td>{{ item.product_code|default:"-" }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>€{{ item.unit_price|floatformat:2 }}</td>
+                <td>€{{ item.total_price|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" class="total" style="text-align:right;">Importo Totale</td>
+                <td class="total">€{{ order.total_amount|floatformat:2 }}</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>

@@ -1,0 +1,134 @@
+{% extends "core/base.html" %}
+
+{% block title %}Crea Annuncio{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Invia una Nuova Comunicazione</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Modulo di Creazione Annuncio</h6>
+        </div>
+        <div class="card-body">
+            <form method="post" id="announcement-form">
+                {% csrf_token %}
+
+                {{ form.load_group.label_tag }}
+                {{ form.load_group }}
+
+                <hr>
+
+                <div class="mb-3">
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.body.label_tag }}
+                    {{ form.body }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        {{ form.priority.label_tag }}
+                        {{ form.priority }}
+                    </div>
+                </div>
+
+                <hr>
+                <h5 class="mt-4 mb-3">Seleziona Destinatari</h5>
+                <p class="text-muted">Puoi caricare un gruppo salvato, oppure creare una nuova selezione combinando i filtri qui sotto.</p>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.target_resorts.label_tag }}
+                        {{ form.target_resorts }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.target_roles.label_tag }}
+                        {{ form.target_roles }}
+                    </div>
+                </div>
+                 <div class="mb-3">
+                    {{ form.recipients.label_tag }}
+                    {{ form.recipients }}
+                    <small class="form-text text-muted">Tieni premuto Ctrl (o Cmd su Mac) per selezionare più utenti specifici.</small>
+                </div>
+
+                <hr>
+                <div class="form-check mt-4 mb-2">
+                    {{ form.save_group }}
+                    <label class="form-check-label" for="{{ form.save_group.id_for_label }}">
+                        {{ form.save_group.label }}
+                    </label>
+                </div>
+                <div class="mb-3" id="new-group-name-wrapper" style="display: none;">
+                    {{ form.new_group_name.label_tag }}
+                    {{ form.new_group_name }}
+                </div>
+
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">Invia Annuncio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ groups_data|json_script:"groups-data" }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const allGroupsData = JSON.parse(document.getElementById('groups-data').textContent);
+    const loadGroupSelect = document.getElementById('load-group-select');
+    const form = document.getElementById('announcement-form');
+
+    loadGroupSelect.addEventListener('change', function() {
+        const groupId = this.value;
+        if (!groupId) {
+            // Clear fields if "-- Nessuno --" is selected
+            form.elements['target_resorts'].querySelectorAll('option').forEach(o => o.selected = false);
+            form.elements['target_roles'].querySelectorAll('option').forEach(o => o.selected = false);
+            form.elements['recipients'].querySelectorAll('option').forEach(o => o.selected = false);
+            return;
+        }
+
+        const group = allGroupsData.find(g => g.id == groupId);
+        if (group) {
+            // Pre-select resorts
+            group.resorts.forEach(resortId => {
+                const option = form.elements['target_resorts'].querySelector(`option[value="${resortId}"]`);
+                if (option) option.selected = true;
+            });
+            // Pre-select roles
+            group.roles.forEach(role => {
+                const option = form.elements['target_roles'].querySelector(`option[value="${role}"]`);
+                if (option) option.selected = true;
+            });
+            // Pre-select users
+            group.users.forEach(userId => {
+                const option = form.elements['recipients'].querySelector(`option[value="${userId}"]`);
+                if (option) option.selected = true;
+            });
+        }
+    });
+
+    const saveGroupCheckbox = document.getElementById('id_save_group');
+    const newGroupNameWrapper = document.getElementById('new-group-name-wrapper');
+    saveGroupCheckbox.addEventListener('change', function() {
+        newGroupNameWrapper.style.display = this.checked ? 'block' : 'none';
+    });
+});
+</script>
+{% endblock %}

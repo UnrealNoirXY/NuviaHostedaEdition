@@ -1,0 +1,53 @@
+# Python
+*.pyc
+__pycache__/
+env/
+venv/
+*.pyo
+*.pyd
+
+# VSCode & PyCharm
+.vscode/
+.idea/
+
+# Django
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/.yarn/
+frontend/.pnp.*
+frontend/.yarnrc.yml
+
+# System
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+
+# build output
+frontend/dist/
+
+# Vite build artifacts
+frontend/dist/
+**/.vite/
+
+# Vite build artifacts
+frontend/dist/
+**/.vite/
+
+# Vite build artifacts
+frontend/dist/
+**/.vite/
+
+# Vite build artifacts
+frontend/dist/
+**/.vite/
+
+node_modules/
+yarn.lock

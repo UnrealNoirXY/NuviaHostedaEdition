@@ -1,0 +1,35 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "./styles/theme";
+@import "./styles/mobile-shell";
+@import "./styles/in-app-guide";
+
+:root {
+    --mobile-touch-target: 46px;
+}
+
+body.is-overlay-locked {
+    overflow: hidden;
+    touch-action: none;
+    overscroll-behavior: contain;
+}
+
+@media (max-width: 767px) {
+    body {
+        font-size: 0.98rem;
+        line-height: 1.45;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    button,
+    .btn,
+    .desk-control-button,
+    .desk-timescale-button,
+    .widget-drag-handle {
+        min-height: var(--mobile-touch-target);
+        min-width: var(--mobile-touch-target);
+    }
+
+    .layout {
+        width: 100%;
+    }
+}

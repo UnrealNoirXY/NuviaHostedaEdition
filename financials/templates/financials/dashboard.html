@@ -1,0 +1,651 @@
+{% extends 'core/base.html' %}
+{% load static django_vite %}
+{% block title %}Controllo Amministrativo{% endblock %}
+
+{% block extra_head %}
+{% vite_asset 'src/financials-dashboard.css' %}
+{% endblock %}
+
+{% block content %}
+<div class="financials-dashboard">
+    <section class="dashboard-card p-4 financials-hero" id="financials-dashboard-hero">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4 gap-3">
+            <div>
+                <h1 class="financials-hero__title mb-1">Cruscotto amministrativo {{ selected_year }}</h1>
+                <p class="financials-hero__subtitle mb-0">Monitoraggio integrato di budget, consuntivi e performance operative in tempo reale.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2" id="financials-action-buttons">
+                <a href="{% url 'financials:snapshot_list' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-table me-2"></i>Vedi Snapshots
+                </a>
+                <a href="{% url 'financials:snapshot_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-2"></i>Nuovo Snapshot
+                </a>
+                {% if in_app_guide %}
+                <button type="button" class="btn btn-outline-secondary" data-guide-trigger>
+                    <i class="fas fa-circle-question me-2"></i>Avvia guida
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="financials-hero__meta">
+            <div class="badge bg-primary-subtle text-primary">{{ selected_company.name|default:'Multi-società' }}</div>
+            {% if selected_resort %}
+            <div class="badge bg-secondary-subtle text-secondary">{{ selected_resort.name }}</div>
+            {% endif %}
+        </div>
+    </section>
+
+    <form method="get" class="financials-filter shadow-sm" id="financials-filter">
+        <div class="row g-3 align-items-end">
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label" for="id_company">Società</label>
+                {{ filter_form.company }}
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label" for="id_resort">Struttura</label>
+                {{ filter_form.resort }}
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <label class="form-label" for="id_year">Anno</label>
+                {{ filter_form.year }}
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <label class="form-label" for="id_period_type">Periodicità</label>
+                {{ filter_form.period_type }}
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter me-2"></i>Filtra</button>
+            </div>
+        </div>
+    </form>
+    <section class="row g-3 mb-4" id="financials-kpi-grid" aria-label="Indicatori principali">
+        <div class="col-xl-4 col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="text-uppercase text-muted mb-0">Raggiungimento Ricavi</h6>
+                        <span class="badge {% if yoy_revenue_delta >= 0 %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %}">
+                            {% if yoy_revenue_delta >= 0 %}+{% endif %}€ {{ yoy_revenue_delta|floatformat:2 }}
+                        </span>
+                    </div>
+                    <h3 class="fw-bold mb-2">{{ revenue_attainment|floatformat:1 }}%</h3>
+                    <p class="text-muted small mb-3">Target rispetto al budget ricavi. YoY {{ yoy_revenue_pct|floatformat:1 }}%.</p>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ revenue_attainment_progress|floatformat:0 }}%;" aria-valuenow="{{ revenue_attainment_progress|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="text-uppercase text-muted mb-0">Controllo Costi</h6>
+                        <span class="badge {% if yoy_cost_delta <= 0 %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %}">
+                            {% if yoy_cost_delta >= 0 %}+{% endif %}€ {{ yoy_cost_delta|floatformat:2 }}
+                        </span>
+                    </div>
+                    <h3 class="fw-bold mb-2">{{ cost_efficiency|floatformat:1 }}%</h3>
+                    <p class="text-muted small mb-3">Spesa rispetto al budget costi. YoY {{ yoy_cost_pct|floatformat:1 }}%.</p>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ cost_efficiency_progress|floatformat:0 }}%;" aria-valuenow="{{ cost_efficiency_progress|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-12">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="text-uppercase text-muted mb-0">Copertura Margine</h6>
+                        <span class="badge {% if yoy_margin_delta >= 0 %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %}">
+                            {% if yoy_margin_delta >= 0 %}+{% endif %}€ {{ yoy_margin_delta|floatformat:2 }}
+                        </span>
+                    </div>
+                    <h3 class="fw-bold mb-2">{{ margin_coverage|floatformat:1 }}%</h3>
+                    <p class="text-muted small mb-3">Margine operativo rispetto al budget. YoY {{ yoy_margin_pct|floatformat:1 }}%.</p>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{ margin_coverage_progress|floatformat:0 }}%;" aria-valuenow="{{ margin_coverage_progress|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-4 col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="text-uppercase text-muted mb-0">Indice di Salute</h6>
+                        <span class="badge {{ health_badge_class }}">{{ health_label }}</span>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ health_score|floatformat:1 }} / 100</h3>
+                    <p class="text-muted small mb-3">{{ health_message }}</p>
+                    <div class="d-flex flex-wrap gap-3 small text-muted">
+                        <span><i class="fas fa-arrow-trend-up text-success me-1"></i>{{ revenue_attainment|floatformat:1 }}% ricavi</span>
+                        <span><i class="fas fa-scale-balanced text-primary me-1"></i>{{ cost_efficiency|floatformat:1 }}% costi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Run-rate Annuale</h6>
+                    <h3 class="fw-bold">€ {{ run_rate_totals.margin|floatformat:2 }}</h3>
+                    <p class="text-muted small mb-3">Proiezione margine a fine anno con moltiplicatore ×{{ run_rate_factor|floatformat:2 }} su {{ run_rate_months }} mesi attivi.</p>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span><i class="fas fa-euro-sign me-1 text-success"></i>Ricavi: € {{ run_rate_totals.revenue|floatformat:2 }}</span>
+                        <span><i class="fas fa-wallet me-1 text-danger"></i>Costi: € {{ run_rate_totals.costs|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="text-uppercase text-muted mb-0">Leadership Outlook</h6>
+                        <span class="badge {% if projected_margin_gap >= 0 %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %}">
+                            {% if projected_margin_gap >= 0 %}+{% endif %}€ {{ projected_margin_gap|floatformat:2 }}
+                        </span>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ budget_gap_ratio|floatformat:1 }}%</h3>
+                    <p class="text-muted small mb-2">Gap stimato rispetto al budget annuale: anticipa azioni per consolidare la leadership.</p>
+                    <div class="text-muted small">
+                        <i class="fas fa-bullseye text-primary me-1"></i>Previsione corrente: € {{ forecast_totals.margin|floatformat:2 }} margine.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-sm-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Consuntivo</h6>
+                    <h3 class="fw-bold">€ {{ actual_totals.margin|floatformat:2 }}</h3>
+                    <p class="text-muted mb-0">Ricavi: € {{ actual_totals.revenue|floatformat:2 }} · Costi: € {{ actual_totals.costs|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Budget</h6>
+                    <h3 class="fw-bold">€ {{ budget_totals.margin|floatformat:2 }}</h3>
+                    <p class="text-muted mb-1">Scostamento: <span class="fw-semibold {% if variance_budget >= 0 %}text-success{% else %}text-danger{% endif %}">€ {{ variance_budget|floatformat:2 }}</span></p>
+                    <p class="text-muted mb-0">Ricavi: € {{ budget_totals.revenue|floatformat:2 }} · Costi: € {{ budget_totals.costs|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Anno Precedente</h6>
+                    <h3 class="fw-bold">€ {{ previous_totals.margin|floatformat:2 }}</h3>
+                    <p class="text-muted mb-1">Delta YoY: <span class="fw-semibold {% if variance_previous >= 0 %}text-success{% else %}text-danger{% endif %}">€ {{ variance_previous|floatformat:2 }}</span></p>
+                    <p class="text-muted mb-0">Margine %: {{ previous_totals.margin_percentage|floatformat:1 }}%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Previsione</h6>
+                    <h3 class="fw-bold">€ {{ forecast_totals.margin|floatformat:2 }}</h3>
+                    <p class="text-muted mb-0">Margine % previsto: {{ forecast_totals.margin_percentage|floatformat:1 }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4 mb-4" id="financials-strategy">
+        <div class="col-xl-6">
+            <div class="card h-100">
+                <div class="card-header">Alert Strategici</div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for alert in strategic_alerts %}
+                        <li class="list-group-item d-flex gap-3 align-items-start">
+                            <span class="badge rounded-pill {% if alert.level == 'danger' %}bg-danger-subtle text-danger{% elif alert.level == 'warning' %}bg-warning-subtle text-warning{% else %}bg-success-subtle text-success{% endif %}"><i class="fas {{ alert.icon }}"></i></span>
+                            <div>
+                                <p class="fw-semibold mb-1">{{ alert.text }}</p>
+                                {% if alert.level == 'success' %}
+                                <p class="text-muted small mb-0">Capitalizza sull'anticipo competitivo per consolidare la quota di mercato.</p>
+                                {% else %}
+                                <p class="text-muted small mb-0">Definisci contromisure dedicate con i responsabili di business unit.</p>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-center text-muted py-4">Nessun alert attivo: continua a innovare per restare leader.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card h-100">
+                <div class="card-header">Opportunità di Leadership</div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for opportunity in strategic_opportunities %}
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-semibold">{{ opportunity.name }}</div>
+                                <div class="text-muted small">
+                                    {% if opportunity.kind == 'growth' %}
+                                        Crescita YoY {{ opportunity.yoy_pct|floatformat:1 }}% · Copertura {{ opportunity.coverage|floatformat:1 }}%
+                                    {% else %}
+                                        Efficienza al {{ opportunity.coverage|floatformat:1 }}% del budget · Varianza € {{ opportunity.variance|floatformat:2 }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <span class="badge {% if opportunity.kind == 'growth' %}bg-success-subtle text-success{% else %}bg-info-subtle text-info{% endif %}">
+                                {% if opportunity.kind == 'growth' %}+{% endif %}€ {{ opportunity.variance|floatformat:2 }}
+                            </span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-center text-muted py-4">Carica categorie e budget per evidenziare nuove traiettorie di crescita.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="financials-visuals mb-4" id="financials-chart-area">
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Margine Operativo Mensile</span>
+                        <span class="badge bg-primary-subtle text-primary">{{ selected_year }}</span>
+                    </div>
+                    <div class="card-body financials-chart__canvas">
+                        <canvas id="financialPerformanceChart" height="140"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header">Top 5 Voci di Consuntivo</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Voce</th>
+                                        <th class="text-end">Importo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in top_line_items %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-semibold">{{ item.description|default:item.category.name }}</span>
+                                            {% if item.cost_center %}<div class="text-muted small">Centro di costo: {{ item.cost_center.name }}</div>{% endif %}
+                                        </td>
+                                        <td class="text-end">€ {{ item.amount|floatformat:2 }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted py-3">Nessun dato disponibile.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header">Spesa Operativa (Ordini vs Economato)</div>
+                    <div class="card-body financials-chart__canvas">
+                        <canvas id="operationalSpendChart" height="140"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header">Centri di Costo Economato</div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            {% for center in economato_by_cost_center %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-semibold">{{ center.code|default:'N/D' }}</div>
+                                    <div class="text-muted small">{{ center.name|default:'Centro di costo' }}</div>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">€ {{ center.total|floatformat:2 }}</span>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item text-center text-muted">Nessun centro di costo da mostrare.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-xl-8">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Scostamenti per Categoria</span>
+                        <span class="badge bg-secondary-subtle text-secondary">Top 6</span>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="financialCategoryChart" height="160"></canvas>
+                    </div>
+                    <div class="table-responsive border-top">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Categoria</th>
+                                    <th class="text-end">Consuntivo</th>
+                                    <th class="text-end">Budget</th>
+                                    <th class="text-end">Varianza</th>
+                                    <th class="text-end">Copertura</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category in category_table %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="d-inline-flex rounded-circle" style="background-color: {{ category.color }}; width: 12px; height: 12px;" aria-hidden="true"></span>
+                                            <div>
+                                                <div class="fw-semibold">{{ category.name }}</div>
+                                                <div class="text-muted small text-uppercase">{% if category.type == 'revenue' %}Ricavo{% else %}Costo{% endif %}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">€ {{ category.actual|floatformat:2 }}</td>
+                                    <td class="text-end">€ {{ category.budget|floatformat:2 }}</td>
+                                    <td class="text-end">
+                                        <span class="fw-semibold {% if category.variance >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                            {% if category.variance >= 0 %}+{% endif %}€ {{ category.variance|floatformat:2 }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">{{ category.coverage|floatformat:1 }}%</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-3">Nessuna categoria con dati disponibili.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Stato Importazioni</span>
+                        <span class="badge bg-primary-subtle text-primary">{{ total_import_batches }} flussi</span>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush mb-3">
+                            {% for status in import_statuses %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span>{{ status.label }}</span>
+                                <span class="badge {% if status.code == 'success' %}bg-success-subtle text-success{% elif status.code == 'failed' %}bg-danger-subtle text-danger{% else %}bg-warning-subtle text-warning{% endif %}">{{ status.count }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <h6 class="text-uppercase text-muted mb-3">Ultimi flussi</h6>
+                        <div class="timeline small">
+                            {% for batch in recent_import_batches %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-semibold">{{ batch.data_source.name|default:'Inserimento' }}</span>
+                                    <span class="text-muted">{{ batch.started_at|date:'d/m/Y H:i' }}</span>
+                                </div>
+                                <div class="text-muted">{{ batch.get_status_display }} · {{ batch.imported_records }} record</div>
+                                {% if batch.notes %}<div class="text-muted fst-italic">{{ batch.notes|truncatewords:12 }}</div>{% endif %}
+                            </div>
+                            {% empty %}
+                            <p class="text-muted mb-0">Nessuna importazione registrata.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="row g-3" id="financials-operational">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Ordini di Acquisto</h6>
+                    <h3 class="fw-bold">€ {{ purchase_order_total|floatformat:2 }}</h3>
+                    <p class="text-muted mb-1">Totale ordini approvati/completati nell'anno.</p>
+                    <div class="text-muted small">Copertura budget: {{ purchase_order_budget_ratio|floatformat:1 }}%</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Economato</h6>
+                    <h3 class="fw-bold">€ {{ economato_total|floatformat:2 }}</h3>
+                    <p class="text-muted mb-1">Richieste approvate o evase nell'anno.</p>
+                    <div class="text-muted small">Impatto sul budget: {{ economato_budget_ratio|floatformat:1 }}%</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted">Budget Allocato</h6>
+                    <h3 class="fw-bold">€ {{ budget_total|floatformat:2 }}</h3>
+                    <p class="text-muted mb-0">Somma dei budget caricati per il periodo selezionato.</p>
+                    <div class="text-muted small">Margine coperto al {{ margin_coverage|floatformat:1 }}%.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="financials-footer card border-0 shadow-sm mt-4">
+        <div class="card-body d-flex flex-column flex-lg-row justify-content-between gap-3">
+            <div>
+                <h2 class="h6 mb-1">Hai bisogno di supporto?</h2>
+                <p class="text-muted mb-0">Apri la guida interattiva o consulta le procedure dedicate dal menu laterale per condividere la stessa visione con il tuo team.</p>
+            </div>
+            <div class="d-flex gap-2">
+                {% if in_app_guide %}
+                <button type="button" class="btn btn-outline-primary" data-guide-trigger>
+                    <i class="fas fa-circle-question me-2"></i>Rivedi guida
+                </button>
+                {% endif %}
+                <a href="{% url 'procedures:procedure_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-book-open me-2"></i>Vai alle procedure
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{ chart_labels|json_script:"financial-chart-labels" }}
+{{ chart_actual|json_script:"financial-chart-actual" }}
+{{ chart_budget|json_script:"financial-chart-budget" }}
+{{ purchase_order_monthly|json_script:"financial-chart-purchase-orders" }}
+{{ economato_monthly|json_script:"financial-chart-economato" }}
+{{ category_chart_labels|json_script:"financial-chart-category-labels" }}
+{{ category_chart_actual|json_script:"financial-chart-category-actual" }}
+{{ category_chart_budget|json_script:"financial-chart-category-budget" }}
+{{ category_chart_colors|json_script:"financial-chart-category-colors" }}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const labels = JSON.parse(document.getElementById('financial-chart-labels').textContent);
+        const actualData = JSON.parse(document.getElementById('financial-chart-actual').textContent);
+        const budgetData = JSON.parse(document.getElementById('financial-chart-budget').textContent);
+        const poData = JSON.parse(document.getElementById('financial-chart-purchase-orders').textContent);
+        const economatoData = JSON.parse(document.getElementById('financial-chart-economato').textContent);
+
+        const ctxPerformance = document.getElementById('financialPerformanceChart');
+        if (ctxPerformance) {
+            new Chart(ctxPerformance, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Margine Consuntivo',
+                            data: actualData,
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13,110,253,0.15)',
+                            tension: 0.3,
+                            fill: true,
+                            borderWidth: 2,
+                        },
+                        {
+                            label: 'Margine Budget',
+                            data: budgetData,
+                            borderColor: '#20c997',
+                            backgroundColor: 'rgba(32,201,151,0.15)',
+                            tension: 0.3,
+                            fill: true,
+                            borderWidth: 2,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label(context) {
+                                    return `${context.dataset.label}: € ${context.parsed.y.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                },
+                            },
+                        },
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => `€ ${value.toLocaleString('it-IT')}`,
+                            },
+                        },
+                    },
+                },
+            });
+        }
+
+        const ctxOperational = document.getElementById('operationalSpendChart');
+        if (ctxOperational) {
+            new Chart(ctxOperational, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Ordini di Acquisto',
+                            data: poData,
+                            backgroundColor: 'rgba(255,193,7,0.6)',
+                            borderColor: 'rgba(255,193,7,1)',
+                            borderWidth: 1,
+                        },
+                        {
+                            label: 'Economato',
+                            data: economatoData,
+                            backgroundColor: 'rgba(13,110,253,0.6)',
+                            borderColor: 'rgba(13,110,253,1)',
+                            borderWidth: 1,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => `€ ${value.toLocaleString('it-IT')}`,
+                            },
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label(context) {
+                                    return `${context.dataset.label}: € ${context.parsed.y.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+        }
+
+        const categoryLabelsScript = document.getElementById('financial-chart-category-labels');
+        if (categoryLabelsScript) {
+            const categoryLabels = JSON.parse(categoryLabelsScript.textContent);
+            const categoryActual = JSON.parse(document.getElementById('financial-chart-category-actual').textContent);
+            const categoryBudget = JSON.parse(document.getElementById('financial-chart-category-budget').textContent);
+            const categoryColors = JSON.parse(document.getElementById('financial-chart-category-colors').textContent);
+            const ctxCategory = document.getElementById('financialCategoryChart');
+            if (ctxCategory && categoryLabels.length) {
+                new Chart(ctxCategory, {
+                    type: 'bar',
+                    data: {
+                        labels: categoryLabels,
+                        datasets: [
+                            {
+                                label: 'Consuntivo',
+                                data: categoryActual,
+                                backgroundColor: categoryColors,
+                                borderRadius: 6,
+                            },
+                            {
+                                label: 'Budget',
+                                data: categoryBudget,
+                                backgroundColor: 'rgba(13, 110, 253, 0.15)',
+                                borderColor: 'rgba(13, 110, 253, 0.6)',
+                                borderWidth: 1,
+                                borderRadius: 6,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                ticks: {
+                                    autoSkip: false,
+                                },
+                            },
+                            y: {
+                                beginAtZero: true,
+                            },
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                        },
+                    },
+                });
+            }
+        }
+    });
+</script>
+{% endblock %}

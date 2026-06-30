@@ -1,0 +1,11 @@
+
+        [
+          {
+            "booking_engine_id": "CMD-TEST-01",
+            "guest_name": "Command Test",
+            "guest_email": "cmd@test.com",
+            "check_in_date": "2025-12-01",
+            "check_out_date": "2025-12-05",
+            "resort_name": "Resort Paradiso"
+          }
+        ]

@@ -1,0 +1,74 @@
+{% extends 'core/base.html' %}
+{% load custom_tags %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title">{{ page_title }}</h2>
+        <a href="{% url 'reviews:scheduled_scraping_create' %}" class="btn btn-success">
+            <i class="fas fa-plus me-2"></i> Nuova Programmazione
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome</th>
+                    <th>Stato</th>
+                    <th>Frequenza</th>
+                    <th>Ultima Esecuzione</th>
+                    <th class="text-end">Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.name }}</td>
+                    <td>
+                        {% if task.is_active %}
+                            <span class="badge bg-success">Attivo</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inattivo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ task.get_frequency_display }}
+                        {% if task.frequency == 'weekly' %}
+                            ogni {{ task.get_day_of_week_display }}
+                        {% endif %}
+                        alle {{ task.hour|stringformat:"02d" }}:{{ task.minute|stringformat:"02d" }}
+                    </td>
+                    <td>
+                        {% if task.periodic_task.last_run_at %}
+                            {{ task.periodic_task.last_run_at|timesince }} fa
+                        {% else %}
+                            <span class="text-muted">Mai eseguito</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'reviews:scheduled_scraping_update' task.pk %}" class="btn btn-sm btn-outline-primary me-2" title="Modifica">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'reviews:scheduled_scraping_delete' task.pk %}" class="btn btn-sm btn-outline-danger" title="Elimina">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5">
+                        <p class="text-muted">Nessuna attività di scraping programmata.</p>
+                        <a href="{% url 'reviews:scheduled_scraping_create' %}" class="btn btn-success">Crea la prima programmazione</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% include 'partials/_pagination.html' %}
+</div>
+{% endblock %}
