@@ -1,8 +1,26 @@
 from django import template
 from django.contrib.auth import get_user_model
 
+from core.permissions import user_can as _user_can
+
 register = template.Library()
 User = get_user_model()
+
+
+@register.filter(name='user_can')
+def user_can(user, capability):
+    """Espone il layer di permessi centralizzato ai template.
+
+    Uso:  {% if request.user|user_can:'reviews' %} ... {% endif %}
+
+    Così i template smettono di duplicare i controlli di ruolo
+    (`{% if user.role == 'owner' or ... %}`) e usano la stessa fonte di verità
+    di viste e navigazione.
+    """
+    try:
+        return _user_can(user, capability)
+    except KeyError:
+        return False
 
 @register.filter(name='get_avatar_url')
 def get_avatar_url(user):

@@ -127,3 +127,30 @@ class HubNavigationTests(TestCase):
         # as_context() chiama reverse(): verifica che tutti gli url_name esistano.
         for tool in get_hub_tools(self.superuser):
             self.assertTrue(tool["url"].startswith("/"), tool["label"])
+
+
+class TemplateFilterTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.owner = User.objects.create_user(
+            "owner4", "owner4@test.com", "pw", role=User.OWNER
+        )
+        cls.receptionist = User.objects.create_user(
+            "rec4", "rec4@test.com", "pw", role=User.RECEPTIONIST
+        )
+
+    def _render(self, user, capability):
+        from django.template import Template, Context
+
+        tpl = Template(
+            "{% load custom_tags %}"
+            "{% if user|user_can:cap %}SI{% else %}NO{% endif %}"
+        )
+        return tpl.render(Context({"user": user, "cap": capability})).strip()
+
+    def test_filter_matches_user_can(self):
+        self.assertEqual(self._render(self.owner, Capability.FINANCIALS), "SI")
+        self.assertEqual(self._render(self.receptionist, Capability.FINANCIALS), "NO")
+
+    def test_filter_unknown_capability_is_falsey(self):
+        self.assertEqual(self._render(self.owner, "inesistente"), "NO")

@@ -175,9 +175,9 @@ if not DEBUG:
     MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
 # --- Django Vite Configuration ---
-# Allow forcing production assets even when DEBUG=True (e.g., on staging servers
-# without a running Vite dev server) via DJANGO_VITE_DEV_MODE=False.
-DJANGO_VITE_DEV_MODE = env.bool("DJANGO_VITE_DEV_MODE", default=False if DEBUG else False)
+# Il dev server Vite è disattivato per default (si servono gli asset buildati da
+# manifest). Va abilitato esplicitamente in sviluppo con DJANGO_VITE_DEV_MODE=true.
+DJANGO_VITE_DEV_MODE = env.bool("DJANGO_VITE_DEV_MODE", default=False)
 
 DJANGO_VITE = {
     "default": {
