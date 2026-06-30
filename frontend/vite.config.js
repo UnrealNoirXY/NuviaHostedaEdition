@@ -98,6 +98,7 @@ export default defineConfig({
         landing_styles: '/src/landing.css',
         login_styles: '/src/login.css',
         financials_dashboard_styles: '/src/financials-dashboard.css',
+        chart_global: '/src/chart_global.js',
         pwa_bootstrap: '/src/pwa/bootstrap.js',
       },
     },
