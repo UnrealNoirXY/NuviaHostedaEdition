@@ -91,6 +91,13 @@
   width: 100%;
 }
 
+/* ---- Stat card (KPI) ---- */
+/* Accent sinistro coerente sui token: sostituisce i bordi Bootstrap divergenti
+   (border-primary/border-info/border-secondary) usati ad-hoc nelle dashboard. */
+.nv-stat-card {
+  border-left: 4px solid var(--nv-color-brand);
+}
+
 /* ---- Card ---- */
 .nv-card {
   background: var(--nv-color-surface);
