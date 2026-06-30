@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Nuvia — Hub (rifinito)</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+.app{grid-template-columns:248px 1fr}
+/* sidebar con etichette */
+.side{background:#0C1019;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px}
+.side .brand{display:flex;align-items:center;gap:11px;padding:6px 8px 16px}
+.side .brand .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:var(--accent-ink);font-weight:800}
+.side .brand b{font-size:15px;font-weight:700}.side .brand span{display:block;font-size:11px;color:var(--ink-3)}
+.side .sect{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);padding:14px 10px 6px}
+.side .lnk{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:9px;color:var(--ink-2);font-size:13.5px;cursor:pointer;position:relative}
+.side .lnk svg{width:18px;height:18px;flex:none}
+.side .lnk:hover{background:var(--surface-2);color:var(--ink)}
+.side .lnk.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.side .lnk .ct{margin-left:auto;font-size:11px;font-family:var(--mono);background:var(--surface-3);color:var(--ink-2);border-radius:20px;padding:1px 7px}
+.side .lnk.active .ct{background:rgba(245,181,68,.2);color:var(--accent)}
+.side .sp{flex:1}
+.side .me{display:flex;align-items:center;gap:10px;padding:10px;border-top:1px solid var(--line);margin-top:8px}
+.side .me .av{width:32px;height:32px;border-radius:50%;background:var(--surface-3);border:1px solid var(--line-strong);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink-2)}
+.side .me b{font-size:13px}.side .me span{display:block;font-size:11px;color:var(--ink-3)}
+
+.hello{font-size:22px;font-weight:700}.hello span{color:var(--accent)}
+.subt{color:var(--ink-3);font-size:13px;margin-top:3px}
+.alerts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 24px}
+.al{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 16px;display:flex;gap:13px;align-items:center}
+.al .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:none}
+.al b{font-family:var(--mono);font-size:20px;display:block;line-height:1.1}.al span{color:var(--ink-3);font-size:12px}
+.cols{display:grid;grid-template-columns:1.7fr 1fr;gap:14px}
+.sec{display:flex;align-items:center;gap:10px;margin:2px 0 12px;color:var(--ink-3);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;cursor:pointer;transition:.15s}
+.tool:hover{border-color:var(--accent-line);background:var(--surface-2)}
+.tool .ic{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-bottom:12px}
+.tool .ic svg{width:19px;height:19px}
+.tool h4{font-size:14px;font-weight:600}.tool p{color:var(--ink-3);font-size:12px;margin-top:5px;line-height:1.45}
+.tool .meta{margin-top:11px}
+.badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--accent-soft);color:var(--accent)}
+.badge.alert{background:var(--neg-bg);color:var(--neg)}
+.feed .it{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}
+.feed .it:last-child{border:0}
+.feed .d{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none;background:var(--surface-3)}
+.feed .d svg{width:15px;height:15px;color:var(--ink-2)}
+.feed h5{font-size:13px;color:var(--ink);font-weight:500}.feed p{font-size:12px;color:var(--ink-3);margin-top:2px}
+.feed time{font-size:11px;color:var(--ink-3);margin-left:auto;white-space:nowrap}
+</style></head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">N</div><div><b>Nuvia OS</b><span>Resort Group · Admin</span></div></div>
+    <div class="sect">Operativo</div>
+    <div class="lnk active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg> Hub</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Prenotazioni <span class="ct">42</span></div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l3 3m-9 9 9-9m-9 9-4 1 1-4 9-9a2.8 2.8 0 1 1 4 4z"/></svg> Manutenzioni <span class="ct">8</span></div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3 6.2 21l1.5-6.6L3 9.8l6.7-.6L12 3l2.3 6.2 6.7.6-4.7 4.6L17.8 21z"/></svg> Recensioni <span class="ct">23</span></div>
+    <div class="sect">Gestione</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 11l2 2 4-4"/></svg> Portale HR</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l3-3 3 3 5-6"/></svg> Finanza</div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h12"/></svg> Economato</div>
+    <div class="sp"></div>
+    <div class="lnk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg> Impostazioni</div>
+    <div class="me"><div class="av">AM</div><div><b>Admin Noir</b><span>Super Admin</span></div></div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb"><b>Hub operativo</b></div>
+      <div class="cmd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg> Cerca o digita un comando… <span class="kbd">⌘K</span></div>
+      <div class="tb-ic dot"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+    </header>
+    <main class="content">
+      <div class="hello">Buongiorno, <span>Admin</span> 👋</div>
+      <div class="subt">Martedì 30 giugno · ecco cosa richiede la tua attenzione oggi.</div>
+      <section class="alerts">
+        <div class="al"><div class="ic" style="background:var(--neg-bg);color:var(--neg)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div><b>23</b><span>recensioni da gestire</span></div></div>
+        <div class="al"><div class="ic" style="background:var(--accent-soft);color:var(--accent)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l3 3m-9 9 9-9m-9 9-4 1 1-4 9-9a2.8 2.8 0 1 1 4 4z"/></svg></div><div><b>8</b><span>ticket aperti</span></div></div>
+        <div class="al"><div class="ic" style="background:var(--pos-bg);color:var(--pos)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M9 16l2 2 4-4"/></svg></div><div><b>42</b><span>check-in oggi</span></div></div>
+        <div class="al"><div class="ic" style="background:var(--neu-bg);color:var(--neu)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><div><b>3</b><span>buste paga</span></div></div>
+      </section>
+      <div class="cols">
+        <div>
+          <div class="sec">I tuoi strumenti</div>
+          <div class="tools">
+            <div class="tool"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3 6.2 21l1.5-6.6L3 9.8l6.7-.6L12 3l2.3 6.2 6.7.6-4.7 4.6L17.8 21z"/></svg></div><h4>Analisi Recensioni</h4><p>Sentiment da Booking, TripAdvisor, Google.</p><div class="meta"><span class="badge alert">23 da gestire</span></div></div>
+            <div class="tool"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div><h4>Prenotazioni</h4><p>Arrivi, check-in online e camere.</p><div class="meta"><span class="badge">42 oggi</span></div></div>
+            <div class="tool"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l3 3m-9 9 9-9m-9 9-4 1 1-4 9-9a2.8 2.8 0 1 1 4 4z"/></svg></div><h4>Manutenzioni</h4><p>Ticket, allerte e asset.</p><div class="meta"><span class="badge">8 aperti</span></div></div>
+            <div class="tool"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 11l2 2 4-4"/></svg></div><h4>Portale HR</h4><p>Buste paga e comunicazioni.</p><div class="meta"><span class="badge">3 da approvare</span></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="sec">Attività recente</div>
+          <div class="panel"><div class="panel-b feed" style="padding:4px 16px">
+            <div class="it"><div class="d" style="background:var(--neg-bg)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neg)" stroke-width="2"><path d="M12 17.3 6.2 21l1.5-6.6L3 9.8l6.7-.6L12 3"/></svg></div><div><h5>Nuova recensione negativa</h5><p>Resort Toscana · 5,4 su Booking</p></div><time>12 min</time></div>
+            <div class="it"><div class="d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div><h5>Ticket #1242 risolto</h5><p>Climatizzatore camera 214</p></div><time>1 ora</time></div>
+            <div class="it"><div class="d" style="background:var(--pos-bg)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--pos)" stroke-width="2"><path d="M3 10h18M9 16l2 2 4-4"/></svg></div><div><h5>15 check-in completati</h5><p>Resort Maldive</p></div><time>2 ore</time></div>
+            <div class="it"><div class="d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div><div><h5>Batch buste paga creato</h5><p>Giugno 2026 · 48 dipendenti</p></div><time>3 ore</time></div>
+          </div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</body></html>

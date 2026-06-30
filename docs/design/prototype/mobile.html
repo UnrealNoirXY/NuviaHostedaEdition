@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=390"><title>Nuvia — Mobile</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+body{max-width:390px;margin:0 auto;border-left:1px solid var(--line);border-right:1px solid var(--line);min-height:100vh;padding-bottom:74px}
+.mtop{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg)}
+.mtop .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:var(--accent-ink);font-weight:800}
+.mtop b{font-size:15px}.mtop .av{margin-left:auto;width:32px;height:32px;border-radius:50%;background:var(--surface-3);border:1px solid var(--line-strong);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink-2)}
+.mtop .bell{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-2);position:relative}
+.mtop .bell::after{content:"";position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--neg);border:2px solid var(--bg)}
+.wrap{padding:16px}
+.search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:11px 14px;color:var(--ink-3);font-size:14px;margin-bottom:18px}
+.search svg{width:16px;height:16px}
+.h{font-size:19px;font-weight:700}.h span{color:var(--accent)}
+.s{color:var(--ink-3);font-size:12.5px;margin:2px 0 16px}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:20px}
+.a{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px}
+.a .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;margin-bottom:9px}
+.a b{font-family:var(--mono);font-size:20px;display:block;line-height:1}.a span{font-size:11.5px;color:var(--ink-3)}
+.sec{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:11px}
+.t{display:flex;align-items:center;gap:13px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.t .ic{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.t .ic svg{width:19px;height:19px}
+.t h4{font-size:14px;font-weight:600}.t p{font-size:11.5px;color:var(--ink-3);margin-top:2px}
+.t .badge{margin-left:auto;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.t .badge.alert{background:var(--neg-bg);color:var(--neg)}
+.tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:390px;display:flex;justify-content:space-around;background:#0C1019;border-top:1px solid var(--line);padding:9px 0 14px}
+.tab a{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink-3);font-size:10px}
+.tab a svg{width:21px;height:21px}
+.tab a.on{color:var(--accent)}
+</style></head>
+<body>
+<div class="mtop"><div class="logo">N</div><b>Nuvia OS</b><div class="bell"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg></div><div class="av">AM</div></div>
+<div class="wrap">
+  <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg> Cerca o digita un comando…</div>
+  <div class="h">Buongiorno, <span>Admin</span></div>
+  <div class="s">Martedì 30 giugno · 4 cose da gestire oggi</div>
+  <div class="ag">
+    <div class="a"><div class="ic" style="background:var(--neg-bg);color:var(--neg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><b>23</b><span>recensioni</span></div>
+    <div class="a"><div class="ic" style="background:var(--accent-soft);color:var(--accent)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l3 3m-9 9 9-9"/></svg></div><b>8</b><span>ticket aperti</span></div>
+    <div class="a"><div class="ic" style="background:var(--pos-bg);color:var(--pos)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg></div><b>42</b><span>check-in oggi</span></div>
+    <div class="a"><div class="ic" style="background:var(--neu-bg);color:var(--neu)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div><b>3</b><span>buste paga</span></div>
+  </div>
+  <div class="sec">I tuoi strumenti</div>
+  <div class="t"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3 6.2 21l1.5-6.6L3 9.8l6.7-.6L12 3l2.3 6.2 6.7.6-4.7 4.6L17.8 21z"/></svg></div><div><h4>Recensioni</h4><p>media 4,32</p></div><span class="badge alert">23</span></div>
+  <div class="t"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg></div><div><h4>Prenotazioni</h4><p>arrivi di oggi</p></div><span class="badge">42</span></div>
+  <div class="t"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l3 3m-9 9 9-9m-9 9-4 1 1-4 9-9a2.8 2.8 0 1 1 4 4z"/></svg></div><div><h4>Manutenzioni</h4><p>ticket aperti</p></div><span class="badge">8</span></div>
+  <div class="t"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/></svg></div><div><h4>Portale HR</h4><p>buste paga</p></div><span class="badge">3</span></div>
+</div>
+<nav class="tab">
+  <a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Hub</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg>Arrivi</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3 6.2 21l1.5-6.6L3 9.8l6.7-.6L12 3l2.3 6.2 6.7.6-4.7 4.6L17.8 21z"/></svg>Recensioni</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profilo</a>
+</nav>
+</body></html>
