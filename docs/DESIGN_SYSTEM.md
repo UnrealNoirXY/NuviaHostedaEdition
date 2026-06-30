@@ -42,9 +42,25 @@ Una sola shell (in `core/templates/core/base.html`):
 `app-shell` → `app-shell__sidebar` + `app-shell__main` (`app-topbar`, `app-content`,
 `app-footer`). Le pagine estendono `base.html` e riempiono `{% block content %}`.
 
-## 5. Roadmap di adozione (incrementale)
+## 5. Libreria componenti
+
+Costruita **sui token**, condivisa tra Django e React:
+
+- **CSS**: `frontend/src/styles/ui-components.css` (importato in `main.css`) — classi
+  `.nv-btn`, `.nv-card`, `.nv-badge`, `.nv-table`, `.nv-alert`, `.nv-empty`, `.nv-spinner`.
+  Usabili direttamente anche nei template Django.
+- **React**: `frontend/src/components/ui/` — `Button`, `Card`, `Badge`, `EmptyState`,
+  `Spinner`, con entry unico `index.js`:
+
+  ```jsx
+  import { Button, Card, EmptyState } from 'components/ui';
+  ```
+
+Regola: i nuovi schermi usano questi componenti invece di stili ad hoc.
+
+## 6. Roadmap di adozione (incrementale)
 1. ✅ Token centralizzati + caricati nei base template.
 2. ✅ Sidebar agganciata al layer permessi.
-3. ⏳ Migrare i componenti SCSS/React a consumare i token `--nv-*`.
-4. ⏳ Libreria componenti riusabile (bottoni, card, tabelle, form, empty/loading state).
+3. ✅ Libreria componenti riusabile (CSS + React) sui token.
+4. ⏳ Migrare i moduli esistenti (SCSS/React) a consumare token e componenti `ui/`.
 5. ⏳ Deprecare `base_demo`/`base_landing` come varianti minime di `base.html`.

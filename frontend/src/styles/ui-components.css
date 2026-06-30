@@ -1,0 +1,253 @@
+/*
+ * Nuvia — Libreria componenti UI (Fase 2)
+ * ------------------------------------------------------------------
+ * Componenti riusabili costruiti SUI design token (--nv-*).
+ * Usabili sia dai template Django sia dai componenti React (cartella
+ * src/components/ui/). Nessun colore/spaziatura hardcodato: tutto via token,
+ * così il tema (chiaro/scuro) e il brand restano coerenti ovunque.
+ *
+ * I token vivono in static/css/design-tokens.css, caricato globalmente da
+ * Django nel <head>: qui li consumiamo soltanto.
+ */
+
+/* ---- Button ---- */
+.nv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nv-space-2);
+  padding: var(--nv-space-2) var(--nv-space-4);
+  font-family: var(--nv-font-sans);
+  font-size: var(--nv-text-sm);
+  font-weight: var(--nv-weight-medium);
+  line-height: var(--nv-leading-tight);
+  border: 1px solid transparent;
+  border-radius: var(--nv-radius-md);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--nv-transition-fast),
+    border-color var(--nv-transition-fast), color var(--nv-transition-fast),
+    box-shadow var(--nv-transition-fast), transform var(--nv-transition-fast);
+}
+
+.nv-btn:active {
+  transform: translateY(1px);
+}
+
+.nv-btn:focus-visible {
+  outline: 2px solid var(--nv-color-brand-soft);
+  outline-offset: 2px;
+}
+
+.nv-btn[disabled],
+.nv-btn.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nv-btn--primary {
+  background: var(--nv-color-brand);
+  color: #fff;
+}
+.nv-btn--primary:hover {
+  background: var(--nv-color-brand-strong);
+}
+
+.nv-btn--secondary {
+  background: var(--nv-color-surface-3);
+  color: var(--nv-color-ink);
+  border-color: var(--nv-color-line);
+}
+.nv-btn--secondary:hover {
+  background: var(--nv-color-surface-2);
+}
+
+.nv-btn--ghost {
+  background: transparent;
+  color: var(--nv-color-brand);
+}
+.nv-btn--ghost:hover {
+  background: var(--nv-color-surface-3);
+}
+
+.nv-btn--danger {
+  background: var(--nv-color-danger);
+  color: #fff;
+}
+.nv-btn--danger:hover {
+  filter: brightness(0.94);
+}
+
+.nv-btn--sm {
+  padding: var(--nv-space-1) var(--nv-space-3);
+  font-size: var(--nv-text-xs);
+}
+.nv-btn--lg {
+  padding: var(--nv-space-3) var(--nv-space-5);
+  font-size: var(--nv-text-base);
+}
+.nv-btn--block {
+  width: 100%;
+}
+
+/* ---- Card ---- */
+.nv-card {
+  background: var(--nv-color-surface);
+  border: 1px solid var(--nv-color-line);
+  border-radius: var(--nv-radius-lg);
+  box-shadow: var(--nv-shadow-sm);
+  padding: var(--nv-space-5);
+  color: var(--nv-color-ink);
+}
+.nv-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nv-space-3);
+  margin-bottom: var(--nv-space-4);
+}
+.nv-card__title {
+  font-size: var(--nv-text-lg);
+  font-weight: var(--nv-weight-bold);
+  margin: 0;
+}
+.nv-card__subtitle {
+  color: var(--nv-color-ink-soft);
+  font-size: var(--nv-text-sm);
+  margin: 0;
+}
+
+/* ---- Badge ---- */
+.nv-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nv-space-1);
+  padding: var(--nv-space-1) var(--nv-space-3);
+  font-size: var(--nv-text-xs);
+  font-weight: var(--nv-weight-medium);
+  border-radius: var(--nv-radius-pill);
+  background: var(--nv-color-surface-3);
+  color: var(--nv-color-ink-soft);
+}
+.nv-badge--success {
+  background: var(--nv-color-success-soft);
+  color: var(--nv-color-success);
+}
+.nv-badge--warning {
+  background: var(--nv-color-warning-soft);
+  color: var(--nv-color-warning);
+}
+.nv-badge--danger {
+  background: var(--nv-color-danger-soft);
+  color: var(--nv-color-danger);
+}
+.nv-badge--info {
+  background: var(--nv-color-info-soft);
+  color: var(--nv-color-info);
+}
+
+/* ---- Table ---- */
+.nv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--nv-text-sm);
+  color: var(--nv-color-ink);
+}
+.nv-table th,
+.nv-table td {
+  text-align: left;
+  padding: var(--nv-space-3) var(--nv-space-4);
+  border-bottom: 1px solid var(--nv-color-line);
+}
+.nv-table th {
+  font-weight: var(--nv-weight-medium);
+  color: var(--nv-color-ink-soft);
+  background: var(--nv-color-surface-2);
+}
+.nv-table tbody tr:hover {
+  background: var(--nv-color-surface-3);
+}
+
+/* ---- Alert ---- */
+.nv-alert {
+  display: flex;
+  gap: var(--nv-space-3);
+  padding: var(--nv-space-3) var(--nv-space-4);
+  border-radius: var(--nv-radius-md);
+  border: 1px solid var(--nv-color-line);
+  font-size: var(--nv-text-sm);
+}
+.nv-alert--success {
+  background: var(--nv-color-success-soft);
+  border-color: transparent;
+  color: var(--nv-color-success);
+}
+.nv-alert--warning {
+  background: var(--nv-color-warning-soft);
+  border-color: transparent;
+  color: var(--nv-color-warning);
+}
+.nv-alert--danger {
+  background: var(--nv-color-danger-soft);
+  border-color: transparent;
+  color: var(--nv-color-danger);
+}
+.nv-alert--info {
+  background: var(--nv-color-info-soft);
+  border-color: transparent;
+  color: var(--nv-color-info);
+}
+
+/* ---- Empty state ---- */
+.nv-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--nv-space-2);
+  padding: var(--nv-space-7) var(--nv-space-4);
+  color: var(--nv-color-ink-soft);
+}
+.nv-empty__icon {
+  font-size: var(--nv-text-3xl);
+  color: var(--nv-color-muted);
+}
+.nv-empty__title {
+  font-size: var(--nv-text-lg);
+  font-weight: var(--nv-weight-medium);
+  color: var(--nv-color-ink);
+  margin: 0;
+}
+.nv-empty__text {
+  margin: 0;
+  max-width: 32rem;
+}
+
+/* ---- Spinner ---- */
+.nv-spinner {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--nv-color-line);
+  border-top-color: var(--nv-color-brand);
+  border-radius: var(--nv-radius-pill);
+  animation: nv-spin 0.7s linear infinite;
+}
+.nv-spinner--lg {
+  width: 2rem;
+  height: 2rem;
+  border-width: 3px;
+}
+
+@keyframes nv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nv-spinner {
+    animation-duration: 1.6s;
+  }
+}

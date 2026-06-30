@@ -191,9 +191,12 @@ Obiettivo: un solo linguaggio visivo, una sola shell.
       ponte di compatibilità con le variabili legacy. Doc: `docs/DESIGN_SYSTEM.md`.
 - [x] **Sidebar agganciata ai permessi**: le voci a capability mappata 1:1 usano
       `{% if user|user_can:'...' %}` invece dei ruoli cablati (4 test di gating, verdi).
-- [ ] **Libreria componenti React** riusabile (bottoni, tabelle, form, modali, toast,
-      empty/loading states) che consuma i token.
-- [ ] **Migrazione SCSS/React ai token** `--nv-*` e deprecazione di `base_demo`/`base_landing`.
+- [x] **Libreria componenti** riusabile: classi CSS sui token (`src/styles/ui-components.css`:
+      Button, Card, Badge, Table, Alert, EmptyState, Spinner) + componenti React in
+      `src/components/ui/` (`Button`, `Card`, `Badge`, `EmptyState`, `Spinner` con un unico
+      entry `index.js`). Build Vite verde, componenti validati con esbuild.
+- [ ] **Migrazione SCSS/React ai token** `--nv-*` e adozione dei componenti `ui/` nei moduli;
+      deprecazione di `base_demo`/`base_landing`.
 - [ ] **Data-fetching standard** + responsive-first (eliminare i componenti "MobileOS" ad hoc).
 
 ### FASE 3 — Ridisegno dei moduli, a ondate (continuativo) · **P1/P2**
