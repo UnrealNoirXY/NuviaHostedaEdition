@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Nuvia — Portale HR</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;color:var(--ink-3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:10px 16px;border-bottom:1px solid var(--line)}
+tbody td{padding:12px 16px;border-bottom:1px solid var(--line);color:var(--ink-2)}
+tbody tr:hover{background:var(--surface-2)} tbody tr:last-child td{border-bottom:0}
+.t-name{color:var(--ink);font-weight:500}
+.mono{font-family:var(--mono);color:var(--ink)}
+.av{width:26px;height:26px;border-radius:50%;background:var(--surface-3);border:1px solid var(--line);display:inline-grid;place-items:center;font-size:10px;font-weight:700;color:var(--ink-2);margin-right:8px;vertical-align:middle}
+.stat{display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.stat:last-child{border-bottom:0}
+.stat .ic{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.stat .ic svg{width:19px;height:19px}
+.stat b{font-family:var(--mono);font-size:18px;display:block}
+.stat span{color:var(--ink-3);font-size:12px}
+.comm{display:flex;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line)}
+.comm:last-child{border-bottom:0}
+.comm .d{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:6px;flex:none}
+.comm h5{font-size:13px;font-weight:600;color:var(--ink)}
+.comm p{font-size:12px;color:var(--ink-3);margin-top:3px}
+.comm time{font-size:11px;color:var(--ink-3);margin-left:auto;white-space:nowrap}
+.pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px}
+.pill.ok{background:var(--pos-bg);color:var(--pos)} .pill.wait{background:var(--neu-bg);color:var(--neu)}
+</style></head>
+<body>
+<div class="app">
+  <nav class="rail">
+    <div class="logo">N</div>
+    <a title="Hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></a>
+    <a title="Prenotazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></a>
+    <a title="Manutenzioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l3 3m-9 9 9-9m-9 9-4 1 1-4 9-9a2.8 2.8 0 1 1 4 4z"/></svg></a>
+    <a title="Recensioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3 6.2 21l1.5-6.6L3 9.8l6.7-.6L12 3l2.3 6.2 6.7.6-4.7 4.6L17.8 21z"/></svg></a>
+    <a class="active" title="HR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 11l2 2 4-4"/></svg></a>
+    <div class="sp"></div>
+    <a title="Impostazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></a>
+    <div class="avatar">AM</div>
+  </nav>
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">HR <b>/ Portale</b></div>
+      <div class="cmd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg> Cerca dipendente, busta paga… <span class="kbd">⌘K</span></div>
+      <div class="tb-ic dot"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+    </header>
+    <main class="content">
+      <div class="page-h">
+        <div><h1>Portale HR</h1><p>Suite risorse umane · 48 dipendenti · 4 resort</p></div>
+        <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Nuovo batch buste paga</button>
+      </div>
+
+      <div class="grid">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-h"><h3>Buste paga · coda di revisione</h3><a href="#">Storico batch</a></div>
+            <table>
+              <thead><tr><th>Dipendente</th><th>Ruolo</th><th>Periodo</th><th>Importo</th><th>Stato</th></tr></thead>
+              <tbody>
+                <tr><td class="t-name"><span class="av">MB</span>Marco Bianchi</td><td>Receptionist</td><td>Giu 2026</td><td class="mono">1.840 €</td><td><span class="pill ok">Approvata</span></td></tr>
+                <tr><td class="t-name"><span class="av">LV</span>Luca Verdi</td><td>Manutentore</td><td>Giu 2026</td><td class="mono">1.920 €</td><td><span class="pill wait">Da approvare</span></td></tr>
+                <tr><td class="t-name"><span class="av">AR</span>Anna Russo</td><td>Housekeeping</td><td>Giu 2026</td><td class="mono">1.610 €</td><td><span class="pill wait">Da approvare</span></td></tr>
+                <tr><td class="t-name"><span class="av">SC</span>Sara Conti</td><td>Chef</td><td>Giu 2026</td><td class="mono">2.450 €</td><td><span class="pill ok">Approvata</span></td></tr>
+                <tr><td class="t-name"><span class="av">GF</span>Giulia Ferrari</td><td>Direttore</td><td>Giu 2026</td><td class="mono">3.900 €</td><td><span class="pill wait">Da approvare</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><h3>Comunicazioni recenti</h3><a href="#">Crea comunicazione</a></div>
+            <div>
+              <div class="comm"><span class="d"></span><div><h5>Aggiornamento turni estivi</h5><p>Pubblicata a tutto il personale · 48 destinatari</p></div><time>2 ore fa</time></div>
+              <div class="comm"><span class="d" style="background:var(--ink-3)"></span><div><h5>Chiusura uffici 15 agosto</h5><p>Bozza · in attesa di revisione</p></div><time>ieri</time></div>
+              <div class="comm"><span class="d" style="background:var(--ink-3)"></span><div><h5>Nuova policy ferie 2026</h5><p>Pubblicata · 46 letture su 48</p></div><time>3 giorni fa</time></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-h"><h3>Documenti personali</h3></div>
+            <div>
+              <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><div><b>0</b><span>documenti in attesa di lettura</span></div></div>
+              <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><div><b>Giugno 2026</b><span>ultima busta paga · pronta</span></div></div>
+              <div class="stat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg></div><div><b>2</b><span>comunicazioni non lette</span></div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><h3>Stato batch corrente</h3></div>
+            <div class="panel-b">
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:8px"><span>Elaborazione OCR</span><b class="mono" style="color:var(--ink)">45 / 48</b></div>
+              <div style="height:8px;background:var(--surface-3);border-radius:5px;margin-bottom:18px"><div style="width:94%;height:100%;background:var(--accent);border-radius:5px"></div></div>
+              <div style="display:flex;gap:10px">
+                <div style="flex:1;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px"><b class="mono" style="font-size:20px;color:var(--pos)">45</b><div style="font-size:11px;color:var(--ink-3)">abbinati</div></div>
+                <div style="flex:1;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px"><b class="mono" style="font-size:20px;color:var(--neu)">3</b><div style="font-size:11px;color:var(--ink-3)">da rivedere</div></div>
+                <div style="flex:1;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px"><b class="mono" style="font-size:20px;color:var(--neg)">0</b><div style="font-size:11px;color:var(--ink-3)">errori</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</body></html>

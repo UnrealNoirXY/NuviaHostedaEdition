@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Nuvia — Recensioni</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+.filters{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px}
+.kpi .lab{color:var(--ink-3);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.kpi .val{font-family:var(--mono);font-size:28px;font-weight:600;margin-top:10px;letter-spacing:-.02em}
+.kpi .val small{font-size:13px;color:var(--ink-3);font-weight:400}
+.kpi .delta{font-size:12px;margin-top:6px} .up{color:var(--pos)} .down{color:var(--neg)}
+.spark{height:30px;margin-top:10px;display:flex;align-items:flex-end;gap:3px}
+.spark i{flex:1;background:var(--surface-3);border-radius:2px}
+.spark.acc i{background:rgba(245,181,68,.40)}
+.grid{display:grid;grid-template-columns:1.1fr 1.5fr;gap:14px;margin-bottom:16px}
+.donut-wrap{display:flex;align-items:center;gap:20px}
+.donut{width:140px;height:140px;border-radius:50%;background:conic-gradient(var(--pos) 0 67%,var(--neu) 67% 84%,var(--neg) 84% 100%);position:relative;flex:none}
+.donut::after{content:"";position:absolute;inset:20px;border-radius:50%;background:var(--surface)}
+.donut .c{position:absolute;inset:0;display:grid;place-items:center;text-align:center;z-index:2}
+.donut .c b{font-family:var(--mono);font-size:22px} .donut .c span{font-size:11px;color:var(--ink-3);display:block}
+.legend{display:flex;flex-direction:column;gap:12px;font-size:13px}
+.legend div{display:flex;align-items:center;gap:9px;color:var(--ink-2)}
+.legend i{width:9px;height:9px;border-radius:3px} .legend b{margin-left:auto;font-family:var(--mono);color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;color:var(--ink-3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:10px 16px;border-bottom:1px solid var(--line)}
+tbody td{padding:12px 16px;border-bottom:1px solid var(--line);color:var(--ink-2)}
+tbody tr:hover{background:var(--surface-2)} tbody tr:last-child td{border-bottom:0}
+.t-title{color:var(--ink);font-weight:500}
+.rate{font-family:var(--mono);font-weight:600;color:var(--ink);background:var(--surface-3);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+.src{display:inline-flex;align-items:center;gap:7px;color:var(--ink-2)}
+.src .b{width:18px;height:18px;border-radius:5px;background:var(--info);display:grid;place-items:center;font-size:9px;color:#06121f;font-weight:800}
+.bar{height:8px;background:var(--surface-3);border-radius:5px}.bar>i{display:block;height:100%;background:var(--accent);border-radius:5px}
+</style></head>
+<body>
+<div class="app">
+  <nav class="rail">
+    <div class="logo">N</div>
+    <a title="Hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></a>
+    <a title="Prenotazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></a>
+    <a title="Manutenzioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l3 3m-9 9 9-9m-9 9-4 1 1-4 9-9a2.8 2.8 0 1 1 4 4z"/></svg></a>
+    <a class="active" title="Recensioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3 6.2 21l1.5-6.6L3 9.8l6.7-.6L12 3l2.3 6.2 6.7.6-4.7 4.6L17.8 21z"/></svg></a>
+    <a title="HR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 11l2 2 4-4"/></svg></a>
+    <div class="sp"></div>
+    <a title="Impostazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></a>
+    <div class="avatar">AM</div>
+  </nav>
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">Recensioni <b>/ Dashboard</b></div>
+      <div class="cmd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg> Cerca o digita un comando… <span class="kbd">⌘K</span></div>
+      <div class="tb-ic dot"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+    </header>
+    <main class="content">
+      <div class="page-h">
+        <div><h1>Dashboard Recensioni</h1><p>Tutti i resort · ultimi 30 giorni · aggiornato 2 min fa</p></div>
+        <div class="seg"><button class="on">30g</button><button>90g</button><button>Anno</button></div>
+      </div>
+      <div class="filters">
+        <div class="chip accent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M7 12h10M10 18h4"/></svg> Tutti i resort</div>
+        <div class="chip">Piattaforma: Tutte <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+        <div class="chip">Sentiment: Tutti <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+      </div>
+      <section class="kpis">
+        <div class="kpi"><div class="lab">Recensioni totali</div><div class="val">1.284</div><div class="delta up">▲ 12% vs prec.</div><div class="spark acc"><i style="height:40%"></i><i style="height:55%"></i><i style="height:45%"></i><i style="height:70%"></i><i style="height:60%"></i><i style="height:85%"></i><i style="height:100%"></i></div></div>
+        <div class="kpi"><div class="lab">Valutazione media</div><div class="val">4,32<small>/5</small></div><div class="delta up">▲ 0,18</div><div class="spark"><i style="height:60%"></i><i style="height:55%"></i><i style="height:65%"></i><i style="height:62%"></i><i style="height:72%"></i><i style="height:78%"></i><i style="height:84%"></i></div></div>
+        <div class="kpi"><div class="lab">Sentiment positivo</div><div class="val" style="color:var(--pos)">67<small>%</small></div><div class="delta up">▲ 4%</div><div class="spark"><i style="height:50%"></i><i style="height:58%"></i><i style="height:55%"></i><i style="height:66%"></i><i style="height:70%"></i><i style="height:74%"></i><i style="height:80%"></i></div></div>
+        <div class="kpi"><div class="lab">Da gestire</div><div class="val" style="color:var(--neg)">23</div><div class="delta down">▲ 5 negative</div><div class="spark"><i style="height:30%"></i><i style="height:25%"></i><i style="height:40%"></i><i style="height:35%"></i><i style="height:50%"></i><i style="height:45%"></i><i style="height:60%"></i></div></div>
+      </section>
+      <section class="grid">
+        <div class="panel">
+          <div class="panel-h"><h3>Distribuzione sentiment</h3><a href="#">Dettaglio</a></div>
+          <div class="panel-b"><div class="donut-wrap">
+            <div class="donut"><div class="c"><div><b>4,32</b><span>media</span></div></div></div>
+            <div class="legend"><div><i style="background:var(--pos)"></i> Positivo <b>67%</b></div><div><i style="background:var(--neu)"></i> Neutrale <b>17%</b></div><div><i style="background:var(--neg)"></i> Negativo <b>16%</b></div></div>
+          </div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><h3>Valutazione per piattaforma</h3><a href="#">Tutte</a></div>
+          <div class="panel-b" style="display:flex;flex-direction:column;gap:14px;padding-top:18px">
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:6px"><span class="src"><span class="b">B</span> Booking.com</span><b style="font-family:var(--mono);color:var(--ink)">4,4</b></div><div class="bar"><i style="width:88%"></i></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:6px"><span class="src"><span class="b" style="background:#34D399">T</span> TripAdvisor</span><b style="font-family:var(--mono);color:var(--ink)">4,2</b></div><div class="bar"><i style="width:84%"></i></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:6px"><span class="src"><span class="b" style="background:#FBBF24">G</span> Google</span><b style="font-family:var(--mono);color:var(--ink)">4,5</b></div><div class="bar"><i style="width:90%"></i></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:6px"><span class="src"><span class="b" style="background:#F87171">V</span> Veratour</span><b style="font-family:var(--mono);color:var(--ink)">3,9</b></div><div class="bar"><i style="width:78%"></i></div></div>
+          </div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-h"><h3>Recensioni recenti</h3><a href="#">Vedi tutte (1.284)</a></div>
+        <table>
+          <thead><tr><th>Data</th><th>Resort</th><th>Ospite</th><th>Piattaforma</th><th>Rating</th><th>Sentiment</th><th>Titolo</th></tr></thead>
+          <tbody>
+            <tr><td>30 Giu</td><td>Resort Maldive</td><td>M. Bianchi</td><td><span class="src"><span class="b">B</span> Booking</span></td><td><span class="rate">9,2</span></td><td><span class="tag p">Positivo</span></td><td class="t-title">Piscina fantastica e staff impeccabile</td></tr>
+            <tr><td>30 Giu</td><td>Resort Sardegna</td><td>L. Verdi</td><td><span class="src"><span class="b" style="background:#34D399">T</span> TripAdv.</span></td><td><span class="rate">7,0</span></td><td><span class="tag n">Neutrale</span></td><td class="t-title">Esperienza buona ma colazione migliorabile</td></tr>
+            <tr><td>29 Giu</td><td>Resort Maldive</td><td>A. Russo</td><td><span class="src"><span class="b" style="background:#FBBF24">G</span> Google</span></td><td><span class="rate">10</span></td><td><span class="tag p">Positivo</span></td><td class="t-title">Personale cordiale, torneremo sicuramente</td></tr>
+            <tr><td>29 Giu</td><td>Resort Toscana</td><td>S. Conti</td><td><span class="src"><span class="b">B</span> Booking</span></td><td><span class="rate">5,4</span></td><td><span class="tag g">Negativo</span></td><td class="t-title">Camera non pulita all'arrivo</td></tr>
+            <tr><td>28 Giu</td><td>Resort Sardegna</td><td>G. Ferrari</td><td><span class="src"><span class="b" style="background:#F87171">V</span> Veratour</span></td><td><span class="rate">8,1</span></td><td><span class="tag p">Positivo</span></td><td class="t-title">Ottima posizione e spiaggia curata</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+</div>
+</body></html>
