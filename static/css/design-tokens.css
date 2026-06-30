@@ -1,0 +1,109 @@
+/*
+ * Nuvia — Design Tokens (Fase 2 del ridisegno)
+ * ------------------------------------------------------------------
+ * Fonte di verità UNICA del linguaggio visivo: colori, tipografia,
+ * spaziature, raggi, ombre, transizioni e z-index.
+ *
+ * Regola: nessun componente deve hardcodare un colore o una spaziatura.
+ * Usare sempre le variabili `--nv-*`. Così un cambio di tema/brand si fa
+ * in un solo punto e l'intera suite resta coerente.
+ *
+ * Caricato in <head> PRIMA del CSS Vite, così i token sono disponibili
+ * sia alle pagine server-rendered sia ai componenti React.
+ */
+
+:root {
+  /* ---- Palette di base ---- */
+  --nv-color-brand: #23395d;            /* allineato a theme_color di default */
+  --nv-color-brand-strong: #1a2c47;
+  --nv-color-brand-soft: #406fa6;       /* allineato a theme_color_secondary */
+  --nv-color-accent: #2dd4bf;
+
+  --nv-color-ink: #0f172a;              /* testo principale */
+  --nv-color-ink-soft: #475569;         /* testo secondario */
+  --nv-color-muted: #94a3b8;            /* testo disabilitato / placeholder */
+  --nv-color-line: #e2e8f0;             /* bordi e divisori */
+
+  --nv-color-surface: #ffffff;          /* superfici (card, pannelli) */
+  --nv-color-surface-2: #f8fafc;        /* sfondo applicazione */
+  --nv-color-surface-3: #f1f5f9;        /* superfici annidate / hover */
+
+  /* ---- Colori semantici ---- */
+  --nv-color-success: #16a34a;
+  --nv-color-success-soft: #dcfce7;
+  --nv-color-warning: #d97706;
+  --nv-color-warning-soft: #fef3c7;
+  --nv-color-danger: #dc2626;
+  --nv-color-danger-soft: #fee2e2;
+  --nv-color-info: #2563eb;
+  --nv-color-info-soft: #dbeafe;
+
+  /* ---- Tipografia ---- */
+  --nv-font-sans: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --nv-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  --nv-text-xs: 0.75rem;    /* 12px */
+  --nv-text-sm: 0.875rem;   /* 14px */
+  --nv-text-base: 1rem;     /* 16px */
+  --nv-text-lg: 1.125rem;   /* 18px */
+  --nv-text-xl: 1.375rem;   /* 22px */
+  --nv-text-2xl: 1.75rem;   /* 28px */
+  --nv-text-3xl: 2.25rem;   /* 36px */
+
+  --nv-weight-regular: 400;
+  --nv-weight-medium: 600;
+  --nv-weight-bold: 700;
+  --nv-leading-tight: 1.2;
+  --nv-leading-normal: 1.5;
+
+  /* ---- Scala di spaziatura (base 4px) ---- */
+  --nv-space-1: 0.25rem;
+  --nv-space-2: 0.5rem;
+  --nv-space-3: 0.75rem;
+  --nv-space-4: 1rem;
+  --nv-space-5: 1.5rem;
+  --nv-space-6: 2rem;
+  --nv-space-7: 3rem;
+  --nv-space-8: 4rem;
+
+  /* ---- Raggi ---- */
+  --nv-radius-sm: 6px;
+  --nv-radius-md: 10px;
+  --nv-radius-lg: 16px;
+  --nv-radius-pill: 999px;
+
+  /* ---- Ombre ---- */
+  --nv-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --nv-shadow-md: 0 6px 16px rgba(15, 23, 42, 0.08);
+  --nv-shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.12);
+
+  /* ---- Transizioni ---- */
+  --nv-transition-fast: 120ms ease;
+  --nv-transition-base: 200ms ease;
+
+  /* ---- Z-index (scala coerente, evita i "9999999" sparsi) ---- */
+  --nv-z-base: 1;
+  --nv-z-sticky: 100;
+  --nv-z-sidebar: 1000;
+  --nv-z-topbar: 1010;
+  --nv-z-dropdown: 1100;
+  --nv-z-modal: 1200;
+  --nv-z-toast: 1300;
+
+  /* ---- Ponte di compatibilità ----
+   * Le variabili legacy usate oggi nei template/SCSS continuano a funzionare
+   * agganciandosi ai token. Migrazione progressiva, zero rotture. */
+  --theme-color-main: var(--nv-color-brand);
+  --theme-color-secondary: var(--nv-color-brand-soft);
+}
+
+/* Tema scuro: gli stessi token, valori adattati. Attivo con data-theme="dark". */
+[data-theme="dark"] {
+  --nv-color-ink: #e2e8f0;
+  --nv-color-ink-soft: #94a3b8;
+  --nv-color-muted: #64748b;
+  --nv-color-line: #1e293b;
+  --nv-color-surface: #0f172a;
+  --nv-color-surface-2: #0b1220;
+  --nv-color-surface-3: #1e293b;
+}

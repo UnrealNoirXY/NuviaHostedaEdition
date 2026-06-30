@@ -182,16 +182,19 @@ Obiettivo: una sola verità per permessi e navigazione.
       per-ruolo e reporting in moduli separati (refactor con migrazioni — da pianificare a parte).
 - [ ] **Settings espliciti e sicuri** (rimuovere rami morti, check di produzione su cookie/CSRF).
 
-### FASE 2 — Unificazione UI e design system (3–4 settimane) · **P1**
+### FASE 2 — Unificazione UI e design system (3–4 settimane) · **P1** — *in corso*
 Obiettivo: un solo linguaggio visivo, una sola shell.
-- [ ] **Scelta del paradigma** (vedi §7, serve decisione): UI applicativa coerente **oppure**
-      la "desktop simulation" come shell ufficiale — **non entrambi**.
-- [ ] **Design tokens** (colori, tipografia, spaziature, raggi, ombre) + **libreria componenti
-      React** riusabile (bottoni, tabelle, form, modali, toast, empty/loading states).
-- [ ] **Una sola `base.html`** + una sola shell di navigazione (top bar + sidebar generata dal
-      registry). Deprecare `base_demo`/`base_landing` come varianti minime.
-- [ ] **Data-fetching standard** (un client unico, gestione errori/loading uniforme) e
-      responsive-first (eliminare i componenti "MobileOS" ad hoc).
+- [x] **Scelta del paradigma**: **UI applicativa coerente** (deciso). La desktop-simulation
+      non è la shell ufficiale.
+- [x] **Design tokens** (`static/css/design-tokens.css`): colori, tipografia, spaziatura,
+      raggi, ombre, transizioni, z-index. Caricati nei 3 base template prima del CSS Vite;
+      ponte di compatibilità con le variabili legacy. Doc: `docs/DESIGN_SYSTEM.md`.
+- [x] **Sidebar agganciata ai permessi**: le voci a capability mappata 1:1 usano
+      `{% if user|user_can:'...' %}` invece dei ruoli cablati (4 test di gating, verdi).
+- [ ] **Libreria componenti React** riusabile (bottoni, tabelle, form, modali, toast,
+      empty/loading states) che consuma i token.
+- [ ] **Migrazione SCSS/React ai token** `--nv-*` e deprecazione di `base_demo`/`base_landing`.
+- [ ] **Data-fetching standard** + responsive-first (eliminare i componenti "MobileOS" ad hoc).
 
 ### FASE 3 — Ridisegno dei moduli, a ondate (continuativo) · **P1/P2**
 Per ogni modulo, nell'ordine, applicare lo stesso template di lavoro:

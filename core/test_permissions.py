@@ -154,3 +154,58 @@ class TemplateFilterTests(TestCase):
 
     def test_filter_unknown_capability_is_falsey(self):
         self.assertEqual(self._render(self.owner, "inesistente"), "NO")
+
+
+class SidebarCapabilityGatingTests(TestCase):
+    """La sidebar (partials/_sidebar.html) gate-a le voci tramite user_can:
+    verifica end-to-end che il filtro template controlli la visibilità."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.superuser = User.objects.create_user(
+            "su5", "su5@test.com", "pw", role=User.SUPERADMIN, is_superuser=True
+        )
+        cls.owner = User.objects.create_user(
+            "owner5", "owner5@test.com", "pw", role=User.OWNER
+        )
+        cls.receptionist = User.objects.create_user(
+            "rec5", "rec5@test.com", "pw", role=User.RECEPTIONIST
+        )
+        cls.reviewer = User.objects.create_user(
+            "rev5", "rev5@test.com", "pw", role=User.RECEPTIONIST, has_reviews_access=True
+        )
+
+    def _render_sidebar(self, user):
+        from django.template.loader import render_to_string
+        from django.test import RequestFactory
+
+        request = RequestFactory().get("/hub/")
+        request.user = user
+        return render_to_string(
+            "partials/_sidebar.html",
+            {"user": user, "platform_name": "Nuvia"},
+            request=request,
+        )
+
+    def test_receptionist_does_not_see_restricted_items(self):
+        html = self._render_sidebar(self.receptionist)
+        for label in (
+            "Portale HR",
+            "Economato",
+            "Controllo Amministrativo",
+            "Schede Profilo Wallet",
+            "Inventario",
+        ):
+            self.assertNotIn(label, html, label)
+
+    def test_owner_sees_role_based_items(self):
+        html = self._render_sidebar(self.owner)
+        for label in ("Portale HR", "Economato", "Controllo Amministrativo"):
+            self.assertIn(label, html, label)
+
+    def test_reviews_flag_controls_reviews_menu(self):
+        self.assertIn("Recensioni", self._render_sidebar(self.reviewer))
+        self.assertNotIn("Recensioni", self._render_sidebar(self.receptionist))
+
+    def test_superuser_sees_profile_cards(self):
+        self.assertIn("Schede Profilo Wallet", self._render_sidebar(self.superuser))

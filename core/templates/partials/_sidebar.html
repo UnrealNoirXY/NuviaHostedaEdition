@@ -59,7 +59,7 @@
                 <span>Bacheca Nuvia</span>
             </a>
         </li>
-        {% if user.is_superuser or user.role == 'owner' or user.role == 'superadmin' or user.role == 'risorse_umane' %}
+        {% if user|user_can:'hr_portal' %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'hr_portal:portal' %}" class="nav-link app-sidenav__link {% if request.resolver_match.url_name == 'portal' %}active{% endif %}">
                 <i class="fas fa-id-badge"></i>
@@ -75,7 +75,7 @@
             </a>
         </li>
         {% endif %}
-        {% if user.has_inventory_access %}
+        {% if user|user_can:'inventory' %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'inventory:list' %}" class="nav-link app-sidenav__link">
                 <i class="fas fa-boxes-stacked"></i>
@@ -83,7 +83,7 @@
             </a>
         </li>
         {% endif %}
-        {% if user.is_superuser or user.role == 'owner' or user.role == 'capo_economo' or user.role == 'economo' or user.role == 'director' %}
+        {% if user|user_can:'economato' %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'economato:app' %}" class="nav-link app-sidenav__link {% if request.resolver_match.app_name == 'economato' %}active{% endif %}">
                 <i class="fas fa-warehouse"></i>
@@ -91,7 +91,7 @@
             </a>
         </li>
         {% endif %}
-        {% if user.is_superuser or user.role == 'superadmin' %}
+        {% if user|user_can:'profile_cards' %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'profile_cards:admin_dashboard' %}" class="nav-link app-sidenav__link {% if request.resolver_match.app_name == 'profile_cards' %}active{% endif %}">
                 <i class="fas fa-id-card"></i>
@@ -99,7 +99,7 @@
             </a>
         </li>
         {% endif %}
-        {% if user.is_superuser or user.role == 'superadmin' or user.role == 'owner' or user.role == 'director' or user.role == 'administrative' %}
+        {% if user|user_can:'financials' %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'financials:dashboard' %}" class="nav-link app-sidenav__link {% if request.resolver_match.app_name == 'financials' %}active{% endif %}">
                 <i class="fas fa-chart-line"></i>
@@ -127,7 +127,7 @@
             </a>
         </li>
         {% endif %}
-        {% if user.is_superuser or user.has_maintenance_access %}
+        {% if user|user_can:'maintenance' %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'maintenance_tool_home' %}" class="nav-link app-sidenav__link">
                 <i class="fas fa-wrench"></i>
@@ -171,7 +171,7 @@
             </a>
         </li>
         {% endif %}
-        {% if user.is_superuser or user.role == 'administrative' or user.role == 'risorse_umane' %}
+        {% if user|user_can:'documents_admin' %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'documents:document_list' %}" class="nav-link app-sidenav__link">
                 <i class="fas fa-file-invoice"></i>
@@ -179,7 +179,7 @@
             </a>
         </li>
         {% endif %}
-        {% if user.can_manage_purchase_orders %}
+        {% if user|user_can:'purchase_orders' %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'purchase_orders:list' %}" class="nav-link app-sidenav__link">
                 <i class="fas fa-shopping-cart"></i>
@@ -201,7 +201,7 @@
                 <span>Nuvia Mail</span>
             </a>
         </li>
-    {% if user.is_superuser or user.has_reviews_access %}
+    {% if user|user_can:'reviews' %}
     <li class="app-sidenav__menu-item app-sidenav__menu-item--group">
         <button class="app-sidenav__link app-sidenav__link--collapse" type="button" data-bs-toggle="collapse" data-bs-target="#reviews-submenu" aria-expanded="false" aria-controls="reviews-submenu">
             <i class="fas fa-star"></i>
