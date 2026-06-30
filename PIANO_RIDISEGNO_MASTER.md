@@ -211,8 +211,13 @@ Obiettivo: un solo linguaggio visivo, una sola shell.
       gate reale delle viste (prima l'hub usava il flag `has_reviews_access`, le viste i ruoli →
       tile mostrate ma accesso negato, e viceversa). Scoping senza fallback "tutte" → **niente
       leak cross-azienda**. (9 nuovi test in `reviews/test_access.py`, verdi.)
-- [ ] **UI recensioni sui design token** (dashboard, analysis center, liste): adottare token e
-      componenti `ui/`.
+- [x] **Dashboard recensioni — verifica a video e fix**: card KPI uniformi sui token; **grafici
+      resi robusti** (Chart.js bundlato e pinnato invece che da CDN; init tooltip difensivo;
+      rimosso Bootstrap CDN duplicato). Prima i 3 grafici restavano vuoti se i CDN erano
+      bloccati (reti aziendali); ora rendono dal bundle. Verificato con screenshot before/after.
+- [ ] **Resto UI recensioni** (analysis center React, liste, dettaglio) sui token/componenti.
+- [ ] **Robustezza CDN estesa** alle altre pagine (base.html carica Bootstrap/htmx da CDN):
+      valutare il bundling globale per non dipendere da CDN esterni.
 
 #### Portale HR — accesso (fatto)
 - [x] **Rimossa la doppia definizione** di `_has_hr_portal_access` (era dichiarata due volte,
