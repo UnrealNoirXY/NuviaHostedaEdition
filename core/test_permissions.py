@@ -1,0 +1,129 @@
+"""Test del layer di permessi centralizzato e della navigazione dichiarativa (Fase 1)."""
+
+from django.test import TestCase, RequestFactory
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
+from django.contrib.auth.models import AnonymousUser
+
+from accounts.models import User
+from core.permissions import (
+    Capability,
+    CAPABILITY_RULES,
+    user_can,
+    capability_required,
+)
+from core.navigation import HUB_TOOLS, get_hub_tools
+
+
+class UserCanTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.superuser = User.objects.create_user(
+            "su", "su@test.com", "pw", role=User.SUPERADMIN, is_superuser=True
+        )
+        cls.owner = User.objects.create_user(
+            "owner", "owner@test.com", "pw", role=User.OWNER
+        )
+        cls.receptionist = User.objects.create_user(
+            "rec", "rec@test.com", "pw", role=User.RECEPTIONIST
+        )
+        cls.reviewer = User.objects.create_user(
+            "rev", "rev@test.com", "pw", role=User.RECEPTIONIST, has_reviews_access=True
+        )
+
+    def test_anonymous_has_no_capability(self):
+        anon = AnonymousUser()
+        for cap in CAPABILITY_RULES:
+            self.assertFalse(user_can(anon, cap), cap)
+
+    def test_public_capability_for_any_authenticated_user(self):
+        self.assertTrue(user_can(self.receptionist, Capability.IT_SUPPORT))
+        self.assertTrue(user_can(self.receptionist, Capability.NUVIA_MAIL))
+        self.assertTrue(user_can(self.receptionist, Capability.PROCEDURES))
+        self.assertTrue(user_can(self.receptionist, Capability.HR_BACHECA))
+
+    def test_flag_based_capability(self):
+        # has_reviews_access concede REVIEWS, senza non si accede.
+        self.assertTrue(user_can(self.reviewer, Capability.REVIEWS))
+        self.assertFalse(user_can(self.receptionist, Capability.REVIEWS))
+
+    def test_role_based_capability(self):
+        # OWNER accede a FINANCIALS ed ECONOMATO; il receptionist no.
+        self.assertTrue(user_can(self.owner, Capability.FINANCIALS))
+        self.assertTrue(user_can(self.owner, Capability.ECONOMATO))
+        self.assertFalse(user_can(self.receptionist, Capability.FINANCIALS))
+        self.assertFalse(user_can(self.receptionist, Capability.ECONOMATO))
+
+    def test_superuser_bypasses_everything(self):
+        for cap in CAPABILITY_RULES:
+            self.assertTrue(user_can(self.superuser, cap), cap)
+
+    def test_unknown_capability_raises(self):
+        with self.assertRaises(KeyError):
+            user_can(self.owner, "capacita_inesistente")
+
+
+class CapabilityDecoratorTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.owner = User.objects.create_user(
+            "owner2", "owner2@test.com", "pw", role=User.OWNER
+        )
+        cls.receptionist = User.objects.create_user(
+            "rec2", "rec2@test.com", "pw", role=User.RECEPTIONIST
+        )
+        cls.factory = RequestFactory()
+
+    def _view(self):
+        @capability_required(Capability.FINANCIALS)
+        def view(request):
+            return HttpResponse("ok")
+
+        return view
+
+    def test_decorator_allows_authorized(self):
+        request = self.factory.get("/")
+        request.user = self.owner
+        response = self._view()(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_decorator_denies_unauthorized(self):
+        request = self.factory.get("/")
+        request.user = self.receptionist
+        with self.assertRaises(PermissionDenied):
+            self._view()(request)
+
+
+class HubNavigationTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.superuser = User.objects.create_user(
+            "su3", "su3@test.com", "pw", role=User.SUPERADMIN, is_superuser=True
+        )
+        cls.receptionist = User.objects.create_user(
+            "rec3", "rec3@test.com", "pw", role=User.RECEPTIONIST
+        )
+
+    def test_every_hub_tool_uses_a_registered_capability(self):
+        for tool in HUB_TOOLS:
+            self.assertIn(tool.capability, CAPABILITY_RULES, tool.label)
+
+    def test_superuser_sees_all_tools(self):
+        labels = [t["label"] for t in get_hub_tools(self.superuser)]
+        self.assertEqual(len(labels), len(HUB_TOOLS))
+
+    def test_receptionist_sees_only_public_tools(self):
+        labels = {t["label"] for t in get_hub_tools(self.receptionist)}
+        # Strumenti pubblici sempre visibili
+        self.assertIn("Supporto IT", labels)
+        self.assertIn("Procedure Operative", labels)
+        self.assertIn("Bacheca Nuvia", labels)
+        # Strumenti riservati non visibili senza ruolo/flag
+        self.assertNotIn("Controllo Amministrativo", labels)
+        self.assertNotIn("Portale HR", labels)
+        self.assertNotIn("Analisi Recensioni", labels)
+
+    def test_tools_are_renderable(self):
+        # as_context() chiama reverse(): verifica che tutti gli url_name esistano.
+        for tool in get_hub_tools(self.superuser):
+            self.assertTrue(tool["url"].startswith("/"), tool["label"])

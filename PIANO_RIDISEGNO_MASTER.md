@@ -168,16 +168,18 @@ Obiettivo: repo pulito, una sola direzione tecnica, niente codice morto.
       operazione che riscrive la history, da concordare). Ruotare eventuali credenziali nel backup.
 - [ ] **Ottimizzare gli asset** (`login-background.jpg` 7.9 MB → WebP < 300 KB; favicon 724 KB).
 
-### FASE 1 — Layer di logica trasversale (2–3 settimane) · **P0/P1**
+### FASE 1 — Layer di logica trasversale (2–3 settimane) · **P0/P1** — *in corso*
 Obiettivo: una sola verità per permessi e navigazione.
-- [ ] **`core/permissions.py` unico**: mappa dichiarativa ruolo → capacità; helper
-      `user_can(user, capability)`. Sostituire tutti i `role in {...}` e `has_X_access` sparsi.
-- [ ] **Registry di navigazione dichiarativo**: ogni app registra i propri "tool"
-      (label, icona, url, capability richiesta). L'hub e la sidebar si generano filtrando per
-      permesso. Elimina l'hardcoding di `get_hub_tools`.
-- [ ] **Spezzare `core`**: estrarre "Nuvia Mail" in un'app `mailbox/` dedicata; spostare le
-      dashboard per-ruolo e il reporting in moduli separati. `core` torna a contenere solo
-      identità/hub/util condivisi.
+- [x] **`core/permissions.py` unico**: `Capability` + `CAPABILITY_RULES` (mappa dichiarativa
+      ruolo/flag → capacità), helper `user_can(user, capability)`, decorator
+      `capability_required` e `CapabilityRequiredMixin`. Copre 13 capacità. **12 test, verdi.**
+- [x] **Registry di navigazione dichiarativo** (`core/navigation.py`): l'hub si genera da
+      `HUB_TOOLS` filtrato con `user_can`. Eliminati i ~14 blocchi `add_tool(condition=...)`
+      cablati in `get_hub_tools`. Navigazione e autorizzazione ora condividono la stessa fonte.
+- [ ] **Adozione progressiva nelle viste**: migrare i guard `role in {...}`/`has_X_access`
+      sparsi (es. `tickets/api.py`, `economato`, `hr_portal`) a `user_can`/`capability_required`.
+- [ ] **Spezzare `core`**: estrarre "Nuvia Mail" in un'app dedicata; spostare dashboard
+      per-ruolo e reporting in moduli separati (refactor con migrazioni — da pianificare a parte).
 - [ ] **Settings espliciti e sicuri** (rimuovere rami morti, check di produzione su cookie/CSRF).
 
 ### FASE 2 — Unificazione UI e design system (3–4 settimane) · **P1**
