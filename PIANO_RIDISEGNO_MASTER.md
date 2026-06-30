@@ -154,17 +154,19 @@ discorso per `communications`+`notifications` e per `documents`+`document_verifi
 Principio guida: **prima consolidare e stabilizzare, poi unificare la UI, poi rifinire i
 moduli uno a uno.** Niente nuove feature finché le fondamenta non sono pulite.
 
-### FASE 0 — Bonifica e fondamenta (1–2 settimane) · **P0**
+### FASE 0 — Bonifica e fondamenta (1–2 settimane) · **P0** — *in corso*
 Obiettivo: repo pulito, una sola direzione tecnica, niente codice morto.
-- [ ] **Eliminare i frontend morti** `frontend-next/` e `frontend_legacy/` (sono orfani).
-      Decisione: **`frontend/` (Vite+React) è la fonte di verità unica del frontend ricco.**
-- [ ] **Rimuovere dalla history** `db.sqlite3.bak.*` e gli asset di debug; aggiungere a
-      `.gitignore`; ruotare eventuali credenziali presenti nel backup.
-- [ ] **Ottimizzare gli asset** (sfondi → WebP < 300 KB, favicon corretta).
-- [ ] **Consolidare la documentazione**: questo file diventa il master; archiviare i 28 `.md`
-      in `docs/archive/`. Riscrivere `README.md` per descrivere il prodotto reale.
-- [ ] **Rafforzare la CI**: aggiungere `ruff` (lint), `python manage.py makemigrations --check`,
-      build del frontend, e far girare i test anche sul branch di feature (non solo `main`).
+- [x] **Eliminati i frontend morti** `frontend-next/` e `frontend_legacy/` (orfani, verificato:
+      zero riferimenti nel backend). **`frontend/` (Vite+React) è la fonte di verità unica.**
+- [x] **Rimossi dal tree** `db.sqlite3.bak.*` e gli screenshot di debug; `.gitignore` corretto
+      (il pattern `*.sqlite3` non catturava i `.bak` datati) e ripulito dai duplicati.
+- [x] **Consolidata la documentazione**: questo file è il master; 26 `.md` archiviati in
+      `docs/archive/`; `README.md` riscritto sul prodotto reale.
+- [x] **CI rafforzata**: lint `ruff` (non bloccante in transizione), check migrazioni
+      (`makemigrations --check`), build del frontend, esecuzione su branch `claude/**` e PR.
+- [ ] **Rimuovere dalla history git** il backup SQLite (richiede `git filter-repo` + force-push:
+      operazione che riscrive la history, da concordare). Ruotare eventuali credenziali nel backup.
+- [ ] **Ottimizzare gli asset** (`login-background.jpg` 7.9 MB → WebP < 300 KB; favicon 724 KB).
 
 ### FASE 1 — Layer di logica trasversale (2–3 settimane) · **P0/P1**
 Obiettivo: una sola verità per permessi e navigazione.
@@ -205,6 +207,14 @@ Per ogni modulo, nell'ordine, applicare lo stesso template di lavoro:
 - [ ] Isolare le dipendenze ML pesanti dietro task Celery / servizio separato.
 - [ ] Osservabilità: il logging strutturato esiste già (`core.logging_utils`) → estenderlo a
       metriche d'uso per capire quali strumenti servono davvero (e quali tagliare).
+
+---
+
+## 6-bis. Decisioni prese (2026-06-30)
+
+- **Frontend (Fase 2):** ✅ **UI applicativa coerente** (top bar + sidebar + pagine, design
+  system unico). La "desktop simulation" non è il prodotto di riferimento.
+- **Partenza:** ✅ **Fase 0 — Bonifica** (in corso in questo branch).
 
 ---
 
