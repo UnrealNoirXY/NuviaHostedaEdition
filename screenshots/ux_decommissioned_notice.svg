@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+  <rect width="1440" height="900" fill="#f4f7fb"/>
+  <rect x="420" y="170" width="600" height="520" rx="32" fill="#ffffff"/>
+  <circle cx="720" cy="278" r="54" fill="#fff7ed"/>
+  <text x="694" y="296" font-family="Inter, Arial" font-size="42" fill="#f59e0b">↗</text>
+  <text x="522" y="380" font-family="Inter, Arial" font-size="34" font-weight="800" fill="#101828">Modulo dismesso</text>
+  <text x="520" y="430" font-family="Inter, Arial" font-size="18" fill="#667085">Questo strumento è stato scollegato perché ora</text>
+  <text x="520" y="460" font-family="Inter, Arial" font-size="18" fill="#667085">viene gestito da un'applicazione esterna dedicata.</text>
+  <text x="520" y="520" font-family="Inter, Arial" font-size="16" fill="#98a2b3">Se ti serve accedere allo storico o al nuovo strumento,</text>
+  <text x="520" y="548" font-family="Inter, Arial" font-size="16" fill="#98a2b3">contatta l'amministratore della piattaforma.</text>
+  <rect x="520" y="600" width="180" height="46" rx="14" fill="#2563eb"/>
+  <text x="552" y="629" font-family="Inter, Arial" font-size="15" font-weight="700" fill="#fff">Torna a Home Desk</text>
+  <rect x="716" y="600" width="150" height="46" rx="14" fill="#fff" stroke="#d0d5dd"/>
+  <text x="750" y="629" font-family="Inter, Arial" font-size="15" font-weight="700" fill="#344054">Vai all'Hub</text>
+</svg>

@@ -4,13 +4,22 @@ from django.db.models import Q
 
 from accounts.models import User
 from it_support.models import IT_Ticket
+from .feature_flags import is_feature_enabled
 
 def active_chats_processor(request):
     base_context = {
         'web_push_public_key': getattr(settings, 'WEB_PUSH_VAPID_PUBLIC_KEY', ''),
+        'enable_menu_generator': is_feature_enabled('ENABLE_MENU_GENERATOR', False),
+        'enable_nuvia_mail': is_feature_enabled('ENABLE_NUVIA_MAIL', False),
+        'enable_internal_tickets': is_feature_enabled('ENABLE_INTERNAL_TICKETS', False),
     }
 
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not base_context['enable_internal_tickets']:
+        base_context.update({
+            'active_chats_list': IT_Ticket.objects.none(),
+            'has_active_chats': False,
+            'is_it_staff': False,
+        })
         return base_context
 
     cache_key = f'active_chats_user_{request.user.id}'
