@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import User
+from core.feature_flags import is_feature_enabled
 from core.templatetags.custom_tags import get_avatar_url
 
 
@@ -152,7 +153,9 @@ class MobileShellContextView(APIView):
                 section='tools',
             )
 
-        if user.is_superuser or getattr(user, 'has_maintenance_access', False):
+        internal_tickets_enabled = is_feature_enabled('ENABLE_INTERNAL_TICKETS', False)
+
+        if internal_tickets_enabled and (user.is_superuser or getattr(user, 'has_maintenance_access', False)):
             self._add_nav_item(
                 items,
                 href=self._reverse('maintenance_tool_home'),
@@ -161,9 +164,9 @@ class MobileShellContextView(APIView):
                 section='tools',
             )
 
-        if user.is_superuser or user.role == User.IT_TECHNICIAN or getattr(
+        if internal_tickets_enabled and (user.is_superuser or user.role == User.IT_TECHNICIAN or getattr(
             user, 'has_it_support_management_access', False
-        ):
+        )):
             self._add_nav_item(
                 items,
                 href=self._reverse('it_support:it_ticket_management_list'),
@@ -188,7 +191,7 @@ class MobileShellContextView(APIView):
                 section='tools',
                 depth=1,
             )
-        else:
+        elif internal_tickets_enabled:
             self._add_nav_item(
                 items,
                 href=self._reverse('it_support:it_ticket_list'),

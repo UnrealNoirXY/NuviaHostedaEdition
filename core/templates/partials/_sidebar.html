@@ -127,7 +127,7 @@
             </a>
         </li>
         {% endif %}
-        {% if user.is_superuser or user.has_maintenance_access %}
+        {% if enable_internal_tickets and user.is_superuser or enable_internal_tickets and user.has_maintenance_access %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'maintenance_tool_home' %}" class="nav-link app-sidenav__link">
                 <i class="fas fa-wrench"></i>
@@ -135,7 +135,7 @@
             </a>
         </li>
         {% endif %}
-        {% if user.is_superuser or user.role == 'it_technician' %}
+        {% if enable_internal_tickets and user.is_superuser or enable_internal_tickets and user.role == 'it_technician' %}
         <li class="app-sidenav__menu-item app-sidenav__menu-item--group">
             <button class="app-sidenav__link app-sidenav__link--collapse" type="button" data-bs-toggle="collapse" data-bs-target="#it-support-submenu" aria-expanded="false" aria-controls="it-support-submenu">
                 <i class="fas fa-headset"></i>
@@ -163,7 +163,7 @@
                 </li>
             </ul>
         </li>
-        {% else %}
+        {% elif enable_internal_tickets %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'it_support:it_ticket_list' %}" class="nav-link app-sidenav__link">
                 <i class="fas fa-headset"></i>
@@ -187,7 +187,7 @@
             </a>
         </li>
         {% endif %}
-        {% if user.is_superuser or user.menu_creation_studio_enabled or user.role == 'owner' %}
+        {% if enable_menu_generator and user.is_superuser or enable_menu_generator and user.menu_creation_studio_enabled or enable_menu_generator and user.role == 'owner' %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'menu_generator:studio' %}" class="nav-link app-sidenav__link {% if request.resolver_match.app_name == 'menu_generator' %}active{% endif %}">
                 <i class="fas fa-utensils"></i>
@@ -195,12 +195,14 @@
             </a>
         </li>
         {% endif %}
+        {% if enable_nuvia_mail %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'core:nuvia_mail' %}" class="nav-link app-sidenav__link {% if request.resolver_match.url_name == 'nuvia_mail' %}active{% endif %}">
                 <i class="fas fa-envelope-open-text"></i>
                 <span>Nuvia Mail</span>
             </a>
         </li>
+        {% endif %}
     {% if user.is_superuser or user.has_reviews_access %}
     <li class="app-sidenav__menu-item app-sidenav__menu-item--group">
         <button class="app-sidenav__link app-sidenav__link--collapse" type="button" data-bs-toggle="collapse" data-bs-target="#reviews-submenu" aria-expanded="false" aria-controls="reviews-submenu">
@@ -277,7 +279,7 @@
         {% if user.is_superuser or user.role == 'owner' or user.role == 'head_maintainer' %}
         <div class="app-sidenav__section">Gestione</div>
         <ul class="nav flex-column app-sidenav__menu">
-        {% if user.is_superuser or user.role == 'head_maintainer' %}
+        {% if enable_internal_tickets and user.is_superuser or enable_internal_tickets and user.role == 'head_maintainer' %}
         <li class="app-sidenav__menu-item">
             <a href="{% url 'core:dashboard_head_maintainer' %}" class="nav-link app-sidenav__link {% if request.resolver_match.url_name == 'dashboard_head_maintainer' %}active{% endif %}">
                 <i class="fas fa-tachometer-alt"></i>
@@ -347,7 +349,7 @@
         </ul>
         {% endif %}
 
-        {% if has_active_chats %}
+        {% if enable_internal_tickets and has_active_chats %}
         <div class="app-sidenav__section">Assistenza Live</div>
         <ul class="nav flex-column app-sidenav__menu">
             <li class="app-sidenav__menu-item">
@@ -377,6 +379,6 @@
 
     <div class="app-sidenav__footer">
         <p class="app-sidenav__footer-copy">Versione piattaforma {{ platform_version|default:"2025" }}</p>
-        <p class="app-sidenav__footer-support">Serve aiuto? <a href="{% url 'it_support:it_ticket_list' %}">Apri un ticket</a></p>
+        <p class="app-sidenav__footer-support">Serve aiuto? <a href="{% url 'procedures:procedure_list' %}">Consulta le procedure</a></p>
     </div>
 </nav>

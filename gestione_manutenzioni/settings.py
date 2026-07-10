@@ -48,6 +48,18 @@ WEB_PUSH_VAPID_PUBLIC_KEY = env('WEB_PUSH_VAPID_PUBLIC_KEY', default='')
 WEB_PUSH_VAPID_PRIVATE_KEY = env('WEB_PUSH_VAPID_PRIVATE_KEY', default='')
 WEB_PUSH_CONTACT_EMAIL = env('WEB_PUSH_CONTACT_EMAIL', default='mailto:support@noirtech.online')
 
+# --- Decommissioned / externally managed product areas ---
+# These modules remain in the codebase for data retention and safe rollback, but
+# are hidden from the UX and routed to an external service or a graceful notice
+# when disabled.
+ENABLE_MENU_GENERATOR = env.bool('ENABLE_MENU_GENERATOR', default=False)
+ENABLE_NUVIA_MAIL = env.bool('ENABLE_NUVIA_MAIL', default=False)
+ENABLE_INTERNAL_TICKETS = env.bool('ENABLE_INTERNAL_TICKETS', default=False)
+
+EXTERNAL_MENU_URL = env('EXTERNAL_MENU_URL', default='')
+EXTERNAL_MAIL_URL = env('EXTERNAL_MAIL_URL', default='')
+EXTERNAL_TICKETS_URL = env('EXTERNAL_TICKETS_URL', default='')
+
 # --- Database Configuration ---
 DATABASES = {
     'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR / "db.sqlite3"}'),

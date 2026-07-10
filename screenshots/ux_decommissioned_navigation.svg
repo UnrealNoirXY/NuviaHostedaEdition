@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+  <rect width="1440" height="900" fill="#f4f7fb"/>
+  <rect x="0" y="0" width="292" height="900" fill="#101828"/>
+  <text x="32" y="54" fill="#e6edf7" font-family="Inter, Arial" font-size="22" font-weight="700">Nuvia OS</text>
+  <text x="32" y="82" fill="#98a2b3" font-family="Inter, Arial" font-size="13">Console Operativa</text>
+  <rect x="24" y="118" width="244" height="64" rx="18" fill="#1d2939"/>
+  <circle cx="58" cy="150" r="19" fill="#3b82f6"/>
+  <text x="88" y="145" fill="#f9fafb" font-family="Inter, Arial" font-size="14" font-weight="700">Utente operativo</text>
+  <text x="88" y="166" fill="#98a2b3" font-family="Inter, Arial" font-size="12">Ultimo accesso oggi</text>
+  <text x="32" y="226" fill="#667085" font-family="Inter, Arial" font-size="12" font-weight="700">NAVIGAZIONE</text>
+  <g font-family="Inter, Arial" font-size="15" fill="#d0d5dd">
+    <rect x="24" y="244" width="244" height="42" rx="12" fill="#2563eb"/>
+    <text x="54" y="271" fill="#fff">Home Desk</text>
+    <text x="54" y="325">Procedure</text>
+    <text x="54" y="371">Bacheca Nuvia</text>
+    <text x="54" y="417">Portale HR</text>
+    <text x="54" y="463">Cruscotto Direzione</text>
+    <text x="54" y="509">Inventario</text>
+    <text x="54" y="555">Economato</text>
+    <text x="54" y="601">Controllo Amministrativo</text>
+  </g>
+  <text x="32" y="664" fill="#667085" font-family="Inter, Arial" font-size="12" font-weight="700">STRUMENTI</text>
+  <g font-family="Inter, Arial" font-size="15" fill="#d0d5dd">
+    <text x="54" y="710">Crea Comunicazione</text>
+    <text x="54" y="756">Amministrazione</text>
+    <text x="54" y="802">Buoni d'Ordine</text>
+  </g>
+  <rect x="332" y="36" width="1068" height="88" rx="28" fill="#ffffff"/>
+  <text x="372" y="76" fill="#101828" font-family="Inter, Arial" font-size="28" font-weight="800">Home Desk semplificata</text>
+  <text x="372" y="104" fill="#667085" font-family="Inter, Arial" font-size="15">Menu Creation Studio, Nuvia Mail e Ticket interni non sono più nella navigazione.</text>
+  <rect x="332" y="164" width="330" height="170" rx="26" fill="#ffffff"/>
+  <text x="362" y="212" fill="#101828" font-family="Inter, Arial" font-size="22" font-weight="800">Oggi</text>
+  <text x="362" y="248" fill="#667085" font-family="Inter, Arial" font-size="15">Attività operative e comunicazioni.</text>
+  <rect x="362" y="278" width="158" height="38" rx="12" fill="#2563eb"/>
+  <text x="390" y="303" fill="#ffffff" font-family="Inter, Arial" font-size="14" font-weight="700">Apri bacheca</text>
+  <rect x="694" y="164" width="330" height="170" rx="26" fill="#ffffff"/>
+  <text x="724" y="212" fill="#101828" font-family="Inter, Arial" font-size="22" font-weight="800">Procedure</text>
+  <text x="724" y="248" fill="#667085" font-family="Inter, Arial" font-size="15">Manuali e processi sempre disponibili.</text>
+  <rect x="724" y="278" width="170" height="38" rx="12" fill="#101828"/>
+  <text x="753" y="303" fill="#ffffff" font-family="Inter, Arial" font-size="14" font-weight="700">Consulta</text>
+  <rect x="1056" y="164" width="344" height="170" rx="26" fill="#ffffff"/>
+  <text x="1086" y="212" fill="#101828" font-family="Inter, Arial" font-size="22" font-weight="800">Direzione</text>
+  <text x="1086" y="248" fill="#667085" font-family="Inter, Arial" font-size="15">KPI e controllo senza duplicati.</text>
+  <rect x="1086" y="278" width="170" height="38" rx="12" fill="#101828"/>
+  <text x="1116" y="303" fill="#ffffff" font-family="Inter, Arial" font-size="14" font-weight="700">Apri KPI</text>
+  <rect x="332" y="378" width="1068" height="408" rx="28" fill="#ffffff"/>
+  <text x="372" y="426" fill="#101828" font-family="Inter, Arial" font-size="24" font-weight="800">Stato dismissione UX</text>
+  <g font-family="Inter, Arial" font-size="16" fill="#344054">
+    <text x="392" y="486">✓ Menu Creation Studio nascosto e protetto da pagina dismissione/redirect.</text>
+    <text x="392" y="536">✓ Nuvia Mail nascosto; restano solo email transazionali.</text>
+    <text x="392" y="586">✓ Ticket interni nascosti da sidebar, hub e mobile shell.</text>
+    <text x="392" y="636">✓ Footer assistenza punta alle procedure, non più al ticket interno.</text>
+  </g>
+</svg>

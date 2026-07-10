@@ -57,6 +57,7 @@ from .forms import (
     NuviaMailCompliancePolicyForm,
 )
 from .utils import themed_render, get_hub_tools
+from .feature_flags import get_external_url
 from .models import (
     PlatformSettings,
     TrustedDevice,
@@ -89,6 +90,43 @@ from openpyxl import Workbook
 from weasyprint import HTML
 
 # --- Main Views ---
+
+DECOMMISSIONED_MODULES = {
+    "menu": {
+        "title": "Menu Creation Studio dismesso",
+        "message": "Il generatore menu interno è stato scollegato perché ora viene gestito da un'applicazione esterna dedicata.",
+        "external_setting": "EXTERNAL_MENU_URL",
+    },
+    "mail": {
+        "title": "Nuvia Mail dismesso",
+        "message": "Il client mail interno è stato scollegato. Restano attive solo le email transazionali di sistema.",
+        "external_setting": "EXTERNAL_MAIL_URL",
+    },
+    "tickets": {
+        "title": "Ticket interni dismessi",
+        "message": "Il ticketing interno è stato scollegato perché la gestione richieste avviene su un sistema esterno.",
+        "external_setting": "EXTERNAL_TICKETS_URL",
+    },
+}
+
+
+@login_required
+def decommissioned_module_view(request, module="tickets"):
+    """Show a controlled fallback or redirect for decommissioned modules."""
+    config = DECOMMISSIONED_MODULES.get(module, DECOMMISSIONED_MODULES["tickets"])
+    external_url = get_external_url(config["external_setting"])
+    if external_url:
+        return redirect(external_url)
+    response = themed_render(
+        request,
+        "core/decommissioned_module.html",
+        {
+            "module_title": config["title"],
+            "module_message": config["message"],
+        },
+    )
+    response.status_code = 410
+    return response
 
 def _get_client_ip(request):
     forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")

@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from accounts.models import User
 from .models import PlatformSettings
+from .feature_flags import is_feature_enabled
 
 def themed_render(request, template_name, context=None):
     """
@@ -77,7 +78,9 @@ def get_hub_tools(user):
             )
 
     add_tool(
-        condition=user.is_superuser or getattr(user, 'has_maintenance_access', False),
+        condition=is_feature_enabled('ENABLE_INTERNAL_TICKETS', False) and (
+            user.is_superuser or getattr(user, 'has_maintenance_access', False)
+        ),
         label='Gestione Manutenzioni',
         description='Crea e gestisci i ticket di manutenzione per i resort.',
         icon='fas fa-wrench',
@@ -99,7 +102,7 @@ def get_hub_tools(user):
     )
 
     add_tool(
-        condition=True,
+        condition=is_feature_enabled('ENABLE_INTERNAL_TICKETS', False),
         label='Supporto IT',
         description='Richiedi assistenza per problemi hardware, software o di rete.',
         icon='fas fa-headset',
@@ -155,7 +158,7 @@ def get_hub_tools(user):
     )
 
     add_tool(
-        condition=True,
+        condition=is_feature_enabled('ENABLE_NUVIA_MAIL', False),
         label='Bacheca Nuvia',
         description='Consulta comunicazioni personali, documenti HR e buste paga.',
         icon='fas fa-clipboard-list',
@@ -206,7 +209,7 @@ def get_hub_tools(user):
     )
 
     add_tool(
-        condition=True,
+        condition=is_feature_enabled('ENABLE_NUVIA_MAIL', False),
         label='Nuvia Mail',
         description='Accedi in modo opzionale alla tua email aziendale con una guida IMAP/SMTP semplice e mobile-first.',
         icon='fas fa-envelope-open-text',
