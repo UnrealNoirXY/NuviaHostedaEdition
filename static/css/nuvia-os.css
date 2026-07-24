@@ -1,0 +1,75 @@
+/* ==========================================================================
+   Nuvia OS — Control Center · Design system (produzione)
+   Nuova direzione frontend: dark, accent ambra, sidebar etichettata+collassabile,
+   command palette. Fonte di verità unica dei token (sostituisce ntk/nv/Bootstrap).
+   ========================================================================== */
+:root{
+  --bg:#0A0D14; --surface:#11151F; --surface-2:#161C28; --surface-3:#1C2433;
+  --line:rgba(255,255,255,.07); --line-strong:rgba(255,255,255,.12);
+  --ink:#E7ECF5; --ink-2:#9AA6B8; --ink-3:#5E6B7E;
+  --accent:#F5B544; --accent-2:#E89B2E; --accent-ink:#1B1303;
+  --accent-soft:rgba(245,181,68,.14); --accent-line:rgba(245,181,68,.40);
+  --pos:#34D399; --pos-bg:rgba(52,211,153,.12);
+  --neu:#FBBF24; --neu-bg:rgba(251,191,36,.12);
+  --neg:#F87171; --neg-bg:rgba(248,113,113,.12);
+  --info:#7CA8F0;
+  --r:10px; --r-lg:14px;
+  --mono:'SFMono-Regular',ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;
+}
+.nos, .nos *{box-sizing:border-box;margin:0;padding:0}
+.nos{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased;min-height:100vh}
+.nos a{color:inherit;text-decoration:none}
+
+.nos-app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+
+/* sidebar */
+.nos-side{background:#0C1019;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px;position:sticky;top:0;height:100vh}
+.nos-brand{display:flex;align-items:center;gap:11px;padding:6px 8px 16px}
+.nos-brand .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:var(--accent-ink);font-weight:800;flex:none}
+.nos-brand b{font-size:15px;font-weight:700}.nos-brand span{display:block;font-size:11px;color:var(--ink-3)}
+.nos-sect{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);padding:14px 10px 6px}
+.nos-lnk{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:9px;color:var(--ink-2);font-size:13.5px;cursor:pointer}
+.nos-lnk i{width:18px;text-align:center;flex:none;font-size:15px}
+.nos-lnk:hover{background:var(--surface-2);color:var(--ink)}
+.nos-lnk.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.nos-lnk .ct{margin-left:auto;font-size:11px;font-family:var(--mono);background:var(--surface-3);color:var(--ink-2);border-radius:20px;padding:1px 7px}
+.nos-side .sp{flex:1}
+.nos-me{display:flex;align-items:center;gap:10px;padding:10px;border-top:1px solid var(--line);margin-top:8px}
+.nos-me .av{width:32px;height:32px;border-radius:50%;background:var(--surface-3);border:1px solid var(--line-strong);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink-2);flex:none;overflow:hidden}
+.nos-me .av img{width:100%;height:100%;object-fit:cover}
+.nos-me b{font-size:13px}.nos-me span{display:block;font-size:11px;color:var(--ink-3)}
+
+/* main + topbar */
+.nos-main{display:flex;flex-direction:column;min-width:0}
+.nos-top{height:56px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 22px;position:sticky;top:0;background:rgba(10,13,20,.85);backdrop-filter:blur(8px);z-index:10}
+.nos-crumb{color:var(--ink-3);font-size:13px}.nos-crumb b{color:var(--ink);font-weight:600}
+.nos-cmd{margin-left:auto;display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:7px 12px;width:320px;color:var(--ink-3);font-size:13px;cursor:text}
+.nos-cmd .kbd{margin-left:auto;border:1px solid var(--line-strong);border-radius:5px;padding:1px 6px;font-size:11px;font-family:var(--mono);color:var(--ink-2)}
+.nos-tbic{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;color:var(--ink-2);border:1px solid var(--line);position:relative}
+.nos-content{padding:22px 26px}
+
+/* hub */
+.nos-hello{font-size:22px;font-weight:700}.nos-hello span{color:var(--accent)}
+.nos-subt{color:var(--ink-3);font-size:13px;margin-top:3px}
+.nos-alerts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 24px}
+.nos-al{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 16px;display:flex;gap:13px;align-items:center}
+.nos-al .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:none;font-size:16px}
+.nos-al b{font-family:var(--mono);font-size:20px;display:block;line-height:1.1}.nos-al span{color:var(--ink-3);font-size:12px}
+.nos-secrow{display:flex;align-items:center;gap:10px;margin:2px 0 14px;color:var(--ink-3);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.nos-secrow::after{content:"";flex:1;height:1px;background:var(--line)}
+.nos-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.nos-tool{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;transition:.15s;position:relative;display:block}
+.nos-tool:hover{border-color:var(--accent-line);background:var(--surface-2)}
+.nos-tool .ic{width:42px;height:42px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-bottom:14px;font-size:19px}
+.nos-tool h4{font-size:15px;font-weight:600;color:var(--ink)}
+.nos-tool p{color:var(--ink-3);font-size:12.5px;margin-top:6px;line-height:1.5}
+.nos-tool .arrow{position:absolute;top:18px;right:18px;color:var(--ink-3)}
+
+/* components */
+.nos-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer}
+.nos-btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent;font-weight:600}
+.nos-tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:6px}
+.nos-tag.p{background:var(--pos-bg);color:var(--pos)} .nos-tag.n{background:var(--neu-bg);color:var(--neu)} .nos-tag.g{background:var(--neg-bg);color:var(--neg)}
+
+@media(max-width:900px){.nos-app{grid-template-columns:1fr}.nos-side{display:none}.nos-alerts{grid-template-columns:1fr 1fr}.nos-tools{grid-template-columns:1fr}}

@@ -1,0 +1,68 @@
+{% load static custom_tags %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuvia OS — Hub</title>
+  <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+  <link rel="stylesheet" href="{% static 'css/nuvia-os.css' %}">
+</head>
+<body class="nos">
+<div class="nos-app">
+  <aside class="nos-side">
+    <div class="nos-brand">
+      <div class="logo">N</div>
+      <div><b>Nuvia OS</b><span>{{ request.user.company.name|default:'Resort Group' }} · {{ request.user.get_role_display }}</span></div>
+    </div>
+    <div class="nos-sect">Operativo</div>
+    <a class="nos-lnk active"><i>🏠</i> Hub</a>
+    <a class="nos-lnk" href="{% url 'bookings:dashboard' %}"><i>📅</i> Prenotazioni</a>
+    <a class="nos-lnk" href="{% url 'maintenance_tool_home' %}"><i>🔧</i> Manutenzioni</a>
+    <a class="nos-lnk" href="{% url 'reviews:dashboard' %}"><i>⭐</i> Recensioni</a>
+    <div class="nos-sect">Gestione</div>
+    <a class="nos-lnk" href="{% url 'hr_portal:portal' %}"><i>🪪</i> Portale HR</a>
+    <a class="nos-lnk" href="{% url 'financials:dashboard' %}"><i>📈</i> Finanza</a>
+    <a class="nos-lnk" href="{% url 'economato:app' %}"><i>🏬</i> Economato</a>
+    <div class="sp"></div>
+    <a class="nos-lnk" href="{% url 'profile' %}"><i>⚙️</i> Profilo</a>
+    <div class="nos-me">
+      <div class="av"><img src="{{ request.user|get_avatar_url }}" alt=""></div>
+      <div><b>{{ request.user.get_full_name|default:request.user.username }}</b><span>{{ request.user.get_role_display }}</span></div>
+    </div>
+  </aside>
+
+  <div class="nos-main">
+    <header class="nos-top">
+      <div class="nos-crumb"><b>Hub operativo</b> · anteprima nuovo design</div>
+      <div class="nos-cmd"><span style="opacity:.8">🔎</span> Cerca o digita un comando… <span class="kbd">⌘K</span></div>
+      <div class="nos-tbic">🔔</div>
+    </header>
+
+    <main class="nos-content">
+      <div class="nos-hello">Buongiorno, <span>{{ request.user.get_full_name|default:request.user.username }}</span> 👋</div>
+      <div class="nos-subt">{% now "l j F" %} · ecco i tuoi strumenti operativi.</div>
+
+      <section class="nos-alerts">
+        <div class="nos-al"><div class="ic" style="background:var(--neg-bg);color:var(--neg)">⭐</div><div><b>—</b><span>recensioni da gestire</span></div></div>
+        <div class="nos-al"><div class="ic" style="background:var(--accent-soft);color:var(--accent)">🔧</div><div><b>—</b><span>ticket manutenzione</span></div></div>
+        <div class="nos-al"><div class="ic" style="background:var(--pos-bg);color:var(--pos)">📅</div><div><b>—</b><span>check-in oggi</span></div></div>
+        <div class="nos-al"><div class="ic" style="background:var(--neu-bg);color:var(--neu)">🪪</div><div><b>—</b><span>buste paga</span></div></div>
+      </section>
+
+      <div class="nos-secrow">I tuoi strumenti · {{ tools|length }}</div>
+      <section class="nos-tools">
+        {% for tool in tools %}
+        <a class="nos-tool" href="{{ tool.url }}">
+          <div class="arrow">→</div>
+          <div class="ic">{{ tool.emoji }}</div>
+          <h4>{{ tool.label }}</h4>
+          <p>{{ tool.description }}</p>
+        </a>
+        {% endfor %}
+      </section>
+    </main>
+  </div>
+</div>
+</body>
+</html>

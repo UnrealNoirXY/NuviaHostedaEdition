@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include, re_path
 from core import views as core_views
+from core import os_views as core_os_views
 from core.api_views import MobileShellContextView
 from tickets import views as tickets_views
 from django.conf import settings
@@ -17,6 +18,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', core_views.landing_page_view, name='landing_page'),
     path('hub/', core_views.home, name='home'),
+    path('hub/preview/', core_os_views.os_hub_preview, name='os_hub_preview'),
     path('login/', core_views.login_view, name='login'),
     path('force-password-change/', core_views.force_password_change_view, name='force_password_change'),
     path('password-change-otp/', core_views.password_change_otp_view, name='password_change_otp'),
